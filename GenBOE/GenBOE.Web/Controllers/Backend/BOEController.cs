@@ -8,14 +8,18 @@ namespace GenBOE.Web.Controllers.Backend
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Diagnostics;
 	using System.Linq;
+	using System.Transactions;
 	using System.Web.Http;
 	using System.Web.Http.Cors;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic._ModelView.Backend;
 	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.CopyBOE;
 	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.ActionLogic.ModelView.BOE;
 	using GenBOE.ActionLogic.Validation;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
@@ -24,6 +28,7 @@ namespace GenBOE.Web.Controllers.Backend
 	using GenBOE.Web.Common;
 	using GenBOE.Web.ModelView;
 	using IES.Common;
+	using IES.Common.Exceptions;
 
 	/// <summary>
 	/// BOEController used for /boe/editboeindex/boe/
@@ -42,9 +47,21 @@ namespace GenBOE.Web.Controllers.Backend
 		private IBOEControllerLogic boeControllerLogic { get; set; }
 
 		/// <summary>
+		/// BOE Labor Controller Logic
+		/// </summary>
+		private IBOELaborControllerLogic boeLaborControllerLogic { get; set; }
+
+		/// <summary>
 		/// Task Element Validation
 		/// </summary>
 		private TaskElementValidation taskElementValidation { get; set; }
+
+		/// <summary>
+		/// BOE Copier
+		/// </summary>
+		private BOECopier boeCopier { get; set; }
+
+
 
 		/// <summary>
 		/// Ctor
@@ -55,11 +72,13 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <param name="permissionsLoader">Permission loader</param>
 		/// <param name="homeControllerLogic">Home Controller Logic</param>
 		public BOEController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader,
-			IBOEControllerLogic boeControllerLogic, TaskElementValidation taskElementValidation)
+			IBOEControllerLogic boeControllerLogic, IBOELaborControllerLogic boeLaborControllerLogic, TaskElementValidation taskElementValidation, BOECopier boeCopier)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.boeControllerLogic = boeControllerLogic;
+			this.boeLaborControllerLogic = boeLaborControllerLogic;
 			this.taskElementValidation = taskElementValidation;
+			this.boeCopier = boeCopier;
 		}
 
 		/// <summary>
@@ -79,7 +98,7 @@ namespace GenBOE.Web.Controllers.Backend
 
 			Stopwatch sw = InitializeAction(logger, WebConstants.GET_BOE_HEADER, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, boeId);
 
-			FullBoe boe = ws.Boes.First(x => x.Id == boeId);
+			FullBoe boe = this.Factory.CreateFullBoe(boeId);
 
 			try
 			{
@@ -256,6 +275,134 @@ namespace GenBOE.Web.Controllers.Backend
 			}
 
 			FinalizeAction(logger, WebConstants.GET_BOE_HEADER, sw);
+			return result;
+		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
+		public IESSingleResponse<bool> SaveEditBOEHeader([FromBody] SaveBoeHeaderModelView saveBOEHeader)
+		{
+			_ = saveBOEHeader ?? throw new ArgumentNullException(nameof(saveBOEHeader));
+
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+			bool descriptionOnly = false;
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(saveBOEHeader.workspaceShortName);
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_SAVE_EDIT_BOE_HEADER, SecurityPage.BOELaborGrid, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, saveBOEHeader.boeHeader.BOEID);
+
+			try
+			{
+				FullBoe boe = this.Factory.CreateFullBoe(saveBOEHeader.boeHeader.BOEID);
+
+				IBOEHeaderModelView boeHeader = new BOEHeaderModelView();
+				boeHeader.BOEID = saveBOEHeader.boeHeader.BOEID;
+				boeHeader.Title = saveBOEHeader.boeHeader.Title;
+				boeHeader.CustomFieldValues = new Collection<CustomFieldSelectionModelView>();
+
+
+				foreach (BOECustomFieldModelView item in saveBOEHeader.boeHeader.CustomFieldValues)
+				{
+					CustomFieldSelectionModelView field = new CustomFieldSelectionModelView();
+
+					if (item.CustomFieldMetaData.CustomFieldValueID != 0 && item.CustomFieldMetaData.SelectionID != 0)
+					{
+						BOECustomFieldOptionModelView selectedOption = item.CustomFieldOptions.First(option => option.CustomFieldOptionID == item.CustomFieldMetaData.CustomFieldValueID);
+						field.CustomFieldID = item.CustomFieldMetaData.isOpenEnded ? item.CustomFieldMetaData.CustomFieldID : -1;
+						field.CustomFieldValueID = item.CustomFieldMetaData.CustomFieldValueID;
+						field.IsOpenEnded = item.CustomFieldMetaData.isOpenEnded;
+						field.OpenEndedValue = selectedOption.Description;
+						field.SelectionID = item.CustomFieldMetaData.SelectionID;
+						field.UpdateDate = item.UpdateDate;
+						field.UpdateDateLong = item.UpdateDateLong;
+
+						boeHeader.CustomFieldValues.Add(field);
+					}
+				}
+
+				boeControllerLogic.SaveEditBoeHeader(ws, boe, boeHeader, saveBOEHeader.boeHeader.Description, descriptionOnly);
+
+				result.IsSuccessful = true;
+				result.Data = true;
+			}
+			catch (GenValidationException ex)
+			{
+				logger.Error(ex);
+				result.Messages = ex.ValidationList.Select(x => x.ValidationIssue).ToList();
+			}
+
+			FinalizeAction(logger, WebConstants.ACTION_SAVE_EDIT_BOE_HEADER, sw);
+			return result;
+		}
+
+		/// <summary>
+		/// Save duplicates of Task Elements
+		/// </summary>
+		/// <returns></returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> SaveDuplicateTaskElements([FromBody] SaveDuplicateTaskElementModelView modelView)
+		{
+			_ = modelView ?? throw new ArgumentNullException(nameof(modelView));
+
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(modelView.workspace);
+			FullBoe boeObject = this.Factory.CreateFullBoe(modelView.boeId);
+
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_SAVE_DUPLICATE_TASK_ELEMENTS, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, modelView.boeId);
+
+			try
+			{
+				Dictionary<int, int> duplicateRequest = modelView.taskElementDuplicateFormCollection.ToDictionary(x => x.TaskID, y => y.DuplicateCount);
+
+				switch (modelView.taskType)
+				{
+					case TaskType.Labor:
+						{
+							boeObject.LoadTaskElementRTEData();
+
+							using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_COPY_WORKSPACE_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+							{
+								boeCopier.DuplicateTasksInABoe(duplicateRequest, boeObject, ws);
+								scope.Complete();
+							}
+
+							break;
+						}
+					case TaskType.Travel:
+						{
+							throw new GenValidationException("Travel type elements are no longer supported");
+						}
+					default:
+						{
+							throw new GenValidationException("An invalid Task Type was used.");
+						}
+				}
+			}
+			catch (SystemException ex)
+			{   // Catch any timeout exceptions and request user to make fewer duplicates
+				// There are several exceptions that could be thrown, but all seem to have 1 of 2 base exceptions:
+				if (ex.GetBaseException() is System.InvalidOperationException ||
+					ex.GetBaseException() is System.TimeoutException)
+				{
+					string exceptionMessage = "Duplicate Task request could not be completed. Please decrease the number of tasks being duplicated, or the number of copies per task and try again.";
+					logger.Error(exceptionMessage);
+					result.Messages.Add(exceptionMessage);
+				}
+				else
+				{
+					logger.Error(ex.Message);
+					result.Messages.Add(ex.Message);
+				}
+			}
+
+			if (modelView.taskType == TaskType.Labor)
+			{
+				this.boeLaborControllerLogic.ProcessAllVariableDependencies(modelView.boeId, ws);
+			}
+			result.IsSuccessful = true;
+			result.Data = true;
+
+			FinalizeAction(logger, WebConstants.ACTION_SAVE_DUPLICATE_TASK_ELEMENTS, sw);
 			return result;
 		}
 	}

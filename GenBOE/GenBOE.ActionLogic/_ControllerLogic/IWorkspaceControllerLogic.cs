@@ -32,6 +32,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		AdjacentItems FindAdjacentBoes(HomeWorkspaceGridModelView modelView, int boeId, string sortColumn, SortOrder sortOrder);
 
 		/// <summary>
+		/// Get The Workspace Grid Data
+		/// </summary>
+		/// <param name="workspace">Workspace</param>
+		/// <returns></returns>
+		HomeWorkspaceGridModelView GetHomeWorkspaceGridData(FullWorkspace workspace);
+
+		/// <summary>
 		/// Calculate any linked task elements that need to be updated based on the workspace variable
 		/// </summary>
 		/// <param name="inTaskElementsToSave">task elements to save</param>

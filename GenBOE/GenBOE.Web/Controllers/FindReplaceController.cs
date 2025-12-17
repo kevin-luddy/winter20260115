@@ -50,7 +50,6 @@ namespace GenBOE.Web.Controllers
         /// Constructor
         /// </summary>
         /// <param name="inSecurityAccess">Access to the security APIs</param>
-        /// <param name="inWorkspaceMapper">Workspace APIs for manipulating workspaces</param>
         public FindReplaceController(ISecurityAccess inSecurityAccess,
             CommonDataMapper inCommonDataMapper,
             IFindReplaceDTODataLoader inFindReplaceDTOLoader,
@@ -78,29 +77,31 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="workspace">the workspace the FindReplace is associated with</param>
         /// <returns>returns the FindReplace view </returns>
-        public ViewResult Index(string workspace)
+        [HttpGet]
+		public ViewResult Index(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "FindReplace", SecurityPage.FindReplace, SecurityAuthorization.Read, ws, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_FIND_REPLACE, SecurityPage.FindReplace, SecurityAuthorization.Read, ws, null);
             
             // Perform Action
             ViewResult toReturn = GetMasterView(WebConstants.VIEW_FIND_REPLACE, workspace);
 
             // Finalize Action
-            FinalizeAction(_log, "FindReplace", sw);
+            FinalizeAction(_log, WebConstants.ACTION_FIND_REPLACE, sw);
             return toReturn;
         }
 
         #region Display
 
-        public ViewResult DisplayFindReplace(string workspace)
+        [ChildActionOnly, HttpGet]
+		public ViewResult DisplayFindReplace(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DisplayFindReplaceForm", SecurityPage.FindReplace, SecurityAuthorization.Read, ws, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_FIND_REPLACE, SecurityPage.FindReplace, SecurityAuthorization.Read, ws, null);
 
             ViewData["WorkspaceID"] = ws.Id;
 
@@ -108,7 +109,7 @@ namespace GenBOE.Web.Controllers
             ViewResult toReturn = View(WebConstants.VIEW_FIND_REPLACE_FORM);
 
             // Finalize Action
-            FinalizeAction(_log, "DisplayFindReplaceForm", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_FIND_REPLACE, sw);
             return toReturn;
         }
 
@@ -116,11 +117,12 @@ namespace GenBOE.Web.Controllers
 
         #region Actions
 
+		[HttpPost]
         public ViewResult PageFindResults(string workspace, FindReplaceResultsModelView findReplaceResults)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            Stopwatch sw = InitializeAction(_log, "PageFindResults", SecurityPage.FindReplace, SecurityAuthorization.Read, ws, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_PAGE_FIND_REPLACE_RESULTS, SecurityPage.FindReplace, SecurityAuthorization.Read, ws, null);
 
             if (findReplaceResults == null)
             {
@@ -136,22 +138,22 @@ namespace GenBOE.Web.Controllers
 
             ViewResult toReturn = View(WebConstants.VIEW_FIND_REPLACE_RESULTS, findReplaceResults);
 
-            FinalizeAction(_log, "PageFindResults", sw);
+            FinalizeAction(_log, WebConstants.ACTION_PAGE_FIND_REPLACE_RESULTS, sw);
             return toReturn;
         }
 
-        /// <summary>
-        /// Performs a search for find/replace text
-        /// </summary>
-        /// <param name="workspace"></param>
-        /// <param name="boeID"></param>
-        /// <param name="quickSearchParams"></param>
-        /// <returns></returns>
-        public ViewResult FindAllforReplace(string workspace, FindReplaceModelView findParams)
+		/// <summary>
+		/// Performs a search for find/replace text
+		/// </summary>
+		/// <param name="workspace"></param>
+		/// <param name="findParams"></param>
+		/// <returns></returns>
+		[HttpPost]
+		public ViewResult FindAllforReplace(string workspace, FindReplaceModelView findParams)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            Stopwatch sw = InitializeAction(_log, "FindAllReferences", SecurityPage.FindReplace, SecurityAuthorization.Read, ws, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_FIND_REPLACE_RESULTS, SecurityPage.FindReplace, SecurityAuthorization.Read, ws, null);
 
             if (findParams == null)
             {
@@ -186,16 +188,17 @@ namespace GenBOE.Web.Controllers
             }
 
             // Finalize Action
-            FinalizeAction(_log, "FindAllReferences", sw);
+            FinalizeAction(_log, WebConstants.ACTION_FIND_REPLACE_RESULTS, sw);
             return toReturn;
         }
 
-        public virtual JsonResult SaveReplacedValues(string workspace, FindReplaceResultsModelView ReplacedTextModelViews)
+		[HttpPost]
+		public virtual JsonResult SaveReplacedValues(string workspace, FindReplaceResultsModelView ReplacedTextModelViews)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "SaveReplacedValues", SecurityPage.FindReplace, SecurityAuthorization.ReadUpdate, ws, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_REPLACED_VALUES, SecurityPage.FindReplace, SecurityAuthorization.ReadUpdate, ws, null);
 
             if (ReplacedTextModelViews == null)
             {
@@ -277,12 +280,12 @@ namespace GenBOE.Web.Controllers
             JsonResult toReturn = Json(new { Status = true });
 
             // Finalize Action
-            FinalizeAction(_log, "SaveReplacedValues", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_REPLACED_VALUES, sw);
             return toReturn;
         }
         #endregion Actions
 
-        public virtual Collection<FindReplaceDTO> getFindReferences(FindReplaceDTO inFindParams, int inWorkspaceId)
+        private Collection<FindReplaceDTO> getFindReferences(FindReplaceDTO inFindParams, int inWorkspaceId)
         {
             if (inFindParams == null)
             {
@@ -611,6 +614,5 @@ namespace GenBOE.Web.Controllers
                 return inText;
             }
         }
-
     }
 }

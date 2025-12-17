@@ -29,11 +29,23 @@ function InitializeImportLaborTypeWidget(boeId, workspace, completeImportUrl, sp
 
 	ImportLaborType.createPreviewOutput = function (lt) {
 
+		// Helper function that checks if the original field is null, if so, return the invalid value
+		function returnInvalidValueIfNull(valid, invalid) {
+			if (valid && valid.toString().trim() !== '') {
+				return valid;
+			}
+			return invalid || 'invalid';
+		}
+
+		var resource = returnInvalidValueIfNull(lt.Resource, lt.InvalidResource);
+		var brc = returnInvalidValueIfNull(lt.BusinessResourceCode, lt.InvalidBusinessResourceCode);
+		var performingOrg = returnInvalidValueIfNull(lt.PerformingOrg, lt.InvalidPerformingOrg);
+
 		var toReturn =
 			'<li>' +
-			'Resources:' + lt.Resource +
-			' Business Resource Code:' + lt.BusinessResourceCode
-			' Performing Org:' + lt.PerformingOrg +
+			'Resources:' + resource + 
+			' Business Resource Code:' + brc +
+			' Performing Org:' + performingOrg +
 			' Date Range:' + lt.StartDateFormatted +
 			'-' + lt.EndDateFormatted +
 			' Curve:' + lt.Curve;

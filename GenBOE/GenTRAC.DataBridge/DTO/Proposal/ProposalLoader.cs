@@ -141,6 +141,7 @@ namespace GenTRAC.DataBridge.DTO
 							CustomerType = (CustomerType)entity.CustomerTypeID,
 							DateAssigned = entity.DateAssigned,
 							DateCreated = entity.DateCreated,
+							DraftRfpIssuedDate = entity.DraftRfpIssuedDate,
 							RFPIssuedDate = entity.RFPIssuedDate,
 							RFPReceivedDate = entity.RFPReceivedDate,
 							Comments = entity.Comments,
@@ -190,7 +191,10 @@ namespace GenTRAC.DataBridge.DTO
 							AdditionalClassification = entity.AdditionalClassification,
 							entity.ReasonCcopdNo,
 							entity.ReasonCcopdNoOther,
-							entity.IsSupportDefinitizingUCA
+							entity.IsSupportDefinitizingUCA,
+							entity.SubjectToAlternativePricingMethodology,
+							entity.AlternativePricingMethodology,
+							entity.AlternativePricingMethodologyOtherText
 						}).ToList()
 						.Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
 						{
@@ -221,6 +225,7 @@ namespace GenTRAC.DataBridge.DTO
 							CustomerType = entity.CustomerType,
 							DateAssigned = entity.DateAssigned,
 							DateCreated = entity.DateCreated,
+							DraftRfpIssuedDate = entity.DraftRfpIssuedDate,
 							RFPIssuedDate = entity.RFPIssuedDate,
 							RFPReceivedDate = entity.RFPReceivedDate,
 							Comments = entity.Comments,
@@ -270,7 +275,10 @@ namespace GenTRAC.DataBridge.DTO
 							AdditionalClassification = entity.AdditionalClassification,
 							CcopdNoReason = (CcopdOptionalReason?)entity.ReasonCcopdNo,
 							CcopdNoOtherReason = entity.ReasonCcopdNoOther,
-							IsSupportOfUndefinitized = entity.IsSupportDefinitizingUCA
+							IsSupportOfUndefinitized = entity.IsSupportDefinitizingUCA,
+							SubjectToAlternativePricingMethodology = entity.SubjectToAlternativePricingMethodology,
+							AlternativePricingMethodology = (IES.Common.AlternativePricingMethodology?)entity.AlternativePricingMethodology,
+							AlternativePricingMethodologyOtherText = entity.AlternativePricingMethodologyOtherText
 						}).ToList();
 				}
 			}
@@ -415,6 +423,12 @@ namespace GenTRAC.DataBridge.DTO
 								CaptureManagerDisplayName = entity.Capture_Manager,
 								CostVolumeLeadDisplayName = entity.Cost_Volume_Lead,
 								PeerReviewerDisplayName = entity.Peer_Reviewer,
+								IndependentReviewerName = entity.IndependentReviewerName,
+								PricingVerificationName = entity.PricingVerificationName,
+								CoverSheetApproverName = entity.CoverSheetApproverName,
+								ProposalMgrName = entity.ProposalMgrName,
+								TechLeadName = entity.TechLeadName,
+								DateEstSubmitsToContracts = entity.Date_Est_Submits_to_Contracts,
 								PricerDisplayName = entity.Pricer_Name,
 								ProposalSubmittalDate = entity.Date_Est_Submits_to_Contracts,
 								ChecklistCompleteDate = entity.ChecklistCompleteDate,
@@ -534,6 +548,7 @@ namespace GenTRAC.DataBridge.DTO
 							string.Join(",", dtoToUpsert.ContractTypeIds),
 							dtoToUpsert.UpdateDateAssigned,
 							dtoToUpsert.CreatedByUserId,
+							dtoToUpsert.DraftRfpIssuedDate,
 							dtoToUpsert.RFPIssuedDate,
 							dtoToUpsert.RFPReceivedDate,
 							dtoToUpsert.Comments,
@@ -587,7 +602,10 @@ namespace GenTRAC.DataBridge.DTO
 							dtoToUpsert.AdditionalClassification,
 							dtoToUpsert.CcopdNoReason == CcopdOptionalReason.NotSet ? null : (int?)dtoToUpsert.CcopdNoReason,
 							dtoToUpsert.CcopdNoOtherReason,
-							dtoToUpsert.IsSupportOfUndefinitized
+							dtoToUpsert.IsSupportOfUndefinitized,
+							dtoToUpsert.SubjectToAlternativePricingMethodology,
+							(int?)dtoToUpsert.AlternativePricingMethodology,
+							dtoToUpsert.AlternativePricingMethodologyOtherText
 							).FirstOrDefault();
 					}
 				}
@@ -886,6 +904,7 @@ namespace GenTRAC.DataBridge.DTO
 						CustomerType = (CustomerType)entity.CustomerTypeID,
 						DateAssigned = entity.DateAssigned,
 						DateCreated = entity.DateCreated,
+						DraftRfpIssuedDate = entity.DraftRfpIssuedDate,
 						RFPIssuedDate = entity.RFPIssuedDate,
 						RFPReceivedDate = entity.RFPReceivedDate,
 						Comments = entity.Comments,
@@ -965,6 +984,7 @@ namespace GenTRAC.DataBridge.DTO
 							CustomerType = entity.CustomerType,
 							DateAssigned = entity.DateAssigned,
 							DateCreated = entity.DateCreated,
+							DraftRfpIssuedDate = entity.DraftRfpIssuedDate,
 							RFPIssuedDate = entity.RFPIssuedDate,
 							RFPReceivedDate = entity.RFPReceivedDate,
 							Comments = entity.Comments,
@@ -1065,6 +1085,7 @@ namespace GenTRAC.DataBridge.DTO
 						CustomerType = (CustomerType)entity.CustomerTypeID,
 						DateAssigned = entity.DateAssigned,
 						DateCreated = entity.DateCreated,
+						DraftRfpIssuedDate = entity.DraftRfpIssuedDate,
 						RFPIssuedDate = entity.RFPIssuedDate,
 						RFPReceivedDate = entity.RFPReceivedDate,
 						Comments = entity.Comments,
@@ -1144,6 +1165,7 @@ namespace GenTRAC.DataBridge.DTO
 							CustomerType = entity.CustomerType,
 							DateAssigned = entity.DateAssigned,
 							DateCreated = entity.DateCreated,
+							DraftRfpIssuedDate = entity.DraftRfpIssuedDate,
 							RFPIssuedDate = entity.RFPIssuedDate,
 							RFPReceivedDate = entity.RFPReceivedDate,
 							Comments = entity.Comments,
@@ -1246,6 +1268,7 @@ namespace GenTRAC.DataBridge.DTO
 							CustomerType = (CustomerType)entity.CustomerTypeID,
 							DateAssigned = entity.DateAssigned,
 							DateCreated = entity.DateCreated,
+							DraftRfpIssuedDate = entity.DraftRfpIssuedDate,
 							RFPIssuedDate = entity.RFPIssuedDate,
 							RFPReceivedDate = entity.RFPReceivedDate,
 							Comments = entity.Comments,
@@ -1325,6 +1348,7 @@ namespace GenTRAC.DataBridge.DTO
 							CustomerType = entity.CustomerType,
 							DateAssigned = entity.DateAssigned,
 							DateCreated = entity.DateCreated,
+							DraftRfpIssuedDate = entity.DraftRfpIssuedDate,
 							RFPIssuedDate = entity.RFPIssuedDate,
 							RFPReceivedDate = entity.RFPReceivedDate,
 							Comments = entity.Comments,
@@ -1444,6 +1468,7 @@ namespace GenTRAC.DataBridge.DTO
 							CustomerType = (CustomerType)entity.CustomerTypeID,
 							DateAssigned = entity.DateAssigned,
 							DateCreated = entity.DateCreated,
+							DraftRfpIssuedDate = entity.DraftRfpIssuedDate,
 							RFPIssuedDate = entity.RFPIssuedDate,
 							RFPReceivedDate = entity.RFPReceivedDate,
 							Comments = entity.Comments,
@@ -1523,6 +1548,7 @@ namespace GenTRAC.DataBridge.DTO
 							CustomerType = entity.CustomerType,
 							DateAssigned = entity.DateAssigned,
 							DateCreated = entity.DateCreated,
+							DraftRfpIssuedDate = entity.DraftRfpIssuedDate,
 							RFPIssuedDate = entity.RFPIssuedDate,
 							RFPReceivedDate = entity.RFPReceivedDate,
 							Comments = entity.Comments,
@@ -1639,6 +1665,7 @@ namespace GenTRAC.DataBridge.DTO
 					CustomerType = (CustomerType)x.Proposals.CustomerTypeID,
 					DateAssigned = x.Proposals.DateAssigned,
 					DateCreated = x.Proposals.DateCreated,
+					DraftRfpIssuedDate = x.Proposals.DraftRfpIssuedDate,
 					RFPIssuedDate = x.Proposals.RFPIssuedDate,
 					RFPReceivedDate = x.Proposals.RFPReceivedDate,
 					Comments = x.Proposals.Comments,
@@ -1746,6 +1773,7 @@ namespace GenTRAC.DataBridge.DTO
 						CustomerType = (CustomerType)entity.Proposals.CustomerTypeID,
 						DateAssigned = entity.Proposals.DateAssigned,
 						DateCreated = entity.Proposals.DateCreated,
+						DraftRfpIssuedDate = entity.Proposals.DraftRfpIssuedDate,
 						RFPIssuedDate = entity.Proposals.RFPIssuedDate,
 						RFPReceivedDate = entity.Proposals.RFPReceivedDate,
 						Comments = entity.Proposals.Comments,
@@ -1825,6 +1853,7 @@ namespace GenTRAC.DataBridge.DTO
 							CustomerType = entity.CustomerType,
 							DateAssigned = entity.DateAssigned,
 							DateCreated = entity.DateCreated,
+							DraftRfpIssuedDate = entity.DraftRfpIssuedDate,
 							RFPIssuedDate = entity.RFPIssuedDate,
 							RFPReceivedDate = entity.RFPReceivedDate,
 							Comments = entity.Comments,
@@ -2376,6 +2405,29 @@ namespace GenTRAC.DataBridge.DTO
 			}
 
 			return names;
+		}
+
+		/// <summary>
+		/// Inserts the report XML.
+		/// </summary>
+		/// <param name="nonce">The nonce.</param>
+		/// <param name="reportXml">The report XML.</param>
+		public virtual void InsertReportXml(string nonce, string reportXml)
+		{
+			if (nonce == null)
+			{
+				throw new ArgumentNullException(nameof(nonce));
+			}
+
+			if (reportXml == null)
+			{
+				throw new ArgumentNullException(nameof(reportXml));
+			}
+
+			using (genTRACEntities gbe = new genTRACEntities())
+			{
+				gbe.insertReportXml(nonce, reportXml);
+			}
 		}
 	}
 }

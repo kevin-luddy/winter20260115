@@ -15,7 +15,7 @@ namespace GenTRAC.ActionLogic.ModelView.Home
     /// <summary>
     /// The My Proposals Grid row that is shown on the home page
     /// </summary>
-    public class HomeProposalGridModelView : SortableModelView<HomeProposalGridModelView>
+    public class HomeProposalGridModelView
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeProposalGridModelView"/> class.
@@ -57,7 +57,7 @@ namespace GenTRAC.ActionLogic.ModelView.Home
         public string Customer { get; set; }
 
         /// <summary>
-        /// Is Commecial Customer
+        /// Is Commercial Customer
         /// </summary>
         public bool IsCommercialCustomer { get; set; }
 
@@ -324,7 +324,7 @@ namespace GenTRAC.ActionLogic.ModelView.Home
         /// <summary>
         /// Gets or sets the workspaces linked to this proposal.
         /// </summary>
-        public ICollection<string> Workspaces { get; set; }
+        public List<string> Workspaces { get; set; }
 
         /// <summary>
         /// Do user's permissions allow the user to delete the proposal
@@ -376,5 +376,54 @@ namespace GenTRAC.ActionLogic.ModelView.Home
                 return result;
             }
         }
-    }
+
+
+		/// <summary>
+		/// Ind. Reviewer Name
+		/// </summary>
+		public string IndependentReviewerName { get; set; }
+
+		/// <summary>
+		/// Pricing Verification Name
+		/// </summary>
+		public string PricingVerificationName { get; set; }
+
+		/// <summary>
+		/// Cover sheet Approver Name
+		/// </summary>
+		public string CoverSheetApproverName { get; set; }
+
+		/// <summary>
+		/// Proposal Manager Name
+		/// </summary>
+		public string ProposalMgrName { get; set; }
+
+		/// <summary>
+		/// Tech Lead Name
+		/// </summary>
+		public string TechLeadName { get; set; }
+
+		/// <summary>
+		/// Date Est Submits to contracts
+		/// </summary>
+		public DateTime? DateEstSubmitsToContracts { get; set; }
+
+		/// <summary>
+		/// Gets the string value of the Date Est Submits to contracts
+		/// </summary>
+		public string DateEstSubmitsToContractsString
+		{
+			get
+			{
+				if (this.DateEstSubmitsToContracts.HasValue)
+				{
+					return this.DateEstSubmitsToContracts.Value.ToString("MM/dd/yyyy");
+				}
+				else
+				{
+					return string.Empty;
+				}
+			}
+		}
+	}
 }

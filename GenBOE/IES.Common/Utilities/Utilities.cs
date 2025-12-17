@@ -465,14 +465,42 @@ namespace IES.Common
 		/// <returns>Task title with prefix</returns>
 		public static string appendCopyPrefixToTitle(string originalTitle, int duplicateNumber)
 		{
-			String prefix = "COPY " + duplicateNumber + " - ";
-			String updatedTitle = prefix + originalTitle;
-			//Truncate any characters over the max title length of 100
-			if (updatedTitle.Length > 100)
+			// Regular expression to check if the title already starts with "COPY X - " pattern
+			Regex regex = new Regex(@"^COPY\s+(\d+)\s+-\s+(.*)$");
+			Match match = regex.Match(originalTitle);
+
+			if (match.Success)
 			{
-				updatedTitle = updatedTitle.Remove(100);
+				// Extract the existing copy number and the actual title
+				int existingNumber = int.Parse(match.Groups[1].Value);
+				string actualTitle = match.Groups[2].Value;
+
+				// Create a new title with incremented number
+				String prefix = "COPY " + (existingNumber + duplicateNumber) + " - ";
+				String updatedTitle = prefix + actualTitle;
+
+				// Truncate any characters over the max title length of 100
+				if (updatedTitle.Length > 100)
+				{
+					updatedTitle = updatedTitle.Remove(100);
+				}
+
+				return updatedTitle;
 			}
-			return updatedTitle;
+			else
+			{
+				// Original behavior when no copy prefix exists
+				String prefix = "COPY " + duplicateNumber + " - ";
+				String updatedTitle = prefix + originalTitle;
+
+				// Truncate any characters over the max title length of 100
+				if (updatedTitle.Length > 100)
+				{
+					updatedTitle = updatedTitle.Remove(100);
+				}
+
+				return updatedTitle;
+			}
 		}
 		#endregion
 
@@ -996,6 +1024,8 @@ namespace IES.Common
 
 				return isPLDIntegrated.Value;
 			}
+			// Internal set for testing purposes
+			internal set => isPLDIntegrated = value;
 		}
 
 

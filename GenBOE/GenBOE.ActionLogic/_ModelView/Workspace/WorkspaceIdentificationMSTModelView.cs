@@ -15,7 +15,6 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 	using GenBOE.Objects;
 	using IES.Common;
 	using IES.Common.classes;
-	using IES.Common.PickList;
 
 	/// <summary>
 	/// Workspace Identification (MST) ModelView that extends WorkspaceIdentificationModelView
@@ -46,6 +45,8 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 				this.LineOfBusinessTypeID = workspaceDTO.LineOfBusiness.Id;
 				this.ProjectMapType = workspaceDTO.ProjectMapType;
 				this.AllowGridEdit = workspaceDTO.AllowGridEdit;
+				this.TrackingNumber = workspaceDTO.TrackingNumber;
+				this.ProposalTitle = workspaceDTO.ProposalTitle;
 			}
 			if (costVolumeLeadDTO != null)
 			{
@@ -92,9 +93,20 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		public bool AllowGridEdit { get; set; }
 
 		/// <summary>
-		/// PTM Tracking Number, not used by RMS
+		/// PA Number from PLD
 		/// </summary>
 		public string TrackingNumber { get; set; }
+
+		/// <summary>
+		/// Gets or sets the user-entered workspace name when PLD is enabled
+		/// </summary>
+		[StringLength(40, ErrorMessage = "A maximum of 40 characters are allowed for the Workspace Name")]
+		public string WorkspaceNameInput { get; set; }
+
+		/// <summary>
+		/// Gets/Sets date PLD Proposal was last updated
+		/// </summary>
+		public string PldLastUpdateDate { get; set; }
 
 		#region new genBOE UI
 		/// <summary>

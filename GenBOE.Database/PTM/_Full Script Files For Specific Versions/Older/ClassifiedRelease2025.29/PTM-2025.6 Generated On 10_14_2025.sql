@@ -613,6 +613,10 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **		05/13/25	ranzalon			PROPH-3038 Added Bid and Mission Segment EPP Dates
 **		07/21/25	e378233				PROPH-2835/2836 Added MSAC POC and Program Manager
 **		10/13/25	ranzalon			PROPH-3375 PPR Questions 13 and 14
+**		11/25/25	e403038				PROPH-3488 Fixing Full release scripts from Release 2025.5 onward - following 3 changes (PROPH-2994, PROPH-3406, PROPH-3406) below this are the items missed in this release
+**		10/02/25	e403038				PROPH-2994 Additional EPP Dates (Original to Planned and add Scheduled)
+**		10/30/25	e403038				PROPH-3406 Label Modifications => Current Planned renamed to ScheduledActual and Current Scheduled renamed to Planned
+**		10/30/25	e403038				PROPH-3406 - THIS CHANGE IN THE FULL SCRIPT IS ONLY TO FIX THE RENAME AND GET EVERYTHING ALIGNED
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
@@ -764,12 +768,12 @@ SELECT
 	pCD.FinalNegotiatedValue AS ContractsFinalNegotiatedValue,
 	pCD.FinalNegotiatedDate AS ContractsFinalNegotiatedDate,
 	eppLU.Text AS ContractsEppDelegationAuthority,
-	pCD.ProgramEppDate AS ContractsProgramEppDate,
-	pCD.LobEppDate AS ContractsLobEppDate,
-	pCD.PreSpaceEppDate AS ContractsPreSpaceEppDate,
-	pCD.SpaceEppDate AS ContractsSpaceEppDate,
-	pCD.PreCorporateEppDate AS ContractsPreCorporateEppDate,
-	pCD.CorporateEppDate AS ContractsCorporateEppDate,
+	pCD.ScheduledActualProgramEppDate AS ContractsScheduledActualProgramEppDate,
+	pCD.ScheduledActualLobEppDate AS ContractsScheduledActualLobEppDate,
+	pCD.ScheduledActualPreSpaceEppDate AS ContractsScheduledActualPreSpaceEppDate,
+	pCD.ScheduledActualSpaceEppDate AS ContractsScheduledActualSpaceEppDate,
+	pCD.ScheduledActualPreCorporateEppDate AS ContractsScheduledActualPreCorporateEppDate,
+	pCD.ScheduledActualCorporateEppDate AS ContractsScheduledActualCorporateEppDate,
 	pCD.EppRosDelegationNotes AS ContractsEppRosDelegationNotes,
 	pCD.CustomerDueDate AS CustomerDueDate,
 	CASE
@@ -778,8 +782,16 @@ SELECT
 		ELSE NULL
 	END AS ContractsLmWon,
 	pCD.ModCompletedDate AS ContractsModCompletedDate,
-	pCD.BidEppDate AS ContractsBidEppDate,
-	pCD.MissionSegmentEppDate AS ContractsMissionSegmentEppDate,
+	pCD.ScheduledActualBidEppDate AS ContractsScheduledActualBidEppDate,
+	pCD.ScheduledActualMissionSegmentEppDate AS ContractsScheduledActualMissionSegmentEppDate,
+	pCD.PlannedProgramEppDate AS ContractsPlannedProgramEppDate,
+	pCD.PlannedLobEppDate AS ContractsPlannedLobEppDate,
+	pCD.PlannedPreSpaceEppDate AS ContractsPlannedPreSpaceEppDate,
+	pCD.PlannedSpaceEppDate AS ContractsPlannedSpaceEppDate,
+	pCD.PlannedPreCorporateEppDate AS ContractsPlannedPreCorporateEppDate,
+	pCD.PlannedCorporateEppDate AS ContractsPlannedCorporateEppDate,
+	pCD.PlannedBidEppDate AS ContractsPlannedBidEppDate,
+	pCD.PlannedMissionSegmentEppDate AS ContractsPlannedMissionSegmentEppDate,
 	-- end of Proposal Contract Data
 	pCD.CageCode,
 	CASE
@@ -2156,6 +2168,10 @@ AS
 **		05/13/25	ranzalon			PROPH-3038 Added Bid and Mission Segment EPP Dates
 **		07/21/25	e378233				PROPH-2835/2836 Added MSAC POC and Program Manager
 **		10/13/25	ranzalon			PROPH-3375 PPR Questions 13 and 14
+**		11/25/25	e403038				PROPH-3488 Fixing Full release scripts from Release 2025.5 onward - following 3 changes (PROPH-2994, PROPH-3406, PROPH-3406) below this are the items missed in this release
+**		10/02/25	e403038				PROPH-2994 Additional EPP Dates (Original to Planned and add Scheduled)
+**		10/30/25	e403038				PROPH-3406 Label Modifications => Current Planned renamed to ScheduledActual and Current Scheduled renamed to Planned
+**		10/30/25	e403038				PROPH-3406 - THIS CHANGE IN THE FULL SCRIPT IS ONLY TO FIX THE RENAME AND GET EVERYTHING ALIGNED
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -2435,17 +2451,25 @@ SELECT V.[ProposalID]
 	 ,V.ContractsFinalNegotiatedValue
 	 ,V.ContractsFinalNegotiatedDate
 	 ,V.ContractsEppDelegationAuthority
- 	 ,V.ContractsProgramEppDate
-	 ,V.ContractsLobEppDate
-	 ,V.ContractsPreSpaceEppDate
-	 ,V.ContractsSpaceEppDate
-	 ,V.ContractsPreCorporateEppDate
-	 ,V.ContractsCorporateEppDate
+ 	 ,V.ContractsScheduledActualProgramEppDate
+	 ,V.ContractsScheduledActualLobEppDate
+	 ,V.ContractsScheduledActualPreSpaceEppDate
+	 ,V.ContractsScheduledActualSpaceEppDate
+	 ,V.ContractsScheduledActualPreCorporateEppDate
+	 ,V.ContractsScheduledActualCorporateEppDate
 	 ,V.ContractsEppRosDelegationNotes
 	 ,V.ContractsLmWon
 	 ,V.ContractsModCompletedDate
-	 ,V.ContractsBidEppDate
-	 ,V.ContractsMissionSegmentEppDate
+	 ,V.ContractsScheduledActualBidEppDate
+	 ,V.ContractsScheduledActualMissionSegmentEppDate
+	 ,V.ContractsPlannedProgramEppDate
+	 ,V.ContractsPlannedLobEppDate
+	 ,V.ContractsPlannedPreSpaceEppDate
+	 ,V.ContractsPlannedSpaceEppDate
+	 ,V.ContractsPlannedPreCorporateEppDate
+	 ,V.ContractsPlannedCorporateEppDate
+	 ,V.ContractsPlannedBidEppDate
+	 ,V.ContractsPlannedMissionSegmentEppDate
 	 -- end of Proposal Contract Data
 	 ,V.CageCode
 	 ,V.ContractActionType
@@ -7071,14 +7095,22 @@ CREATE PROCEDURE [dbo].[upsertProposalContractsData]
 	@FinalNegotiatedValue [bigint],
 	@FinalNegotiatedDate [date],
 	@EppDelegationAuthority [int],
-	@BidEppDate [date],
-	@ProgramEppDate [date],
-	@MissionSegmentEppDate [date],
-	@LobEppDate [date],
-	@PreSpaceEppDate [date],
-	@SpaceEppDate [date],
-	@PreCorporateEppDate [date],
-	@CorporateEppDate [date],
+	@ScheduledActualBidEppDate [date],
+	@ScheduledActualProgramEppDate [date],
+	@ScheduledActualMissionSegmentEppDate [date],
+	@ScheduledActualLobEppDate [date],
+	@ScheduledActualPreSpaceEppDate [date],
+	@ScheduledActualSpaceEppDate [date],
+	@ScheduledActualPreCorporateEppDate [date],
+	@ScheduledActualCorporateEppDate [date],
+	@PlannedBidEppDate [date],
+	@PlannedProgramEppDate [date],
+	@PlannedMissionSegmentEppDate [date],
+	@PlannedLobEppDate [date],
+	@PlannedPreSpaceEppDate [date],
+	@PlannedSpaceEppDate [date],
+	@PlannedPreCorporateEppDate [date],
+	@PlannedCorporateEppDate [date],
 	@EppRosDelegationNotes [varchar](1000),
 	@LmWon [bit],
 	@ModCompletedDate [date],
@@ -7109,6 +7141,10 @@ AS
 **		02/22/23	ranzalon			Add CustomerDueDate
 **		11/12/24	twilson3			Add Insurance fields
 **		05/12/25	ranzalon			Add Bid and Mission Segment EPP Dates
+**		11/25/25	e403038				PROPH-3488 Fixing Full release scripts from Release 2025.5 onward - following 3 changes (PROPH-2994, PROPH-3406, PROPH-3406) below this are the items missed in this release
+**		10/02/25	e403038				PROPH-2994 Additional EPP Dates (Original to Planned and add Scheduled)
+**		10/30/25	e403038				PROPH-3406 Label Modifications => Current Planned renamed to ScheduledActual and Current Scheduled renamed to Planned
+**		10/30/25	e403038				PROPH-3406 - THIS CHANGE IN THE FULL SCRIPT IS ONLY TO FIX THE RENAME AND GET EVERYTHING ALIGNED
 *******************************************************************************/
 SET NOCOUNT ON
 
@@ -7117,16 +7153,20 @@ SET NOCOUNT ON
 			DECLARE @Inserted AS Table (Id int)
 			INSERT INTO [dbo].[ProposalContractsData] (UpdateDT, ProposalID, PreviouslySubmittedROM, CustomerSubmittalDate,
 														ContractsCorrespondLogNumber, FinalNegotiatedValue, FinalNegotiatedDate,
-														EppDelegationAuthority, ProgramEppDate, LobEppDate, PreSpaceEppDate, 
-														SpaceEppDate, PreCorporateEppDate, CorporateEppDate, EppRosDelegationNotes, 
+														EppDelegationAuthority, ScheduledActualProgramEppDate, ScheduledActualLobEppDate, ScheduledActualPreSpaceEppDate, 
+														ScheduledActualSpaceEppDate, ScheduledActualPreCorporateEppDate, ScheduledActualCorporateEppDate, EppRosDelegationNotes, 
 														LmWon, ModCompletedDate, CageCode, CustomerDueDate, IsInsuranceDirect, 
-														InsuranceType, ProposedInsurance, NegotiatedInsurance, BidEppDate, MissionSegmentEppDate)
+														InsuranceType, ProposedInsurance, NegotiatedInsurance, ScheduledActualBidEppDate, ScheduledActualMissionSegmentEppDate,
+														PlannedProgramEppDate, PlannedLobEppDate, PlannedPreSpaceEppDate, 
+														PlannedSpaceEppDate, PlannedPreCorporateEppDate, PlannedCorporateEppDate, PlannedBidEppDate, PlannedMissionSegmentEppDate)
 				OUTPUT inserted.ProposalContractsDataId INTO @Inserted
 				VALUES (GETDATE(), @ProposalID, @PreviouslySubmittedROM, @CustomerSubmittalDate, @ContractsCorrespondLogNumber,
-						@FinalNegotiatedValue, @FinalNegotiatedDate, @EppDelegationAuthority, @ProgramEppDate, @LobEppDate, 
-						@PreSpaceEppDate, @SpaceEppDate, @PreCorporateEppDate, @CorporateEppDate, @EppRosDelegationNotes, @LmWon, 
+						@FinalNegotiatedValue, @FinalNegotiatedDate, @EppDelegationAuthority, @ScheduledActualProgramEppDate, @ScheduledActualLobEppDate, 
+						@ScheduledActualPreSpaceEppDate, @ScheduledActualSpaceEppDate, @ScheduledActualPreCorporateEppDate, @ScheduledActualCorporateEppDate, @EppRosDelegationNotes, @LmWon, 
 						@ModCompletedDate, @CageCode, @CustomerDueDate, @IsInsuranceDirect, @InsuranceType, @ProposedInsurance, 
-						@NegotiatedInsurance, @BidEppDate, @MissionSegmentEppDate)
+						@NegotiatedInsurance, @ScheduledActualBidEppDate, @ScheduledActualMissionSegmentEppDate,
+						@PlannedProgramEppDate, @PlannedLobEppDate, @PlannedPreSpaceEppDate, 
+						@PlannedSpaceEppDate, @PlannedPreCorporateEppDate, @PlannedCorporateEppDate, @PlannedBidEppDate, @PlannedMissionSegmentEppDate)
 			SELECT @ProposalContractsDataId = Id FROM @Inserted
 		END
 	ELSE -- updating existing
@@ -7141,14 +7181,22 @@ SET NOCOUNT ON
 						FinalNegotiatedValue = @FinalNegotiatedValue, 
 						FinalNegotiatedDate = @FinalNegotiatedDate,
 						EppDelegationAuthority = @EppDelegationAuthority,
-						BidEppDate = @BidEppDate,
-						ProgramEppDate = @ProgramEppDate,
-						MissionSegmentEppDate = @MissionSegmentEppDate,
-						LobEppDate = @LobEppDate,
-						PreSpaceEppDate = @PreSpaceEppDate,
-						SpaceEppDate = @SpaceEppDate,
-						PreCorporateEppDate = @PreCorporateEppDate,
-						CorporateEppDate = @CorporateEppDate,
+						ScheduledActualBidEppDate = @ScheduledActualBidEppDate,
+						ScheduledActualProgramEppDate = @ScheduledActualProgramEppDate,
+						ScheduledActualMissionSegmentEppDate = @ScheduledActualMissionSegmentEppDate,
+						ScheduledActualLobEppDate = @ScheduledActualLobEppDate,
+						ScheduledActualPreSpaceEppDate = @ScheduledActualPreSpaceEppDate,
+						ScheduledActualSpaceEppDate = @ScheduledActualSpaceEppDate,
+						ScheduledActualPreCorporateEppDate = @ScheduledActualPreCorporateEppDate,
+						ScheduledActualCorporateEppDate = @ScheduledActualCorporateEppDate,
+						PlannedBidEppDate = @PlannedBidEppDate,
+						PlannedProgramEppDate = @PlannedProgramEppDate,
+						PlannedMissionSegmentEppDate = @PlannedMissionSegmentEppDate,
+						PlannedLobEppDate = @PlannedLobEppDate,
+						PlannedPreSpaceEppDate = @PlannedPreSpaceEppDate,
+						PlannedSpaceEppDate = @PlannedSpaceEppDate,
+						PlannedPreCorporateEppDate = @PlannedPreCorporateEppDate,
+						PlannedCorporateEppDate = @PlannedCorporateEppDate,
 						EppRosDelegationNotes = @EppRosDelegationNotes,
 						LmWon = @LmWon,
 						ModCompletedDate = @ModCompletedDate,

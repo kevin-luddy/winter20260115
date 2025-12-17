@@ -115,7 +115,7 @@ namespace GenBOE.ActionLogic.IO.Export
             toReturn.Add("MOQ Template BOEs", workspace.UsingTemplateBOE ? this.sYes : this.sNo);
             toReturn.Add("SAP Connection Enabled", workspace.EnableSAPConnection ?  this.sYes : this.sNo);
 
-	     return toReturn;
+			return toReturn;
         }
 
         /// <summary>

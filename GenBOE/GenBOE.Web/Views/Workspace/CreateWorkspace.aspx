@@ -95,6 +95,14 @@
                         <span data-ng-class="{'current-step': step == 5}">Verify</span>
                     </div>
                     <gen-validation data-errors="errors"></gen-validation>
+                    <%
+                        // Determine which Step 3 file to use based on CompanyConfiguration
+                        string step3FileName = "CreateWorkspaceStep3RMS.html";
+                        if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+                        {
+                            step3FileName = "CreateWorkspaceStep3Space.html";
+                        }
+                    %>
                     <ul id="urlValidationBox" class="validation-box"></ul>
                     <div id="CreateWorkspace-Wizard">
                         <div data-ng-cloak data-ng-hide="isDataLoading">
@@ -106,7 +114,7 @@
                                     <div data-ng-include src="'/Resources/CreateWorkspaceStep2.html'"></div>
                                 </div>
                                 <div data-ng-switch-when="3">
-                                    <div data-ng-include src="'/Resources/CreateWorkspaceStep3.html'"></div>
+                                    <div data-ng-include src="'/Resources/<%= step3FileName %>'"></div>
                                 </div>
                                 <div data-ng-switch-when="4">
                                     <div data-ng-include src="'/Resources/CreateWorkspaceStep4.html'"></div>

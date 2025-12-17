@@ -227,6 +227,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">Workspace short name</param>
 		/// <returns>a view</returns>
+		[HttpGet]
 		public virtual ActionResult Index(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -265,13 +266,14 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeID">Current BOE</param>
 		/// <param name="taskType">Type of tasks to display</param>
 		/// <returns>Populated Duplicate Task Element View</returns>
+		[HttpGet]
 		public ViewResult LoadDuplicateTaskDialog(string workspace, int boeID, TaskType taskType)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			FullBoe boeObject = this.Factory.CreateFullBoe(boeID);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "LoadDuplicateTaskDialog", SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_LOAD_DUPLICATE_TASK_DIALOG, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
 
 			// Perform Action
 			ViewData["BOEID"] = boeID;
@@ -283,7 +285,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_DUPLICATE_TASK_DIALOG, theModelView);
 
 			// Finalize Action
-			FinalizeAction(_log, "LoadDuplicateTaskDialog", sw);
+			FinalizeAction(_log, WebConstants.ACTION_LOAD_DUPLICATE_TASK_DIALOG, sw);
 
 			return toReturn;
 		}
@@ -296,13 +298,14 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace Shortname</param>
 		/// <param name="boeID">BOE ID</param>
 		/// <returns>DisplayTaskElementGrid ActionResult</returns>
+		[HttpPost]
 		public virtual ViewResult DisplayTaskElementGrid(string workspace, int boeID)
 		{
 			FullWorkspace workspaceObject = this.Factory.CreateFullWorkspace(workspace);
 			FullBoe boe = workspaceObject.Boes.First(x => x.Id == boeID);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayTaskElementGrid", SecurityPage.BOELaborGrid, SecurityAuthorization.Read, workspaceObject, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_TASK_ELEMENT_GRID, SecurityPage.BOELaborGrid, SecurityAuthorization.Read, workspaceObject, boeID);
 
 			// Perform Action
 			ViewData["BOEID"] = boeID;
@@ -360,7 +363,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_TASK_ELEMENT_GRID, theModelView);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayTaskElementGrid", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_TASK_ELEMENT_GRID, sw);
 			return toReturn;
 		}
 
@@ -370,19 +373,20 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace Shortname</param>
 		/// <param name="id">BOE ID</param>
 		/// <returns>DisplayBOEValidateResults ActionResult</returns>
+		[HttpGet]
 		public virtual ViewResult DisplayBOEValidateResults(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayBOEValidateResults", SecurityPage.ValidateBOE, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_VALIDATE_RESULTS, SecurityPage.ValidateBOE, SecurityAuthorization.Read, ws, boeID);
 
 			ViewData["BOEID"] = boeID;
 
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_VALIDATION_RESULTS);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayBOEValidateResults", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_VALIDATE_RESULTS, sw);
 			return toReturn;
 		}
 
@@ -392,19 +396,20 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace.</param>
 		/// <param name="boeId">The boe identifier.</param>
 		/// <returns>DisplayBOEOffloadResults View.</returns>
+		[HttpGet]
 		public virtual ViewResult DisplayBOEOffloadResults(string workspace, int boeId)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayBOEOffloadResults", SecurityPage.BOELaborGrid, SecurityAuthorization.Read, ws, boeId);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_OFFLOAD_RESULTS, SecurityPage.BOELaborGrid, SecurityAuthorization.Read, ws, boeId);
 
 			BoeOffloadModelView model = this._ControllerLogic.RetrieveBoeOffloadData(ws, boeId);
 
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_OFFLOAD_RESULTS, model);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayBOEOffloadResults", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_OFFLOAD_RESULTS, sw);
 			return toReturn;
 		}
 
@@ -414,13 +419,14 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">THe Workspace Shortname</param>
 		/// <param name="id">BOE ID</param>
 		/// <returns>The view for the BOE Header</returns>
+		[HttpGet, ChildActionOnly]
 		public virtual ViewResult DisplayBOEHeaderDescription(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			FullBoe boe = this.Factory.CreateFullBoe(boeID);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayBOEHeaderDescription", SecurityPage.EditBOEHeaderDescription,
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_HEADER_DESCRIPTION, SecurityPage.EditBOEHeaderDescription,
 				SecurityAuthorization.Read, ws, boeID);
 
 			ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateAnswers = this.rteTemplateDataLoader.GetByBoeId(ws.Id, boeID).Where(t => t.SourceId == (int)RteTemplateSource.BoeDescription).OrderBy(r => r.SortOrder).ToList();
@@ -429,7 +435,7 @@ namespace GenBOE.Web.Controllers
 			ViewBag.RteFieldSize = ws.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayBOEHeaderDescription", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_HEADER_DESCRIPTION, sw);
 			return toReturn;
 		}
 
@@ -439,13 +445,14 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">THe Workspace Shortname</param>
 		/// <param name="id">BOE ID</param>
 		/// <returns>The view for the BOE Header</returns>
+		[ChildActionOnly, HttpGet]
 		public virtual ViewResult DisplayBOEHeader(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			FullBoe boe = ws.Boes.First(x => x.Id == boeID);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayBOEHeader", SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_HEADER, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 
 			ViewData["BOEID"] = boeID;
 			ViewData["CustomFields"] = _ControllerLogic.GetCustomFieldModelViews(ws);
@@ -471,7 +478,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_HEADER, _ControllerLogic.CreateBOEHeaderMV(boe, ws));
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayBOEHeader", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_HEADER, sw);
 			return toReturn;
 		}
 
@@ -490,6 +497,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace.</param>
 		/// <param name="boeID">The boe identifier.</param>
 		/// <returns>View containing BOE Search or nothing if no access.</returns>
+		[HttpGet, ChildActionOnly]
 		public virtual ViewResult DisplayBOESearch(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -502,7 +510,7 @@ namespace GenBOE.Web.Controllers
 				return null;
 			}
 
-			Stopwatch sw = InitializeAction(_log, "DisplayBOESearch", SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_SEARCH, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 
 			ViewData["BOEID"] = boeID;
 			ViewData["UsingTemplateBoe"] = ws.UsingTemplateBOE;
@@ -513,7 +521,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_SEARCH);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayBOESearch", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_SEARCH, sw);
 			return toReturn;
 		}
 
@@ -522,6 +530,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">The workspace.</param>
 		/// <returns>View containing BOE Search button or nothing if no access.</returns>
+		[HttpGet, ChildActionOnly]
 		public virtual ViewResult DisplayProjectMapBOESearch(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -533,7 +542,7 @@ namespace GenBOE.Web.Controllers
 				return null;
 			}
 
-			Stopwatch sw = InitializeAction(_log, "DisplayProjectMapBOESearch", SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_PROJECTMAP_BOE_SEARCH, SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
 
 			// Only an Author/Admin in WS=Working should be able to Search to copy a BOE.
 			ViewData["BOESearch_ReadOnly"] = (Boolean.Parse(GetReadOnlyAttribute(CheckPermissions(SecurityPage.ProjectMapBoeSearch, ws, null)))).ToString().ToLower();
@@ -541,7 +550,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_PROJECTMAP_SEARCH);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayProjectMapBOESearch", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_PROJECTMAP_BOE_SEARCH, sw);
 			return toReturn;
 		}
 
@@ -551,10 +560,11 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace"></param>
 		/// <param name="boeID"></param>
 		/// <returns></returns>
+		[HttpGet, ChildActionOnly]
 		public virtual ViewResult DisplayBOEAdvancedSearch(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-			Stopwatch sw = InitializeAction(_log, "DisplayBOEAdvancedSearch", SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_ADVANCED_SEARCH, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 			ViewData["WSPERFORGS"] = _BoeLaborControllerLogic.GetPerformingOrgs(ws);
 			BOEAdvancedSearchModelView theModelView = new BOEAdvancedSearchModelView();
 			_ControllerLogic.PopulateCompanySpecificProperties(theModelView);
@@ -562,7 +572,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_ADVANCED_SEARCH, theModelView);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayBOEAdvancedSearch", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_ADVANCED_SEARCH, sw);
 			return toReturn;
 		}
 
@@ -571,10 +581,11 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">The workspace.</param>
 		/// <returns></returns>
+		[HttpGet, ChildActionOnly]
 		public virtual ViewResult DisplayBOEProjectMapAdvancedSearch(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-			Stopwatch sw = InitializeAction(_log, "DisplayBOEProjectMapAdvancedSearch", SecurityPage.ProjectMapBoeSearch, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_PROJECTMAP_ADVANCED_SEARCH, SecurityPage.ProjectMapBoeSearch, SecurityAuthorization.Read, ws, null);
 			ViewData["WSPERFORGS"] = _BoeLaborControllerLogic.GetPerformingOrgs(ws);
 			BOEAdvancedSearchModelView theModelView = new BOEAdvancedSearchModelView();
 			_ControllerLogic.PopulateCompanySpecificProperties(theModelView);
@@ -582,7 +593,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_PROJECTMAP_ADVANCED_SEARCH, theModelView);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayBOEProjectMapAdvancedSearch", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_PROJECTMAP_ADVANCED_SEARCH, sw);
 			return toReturn;
 		}
 
@@ -592,19 +603,20 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace"></param>
 		/// <param name="boeID"></param>
 		/// <returns></returns>
+		[HttpGet, ChildActionOnly]
 		public virtual ViewResult DisplayBOEQuickSearch(string workspace, int? boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			SecurityPage securityPage = ws.IsProjectMapWorkspace ? SecurityPage.ProjectMapBoeSearch : SecurityPage.EditBOEHeader;
-			Stopwatch sw = InitializeAction(_log, "DisplayBOEQuickSearch", securityPage, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_QUICK_SEARCH, securityPage, SecurityAuthorization.Read, ws, boeID);
 
 			BOEQuickSearchModelView theModelView = new BOEQuickSearchModelView();
 
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_QUICK_SEARCH, theModelView);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayBOEQuickSearch", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_QUICK_SEARCH, sw);
 			return toReturn;
 		}
 
@@ -614,13 +626,14 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace short name</param>
 		/// <param name="id">BOE ID</param>
 		/// <returns>BOE Summary view Action Result</returns>
+		[HttpGet]
 		public virtual ViewResult DisplayBOESummary(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			FullBoe boe = this.Factory.CreateFullBoe(boeID);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayBOESummary", SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_SUMMARY, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 
 			bool isSubcontractorUser = (from p in this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(ws.Id)
 										where p.Role == Role.SubcontractorAuthor && p.ETIUserId == ws.CurrentActiveUser.UserID
@@ -644,7 +657,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayBOESummary", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_SUMMARY, sw);
 			return toReturn;
 		}
 
@@ -654,13 +667,14 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace short name</param>
 		/// <param name="id">BOE ID</param>
 		/// <returns></returns>
+		[ChildActionOnly, HttpGet]
 		public virtual ViewResult DisplayBOEDetails(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			FullBoe boe = this.Factory.CreateFullBoe(boeID);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayBOEDetails", SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_DETAILS, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 
 			bool IsSubContractor = (from p in this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(ws.Id)
 									where p.Role == Role.SubcontractorAuthor && p.ETIUserId == ws.CurrentActiveUser.UserID
@@ -690,7 +704,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = GetMasterView(WebConstants.VIEW_BOE_DETAILS, workspace);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayBOEDetails", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_DETAILS, sw);
 			return toReturn;
 		}
 
@@ -700,12 +714,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">the workspace name</param>
 		/// <param name="boeID">the boeid</param>
 		/// <returns>the button/script</returns>
+		[ChildActionOnly]
 		public ViewResult DisplaySubmitForReviewBOEButton(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplaySubmitForReviewBOEButton", SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_SUBMIT_FOR_REVIEW, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 
 			ViewData["SubmitForReview_ReadOnly"] = GetReadOnlyAttribute(CheckPermissions(SecurityPage.SubmitForReview, ws, boeID));
 
@@ -724,7 +739,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_BOE_SUBMIT_FOR_REVIEW);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplaySubmitForReviewBOEButton", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_SUBMIT_FOR_REVIEW, sw);
 			return toReturn;
 		}
 
@@ -734,12 +749,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The current workspace ID</param>
 		/// <param name="id">The current BOE ID</param>
 		/// <returns>ActionResult to display the Validate BOE partial</returns>
+		[ChildActionOnly]
 		public ViewResult DisplayValidateBOEButton(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayValidateBOEButton", SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_VALIDATE, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 
 			ViewData["ValidateBOE_ReadOnly"] = GetReadOnlyAttribute(CheckPermissions(SecurityPage.ValidateBOE, ws, boeID));
 
@@ -750,7 +766,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_BOE_VALIDATE);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayValidateBOEButton", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_VALIDATE, sw);
 			return toReturn;
 		}
 
@@ -760,12 +776,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The current workspace ID</param>
 		/// <param name="id">The current BOE ID</param>
 		/// <returns>ActionResult to display the Offload BOE partial</returns>
+		[ChildActionOnly]
 		public ViewResult DisplayOffloadBOEButton(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayOffloadBOEButton", SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_OFFLOAD, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 
 			ViewData["HideOffloadBOE"] = (ws.ProjectMapType == ProjectMapType.StandardWithoutOffload).ToString().ToLower();
 			ViewData["BOEID"] = boeID;
@@ -773,7 +790,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_BOE_OFFLOAD);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayOffloadBOEButton", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_OFFLOAD, sw);
 			return toReturn;
 		}
 
@@ -783,12 +800,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">the workspace name</param>
 		/// <param name="boeID">the boeid</param>
 		/// <returns>the button/script</returns>
+		[ChildActionOnly]
 		public ViewResult DisplaySubmitForApproval(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplaySubmitForApproval", SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_SUBMIT_FOR_APPROVAL, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 			ViewData["SubmitForApproval_ReadOnly"] = GetReadOnlyAttribute(CheckPermissions(SecurityPage.SubmitForApproval, ws, boeID));
 
 			// Pass the BOE ID to the Validate BOE partial
@@ -798,7 +816,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_BOE_SUBMIT_FOR_APPROVAL);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplaySubmitForApproval", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_SUBMIT_FOR_APPROVAL, sw);
 			return toReturn;
 		}
 
@@ -808,7 +826,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace Shortname</param>
 		/// <param name="boeID">BOE ID</param>
 		/// <returns>ViewResult for Confidence Report Button</returns>
-		[ChildActionOnly]
+		[ChildActionOnly, HttpGet]
 		public ViewResult DisplayConfidenceReportButton(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -834,6 +852,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public virtual JsonResult GetManageBOEGridModel(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -856,35 +875,19 @@ namespace GenBOE.Web.Controllers
 			return this.Json(theModelView);
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public JsonResult SaveBOEStates(string workspace, IDictionary<int, BOEState> boeStates)
-		{
-			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-
-			Stopwatch sw = InitializeAction(_log, "SaveBOEStates", SecurityPage.EditBoeLockedState, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
-			IList<string> errorMessages = new List<string>();
-
-			long? updateDateLong = this._ControllerLogic.SaveBOEStates(boeStates, ws, errorMessages);
-
-			JsonResult response = Json(new { Status = true, UpdateDateLong = updateDateLong.ToString(), ErrorMessages = errorMessages });
-
-			FinalizeAction(_log, "SaveBOEStates", sw);
-
-			return response;
-		}
-
 		/// <summary>
 		/// Display the Export BOE partial view
 		/// </summary>
 		/// <param name="workspace">The current workspace ID</param>
 		/// <param name="boeID">The current BOE ID</param>
 		/// <returns>ActionResult to display the Export BOE partial</returns>
+		[ChildActionOnly, HttpGet]
 		public ViewResult DisplayExportBOEButton(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayExportBOEButton", SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_EXPORT, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 
 			// Perform Action
 			// Pass the BOE ID and Title to the Export BOE partial
@@ -908,7 +911,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_BOE_EXPORT);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayExportBOEButton", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_EXPORT, sw);
 			return toReturn;
 		}
 
@@ -930,9 +933,12 @@ namespace GenBOE.Web.Controllers
 		/// <returns>A special ActionResult that generates a file download for the user to download the
 		/// populated Word template.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
 		public async Task<ActionResult> ExportBOEToWordFile(string workspace, int boeId, string summarizeByCustomField)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+			// Initialize Action
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_BOE, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeId);
 
 			bool isSubcontractorUser = (from p in this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(ws.Id)
 										where p.Role == Role.SubcontractorAuthor && p.ETIUserId == ws.CurrentActiveUser.UserID
@@ -945,6 +951,12 @@ namespace GenBOE.Web.Controllers
 
 			try
 			{
+				// Validate Workspace PoP
+				if (!this._validateBOE.ValidateWorkspacePoP(ws))
+				{
+					throw new GenValidationException(Constants.INVALID_WORKSPACE_POP);
+				}
+
 				// UCOT validation (Space only) - if there are multiple MOQ types assigned to a task and one of those MOQ types falls under a specified type, throw an exception
 				if (Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.TrackingNumber) && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 				{
@@ -999,6 +1011,8 @@ namespace GenBOE.Web.Controllers
 				}
 			}
 
+			// Finalize Action
+			FinalizeAction(_log, WebConstants.ACTION_EXPORT_BOE, sw);
 			return result;
 		}
 
@@ -1010,18 +1024,19 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeID">BOE</param>
 		/// <returns>A special ActionResult that generates a file download for the user to download the
 		/// populated Word template.</returns>
+		[HttpGet]
 		public async Task<ActionResult> BOESearchPreview(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
 			//The BOE id sent in is not the BOE the user has permissions too its the BOE they are previewing which they are allowed to view if it is searchable.
-			Stopwatch sw = InitializeAction(_log, "BOESearchPreview", SecurityPage.BoeCopyConflicts, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_BOE_SEARCH_PREVIEW, SecurityPage.BoeCopyConflicts, SecurityAuthorization.Read, ws, null);
 
 			await _ControllerLogic.ExportBOESearchPreview(ws, boeID, Response);
 
 			// Finalize Action
-			FinalizeAction(_log, "BOESearchPreview", sw);
+			FinalizeAction(_log, WebConstants.ACTION_BOE_SEARCH_PREVIEW, sw);
 			return new EmptyResult();
 		}
 
@@ -1033,18 +1048,19 @@ namespace GenBOE.Web.Controllers
 		/// <param name="projectMapId">The project map identifier.</param>
 		/// <returns>A special ActionResult that generates a file download for the user to download the
 		/// populated Word template.</returns>
+		[HttpGet]
 		public ActionResult ProjectMapSearchPreview(string workspace, int projectMapId)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
 			//The ProjectMap id sent in is not the ProjectMap the user has permissions too its the ProjectMap they are previewing which they are allowed to view if it is searchable.
-			Stopwatch sw = InitializeAction(_log, "ProjectMapSearchPreview", SecurityPage.BoeCopyConflicts, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_PROJECTMAP_SEARCH_PREVIEW, SecurityPage.BoeCopyConflicts, SecurityAuthorization.Read, ws, null);
 
 			_ControllerLogic.ExportProjectMapSearchPreview(ws, projectMapId, Response);
 
 			// Finalize Action
-			FinalizeAction(_log, "BOESearchPreview", sw);
+			FinalizeAction(_log, WebConstants.ACTION_PROJECTMAP_SEARCH_PREVIEW, sw);
 			return new EmptyResult();
 		}
 
@@ -1055,15 +1071,16 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace ID</param>
 		/// <param name="id">The ID of the BOE to validate</param>
 		/// <returns>The results of the validate function</returns>
+		[HttpPost]
 		public JsonResult ValidateBOE(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			FullBoe boe = this.Factory.CreateFullBoe(boeID);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "ValidateBOE", SecurityPage.ValidateBOE, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_VALIDATE_BOE, SecurityPage.ValidateBOE, SecurityAuthorization.Read, ws, boeID);
 
-			// Perofrm Action
+			// Perform Action
 			// Get the BOE's entire set of data in a DTO object
 
 			JsonResult toReturn = null;
@@ -1072,7 +1089,7 @@ namespace GenBOE.Web.Controllers
 			toReturn = Json(_validateBOE.ValidateBOE_OnValidateBtnClick(boe, ws));
 
 			// Finalize Action
-			FinalizeAction(_log, "ValidateBOE", sw);
+			FinalizeAction(_log, WebConstants.ACTION_VALIDATE_BOE, sw);
 			return toReturn;
 		}
 
@@ -1095,12 +1112,12 @@ namespace GenBOE.Web.Controllers
 			bool descriptionOnly = false;
 			try
 			{
-				sw = InitializeAction(_log, "SaveEditBOEHeader", SecurityPage.EditBOEHeader, SecurityAuthorization.ReadUpdate, ws, boe.Id);
+				sw = InitializeAction(_log, WebConstants.ACTION_SAVE_EDIT_BOE_HEADER, SecurityPage.EditBOEHeader, SecurityAuthorization.ReadUpdate, ws, boe.Id);
 			}
 			catch (AuthorizationException)
 			{
 				// we failed saving at the 'edit boe header' level .. let's see if the EditBOEHeaderDescription is allowed
-				sw = InitializeAction(_log, "SaveEditBOEHeader", SecurityPage.EditBOEHeaderDescription, SecurityAuthorization.ReadUpdate, ws, boe.Id);
+				sw = InitializeAction(_log, WebConstants.ACTION_SAVE_EDIT_BOE_HEADER, SecurityPage.EditBOEHeaderDescription, SecurityAuthorization.ReadUpdate, ws, boe.Id);
 
 				descriptionOnly = true;
 			}
@@ -1148,7 +1165,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "SaveEditBOEHeader", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_EDIT_BOE_HEADER, sw);
 
 			toReturn.MaxJsonLength = int.MaxValue;
 			return toReturn;
@@ -1164,14 +1181,14 @@ namespace GenBOE.Web.Controllers
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			Stopwatch sw = InitializeAction(_log, "SubmitForReview", SecurityPage.SubmitForReview, SecurityAuthorization.ReadUpdate, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_BOE_SUBMIT_FOR_REVIEW, SecurityPage.SubmitForReview, SecurityAuthorization.ReadUpdate, ws, boeID);
 			// when we submit for review we want to send an email to reviewers
 			// and also write a message to the log
 
 			_ControllerLogic.SubmitForReview(ws, boeID);
 
 			// Finalize Action
-			FinalizeAction(_log, "SubmitForReview", sw);
+			FinalizeAction(_log, WebConstants.ACTION_BOE_SUBMIT_FOR_REVIEW, sw);
 		}
 
 		/// <summary>
@@ -1180,12 +1197,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace Name</param>
 		/// <param name="boeID">BOE ID</param>
 		/// <returns></returns>
+		[HttpPost]
 		public JsonResult DeleteAllBOETaskElements(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			FullBoe boe = this.Factory.CreateFullBoe(boeID);
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DeleteAllBOETaskElements", SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DELETE_ALL_BOE_TASK_ELEMENTS, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
 
 			// Perform Action
 			JsonResult toReturn = Json(new { Status = true });
@@ -1200,7 +1218,7 @@ namespace GenBOE.Web.Controllers
 			this._BoeLaborControllerLogic.ProcessAllVariableDependencies(boeID, ws);
 
 			// Finalize Action
-			FinalizeAction(_log, "DeleteAllBOETaskElements", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DELETE_ALL_BOE_TASK_ELEMENTS, sw);
 
 			return toReturn;
 		}
@@ -1217,7 +1235,7 @@ namespace GenBOE.Web.Controllers
 			FullBoe boe = this.Factory.CreateFullBoe(boeID);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DeleteTaskElements", SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DELETE_TASK_ELEMENTS, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
 
 			// Perform Action
 			if (deletedTask == null)
@@ -1235,7 +1253,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "DeleteTaskElements", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DELETE_TASK_ELEMENTS, sw);
 		}
 
 		/// <summary>
@@ -1244,6 +1262,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace name.</param>
 		/// <param name="boes">List of BOEs to be saved.</param>
 		/// <returns>JsonResult of True or GenValidationException</returns>
+		[HttpPost]
 		public ActionResult ResetDraftBOE(string workspace, Collection<ManageBOEModelView> boes)
 		{
 			// reuse SaveManageBOE to do state transitions
@@ -1282,6 +1301,7 @@ namespace GenBOE.Web.Controllers
 		/// </returns>
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
+		[HttpPost]
 		public ActionResult SaveManageBOE(string workspace, Collection<ManageBOEModelView> boes)
 		{
 			if (boes == null)
@@ -1337,12 +1357,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace</param>
 		/// <param name="boeID">The BOE</param>
 		/// <returns>True if task elements under the BOE have references to Sum of BOEs variables, false otherwise.</returns>
+		[HttpPost]
 		public JsonResult BOEContainsSumOfBOEs(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			FullBoe boe = this.Factory.CreateFullBoe(boeID);
 
-			Stopwatch sw = this.InitializeAction(this._log, "BOEContainsSumOfBOEs", SecurityPage.SubmitForApproval, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_BOE_CONTAINS_SUM_OF_BOES, SecurityPage.SubmitForApproval, SecurityAuthorization.Read, ws, boeID);
 
 			// Get a value to indicate whether or not this BOE contains task elements that reference
 			// other BOEs through Sum of BOEs task or workspace variables
@@ -1352,7 +1373,7 @@ namespace GenBOE.Web.Controllers
 				Type = "Variable"
 			});
 
-			this.FinalizeAction(this._log, "BOEContainsSumOfBOEs", sw);
+			this.FinalizeAction(this._log, WebConstants.ACTION_BOE_CONTAINS_SUM_OF_BOES, sw);
 			return result;
 		}
 
@@ -1361,14 +1382,15 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">the workspace name</param>
 		/// <param name="boeID">the boeid</param>
+		[HttpPost]
 		public virtual JsonResult SubmitForApproval(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			FullBoe boe = this.Factory.CreateFullBoe(boeID);
 
-			Stopwatch sw = InitializeAction(_log, "SubmitForApproval", SecurityPage.SubmitForApproval, SecurityAuthorization.ReadUpdate, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SUBMIT_FOR_APPROVAL, SecurityPage.SubmitForApproval, SecurityAuthorization.ReadUpdate, ws, boeID);
 
-			JsonResult toReturn = Json(new { Status = true });
+			JsonResult toReturn;
 			// when we submit for approval we want to send an email to approvers
 			// and also write a message to the log
 
@@ -1379,8 +1401,7 @@ namespace GenBOE.Web.Controllers
 			{
 				if (boe.State == BOEState.DraftLocked)
 				{
-					string validationMessage = string.Empty;
-					if (_boeStateMachine.PerformStateTransitionValidation(boe, ws, BOEState.DraftLocked, BOEState.Draft, out validationMessage))
+					if (_boeStateMachine.PerformStateTransitionValidation(boe, ws, BOEState.DraftLocked, BOEState.Draft, out _))
 					{
 						boe.Updateable = UpdateType.Upsert;
 						boe.State = BOEState.Draft;
@@ -1400,10 +1421,8 @@ namespace GenBOE.Web.Controllers
 
 			toReturn = Json(validatedBOE);
 
-			FinalizeAction(_log, "SubmitForApproval", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SUBMIT_FOR_APPROVAL, sw);
 			return toReturn;
-
-
 		}
 
 		/// <summary>
@@ -1413,12 +1432,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeID">ID of BOE search is being performed from</param>
 		/// <param name="advSearchParams">parameters to search for</param>
 		/// <returns></returns>
+		[HttpPost]
 		public ViewResult AdvancedSearchForBOEs(string workspace, int boeID, BOEAdvancedSearchModelView advSearchParams)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			Stopwatch sw = InitializeAction(_log, "SearchForBOEs", SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
-			ViewResult toReturn = null;
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_ADVANCED_SEARCH_FOR_BOES, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+			ViewResult toReturn;
 
 			if (advSearchParams == null)
 			{
@@ -1445,12 +1465,12 @@ namespace GenBOE.Web.Controllers
 				toReturn = View(WebConstants.VIEW_BOE_SEARCH_RESULTS, modelView);
 
 				// Finalize Action
-				FinalizeAction(_log, "SearchForBOEs", sw);
+				FinalizeAction(_log, WebConstants.ACTION_ADVANCED_SEARCH_FOR_BOES, sw);
 			}
 			else
 			{
 				// Finalize Action
-				FinalizeAction(_log, "SearchForBOEs", sw);
+				FinalizeAction(_log, WebConstants.ACTION_ADVANCED_SEARCH_FOR_BOES, sw);
 				throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(ModelState));
 			}
 			ViewData["UsingTemplateBoe"] = ws.UsingTemplateBOE;
@@ -1464,12 +1484,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Name of Workspace containing BOE</param>
 		/// <param name="advSearchParams">parameters to search for</param>
 		/// <returns></returns>
+		[HttpPost]
 		public ViewResult ProjectMapAdvancedSearchForBOEs(string workspace, BOEProjectMapAdvancedSearchModelView advSearchParams)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			Stopwatch sw = InitializeAction(_log, "SearchForBOEs", SecurityPage.ProjectMapBoeSearch, SecurityAuthorization.Read, ws, null);
-			ViewResult toReturn = null;
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_PROJECTMAP_ADVANCED_SEARCH_FOR_BOES, SecurityPage.ProjectMapBoeSearch, SecurityAuthorization.Read, ws, null);
+			ViewResult toReturn;
 
 			if (advSearchParams == null)
 			{
@@ -1491,12 +1512,12 @@ namespace GenBOE.Web.Controllers
 				toReturn = View(WebConstants.VIEW_BOE_PROJECTMAP_SEARCH_RESULTS, modelView);
 
 				// Finalize Action
-				FinalizeAction(_log, "SearchForBOEs", sw);
+				FinalizeAction(_log, WebConstants.ACTION_PROJECTMAP_ADVANCED_SEARCH_FOR_BOES, sw);
 			}
 			else
 			{
 				// Finalize Action
-				FinalizeAction(_log, "SearchForBOEs", sw);
+				FinalizeAction(_log, WebConstants.ACTION_PROJECTMAP_ADVANCED_SEARCH_FOR_BOES, sw);
 				throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(ModelState));
 			}
 
@@ -1510,11 +1531,12 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeID">ID of BOE search is being performed from</param>
 		/// <param name="quickSearchParams">Parmeters of the search</param>
 		/// <returns></returns>
+		[HttpPost]
 		public ViewResult QuickSearchForBOEs(string workspace, int? boeID, BOEQuickSearchModelView quickSearchParams)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			SecurityPage security = ws.IsProjectMapWorkspace ? SecurityPage.ProjectMapBoeSearch : SecurityPage.EditBOEHeader;
-			Stopwatch sw = InitializeAction(_log, "SearchForBOEs", security, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_QUICK_SEARCH_FOR_BOES, security, SecurityAuthorization.Read, ws, boeID);
 
 			if (quickSearchParams == null)
 			{
@@ -1523,7 +1545,7 @@ namespace GenBOE.Web.Controllers
 
 			ViewData["BOEID"] = boeID;
 
-			ViewResult toReturn = null;
+			ViewResult toReturn;
 
 			if (ModelState.IsValid)
 			{
@@ -1534,12 +1556,12 @@ namespace GenBOE.Web.Controllers
 				toReturn = View(view, modelView);
 
 				// Finalize Action
-				FinalizeAction(_log, "SearchForBOEs", sw);
+				FinalizeAction(_log, WebConstants.ACTION_QUICK_SEARCH_FOR_BOES, sw);
 			}
 			else
 			{
 				// Finalize Action
-				FinalizeAction(_log, "SearchForBOEs", sw);
+				FinalizeAction(_log, WebConstants.ACTION_QUICK_SEARCH_FOR_BOES, sw);
 				throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(ModelState));
 			}
 
@@ -1555,11 +1577,12 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeID">ID of BOE search is being performed in</param>
 		/// <param name="searchResults">Modelview of search resultsd</param>
 		/// <returns></returns>
+		[HttpPost]
 		public ViewResult PageSearchResults(string workspace, int? boeID, SearchResultsModelView searchResults)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			SecurityPage security = ws.IsProjectMapWorkspace ? SecurityPage.ProjectMapBoeSearch : SecurityPage.EditBOEHeader;
-			Stopwatch sw = InitializeAction(_log, "PageSearchResults", security, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_PAGE_SEARCH_RESULTS, security, SecurityAuthorization.Read, ws, boeID);
 
 			if (searchResults == null)
 			{
@@ -1576,7 +1599,7 @@ namespace GenBOE.Web.Controllers
 			ViewData["UsingTemplateBoe"] = ws.UsingTemplateBOE;
 
 			// Finalize Action
-			FinalizeAction(_log, "PageSearchResults", sw);
+			FinalizeAction(_log, WebConstants.ACTION_PAGE_SEARCH_RESULTS, sw);
 			return toReturn;
 		}
 
@@ -1586,12 +1609,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace containing BOEs</param>
 		/// <returns></returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[HttpGet]
 		public async Task<ActionResult> ExportManageBOE(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			ActionResult result;
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "ExportManageBOE", SecurityPage.ManageBOEs, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_MANAGE_BOE, SecurityPage.ManageBOEs, SecurityAuthorization.Read, ws, null);
 
 			try
 			{
@@ -1604,7 +1628,7 @@ namespace GenBOE.Web.Controllers
 				FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
 				// Finalize Action
-				FinalizeAction(_log, "ExportManageBOE", sw);
+				FinalizeAction(_log, WebConstants.ACTION_EXPORT_MANAGE_BOE, sw);
 
 				result = File(
 					fileStream: fs,
@@ -1631,12 +1655,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace containing BOEs</param>
 		/// <returns></returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[HttpGet]
 		public async Task<ActionResult> ExportManageBOETemplate(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "ExportManageBOETemplate", SecurityPage.ManageBOEs, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_MANAGE_BOE_TEMPLATE, SecurityPage.ManageBOEs, SecurityAuthorization.Read, ws, null);
 			ActionResult result;
 
 			try
@@ -1651,7 +1676,7 @@ namespace GenBOE.Web.Controllers
 				FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
 				// Finalize Action
-				FinalizeAction(_log, "ExportManageBOETemplate", sw);
+				FinalizeAction(_log, WebConstants.ACTION_EXPORT_MANAGE_BOE_TEMPLATE, sw);
 
 				result = File(
 					fileStream: fs,
@@ -1677,6 +1702,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">Workspace to import to</param>
 		/// <returns></returns>
+		[HttpPost]
 		public ViewResult ImportManageBOE(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1685,11 +1711,8 @@ namespace GenBOE.Web.Controllers
 			Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_IMPORT_MANAGE_BOE, SecurityPage.ManageBOEs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			JavaScriptSerializer serializer = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
-			ICollection<ImportBoeResultsModelView> dataToSave;
-			bool errorsOccurred;
-			Exception exception;
 
-			Collection<ImportBoeResultsModelView> theModelViews = this._ControllerLogic.ImportManageBOE(ws, this.Request, out dataToSave, out errorsOccurred, out exception);
+			Collection<ImportBoeResultsModelView> theModelViews = this._ControllerLogic.ImportManageBOE(ws, this.Request, out ICollection<ImportBoeResultsModelView> dataToSave, out bool errorsOccurred, out Exception exception);
 
 			if (errorsOccurred)
 			{
@@ -1698,7 +1721,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			this.ViewData["SERIALIZED_DATA"] = serializer.Serialize(dataToSave);
-			this.ViewData["DOCUMENT_DOMAIN"] = this.Request["documentDomain"];
+			this.ViewData["DOCUMENT_DOMAIN"] = this.Request.Form["documentDomain"];
 
 			ViewResult toReturn = this.View(WebConstants.VIEW_MANAGE_BOE_IMPORT_VERIFICATION, theModelViews);
 
@@ -1714,6 +1737,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="importResults">Modelviews with the results of the import</param>
 		/// <returns></returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
+		[HttpPost]
 		public JsonResult CompleteImportManageBOE(string workspace, Collection<ImportBoeResultsModelView> importResults)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
@@ -2351,26 +2375,24 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeID">ID of BOE to be copied to</param>
 		/// <param name="copyBOEID">ID of BOE to be copied</param>
 		/// <param name="taskElementsToCopy">Task elements of BOE to be copied</param>
-		/// <param name="travelElementsToCopy">Travel elements of BOE to be copied</param>
 		/// <returns></returns>
-		public ViewResult DisplayCopyBOEConflicts(string workspace, int boeID, int copyBOEID, ICollection<int> taskElementsToCopy, ICollection<int> travelElementsToCopy)
+		[HttpPost]
+		public ViewResult DisplayCopyBOEConflicts(string workspace, int boeID, int copyBOEID, ICollection<int> taskElementsToCopy)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			if (taskElementsToCopy == null)
 			{
 				taskElementsToCopy = new Collection<int>();
 			}
-			Stopwatch sw = InitializeAction(_log, "DisplayCopyBOEConflicts", SecurityPage.BoeCopyConflicts, SecurityAuthorization.Read, ws, null);
 
-			ViewResult toReturn = null;
-
-			BOECopyConflictsModelView boeCopyConflictsModelView = _ControllerLogic.DisplayCopyBOEConflicts(ws, boeID, copyBOEID, taskElementsToCopy, travelElementsToCopy);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_BOE_COPY_CONFLICTS, SecurityPage.BoeCopyConflicts, SecurityAuthorization.Read, ws, null);
+			BOECopyConflictsModelView boeCopyConflictsModelView = _ControllerLogic.DisplayCopyBOEConflicts(ws, boeID, copyBOEID, taskElementsToCopy);
 			ViewData["HoursLabel"] = FullObjectHelper.HoursLabel(ws);
 
-			toReturn = View(WebConstants.VIEW_BOE_COPY_CONFLICTS, boeCopyConflictsModelView);
+			ViewResult toReturn = View(WebConstants.VIEW_BOE_COPY_CONFLICTS, boeCopyConflictsModelView);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayCopyBOEConflicts", sw);
+			FinalizeAction(_log, WebConstants.ACTION_BOE_COPY_CONFLICTS, sw);
 			return toReturn;
 		}
 
@@ -2381,9 +2403,9 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeID">ID of BOE to be copied to</param>
 		/// <param name="copyBOEID">ID of BOE to be copied</param>
 		/// <param name="taskElementsToCopy">Task elements of BOE to be copied</param>
-		/// <param name="travelElementsToCopy">Travel elements of BOE to be copied</param>
 		/// <returns></returns>
-		public ActionResult SaveCopyOfBOE(string workspace, int? boeID, int copyBOEID, Collection<int> taskElementsToCopy, Collection<int> travelElementsToCopy)
+		[HttpPost]
+		public ActionResult SaveCopyOfBOE(string workspace, int? boeID, int copyBOEID, Collection<int> taskElementsToCopy)
 		{
 			// Perform Action
 			JsonResult toReturn = Json(new { Status = true });
@@ -2393,13 +2415,8 @@ namespace GenBOE.Web.Controllers
 				taskElementsToCopy = new Collection<int>();
 			}
 
-			if (travelElementsToCopy == null)
-			{
-				travelElementsToCopy = new Collection<int>();
-			}
-
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "SaveCopyOfBOE", SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_COPY_OF_BOE, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
 
 			/** Valid Model Check */
 			if (ModelState.IsValid)
@@ -2416,7 +2433,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "SaveCopyOfBOE", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_COPY_OF_BOE, sw);
 			return toReturn;
 		}
 
@@ -2426,6 +2443,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace to be copied to</param>
 		/// <param name="copyProjectMapId">Id of Project Map to be copied</param>
 		/// <returns>Json status for saving a copy of a Project Map.</returns>
+		[HttpPost]
 		public ActionResult SaveCopyOfProjectMap(string workspace, int copyProjectMapId)
 		{
 			// Perform Action
@@ -2433,7 +2451,7 @@ namespace GenBOE.Web.Controllers
 			FullProjectMapWorkspace ws = this.Factory.CreateFullProjectMapWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "SaveCopyOfProjectMap", SecurityPage.ProjectMapBoeSearch, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_COPY_OF_PROJECTMAP, SecurityPage.ProjectMapBoeSearch, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			/** Valid Model Check */
 			if (ModelState.IsValid)
@@ -2447,7 +2465,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "SaveCopyOfProjectMap", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_COPY_OF_PROJECTMAP, sw);
 			return toReturn;
 		}
 
@@ -2460,6 +2478,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">current workspace</param>
 		/// <param name="boeID">current boe</param>
 		/// <returns></returns>
+		[HttpPost]
 		public JsonResult SaveReorderLaborTaskElements(TaskElementOrderCollection theModelView, string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -2476,7 +2495,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "SaveReorderLaborTaskElements", SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_REORDER_LABOR_TASK_ELEMENTS, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
 
 			_ControllerLogic.ReOrderTaskElementOrder(ws, boeObject, theModelView);
 
@@ -2484,7 +2503,7 @@ namespace GenBOE.Web.Controllers
 
 
 			// Finalize Action
-			FinalizeAction(_log, "SaveReorderLaborTaskElements", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_REORDER_LABOR_TASK_ELEMENTS, sw);
 			return toReturn;
 		}
 
@@ -2496,6 +2515,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeID">Current BOE Id</param>
 		/// <param name="taskType">Task Element type</param>
 		/// <returns>Returns a status of true if successful; otherwise validation errors are returned</returns>
+		[HttpPost]
 		public JsonResult SaveDuplicateTaskElements(TaskElementDuplicateFormCollection theModelView, string workspace, int boeID, TaskType taskType)
 		{
 			if (theModelView == null)
@@ -2515,7 +2535,7 @@ namespace GenBOE.Web.Controllers
 			theModelView.TaskType = taskType;
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "SaveDuplicateTaskElements", SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_DUPLICATE_TASK_ELEMENTS, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
 
 			try
 			{
@@ -2523,7 +2543,7 @@ namespace GenBOE.Web.Controllers
 
 				switch (theModelView.TaskType)
 				{
-					case (TaskType.Labor):
+					case TaskType.Labor:
 						{
 							boeObject.LoadTaskElementRTEData();
 
@@ -2535,7 +2555,7 @@ namespace GenBOE.Web.Controllers
 
 							break;
 						}
-					case (TaskType.Travel):
+					case TaskType.Travel:
 						{
 							boeObject.LoadTravelRTEData();
 
@@ -2575,7 +2595,7 @@ namespace GenBOE.Web.Controllers
 			JsonResult toReturn = Json(new { Status = true });
 
 			// Finalize Action
-			FinalizeAction(_log, "SaveDuplicateTaskElements", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_DUPLICATE_TASK_ELEMENTS, sw);
 			return toReturn;
 		}
 
@@ -2584,17 +2604,18 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">Workspace</param>
 		/// <param name="boeRolesToSave">Boe Roles to Save</param>
+		[HttpPost]
 		public JsonResult SaveBoeBulkRoles(string workspace, ICollection<ManageBOEModelView> boeRolesToSave)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			Stopwatch sw = InitializeAction(_log, "SaveBoeBulkRoles", SecurityPage.ManageBOEs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_BULK_ROLE_ASSIGN, SecurityPage.ManageBOEs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			IList<string> errorMessages = this._ControllerLogic.SaveBoeBulkRoles(ws, boeRolesToSave);
 
 			JsonResult response = Json(new { Status = true, ErrorMessages = errorMessages });
 
-			FinalizeAction(_log, "SaveBoeBulkRoles", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_BULK_ROLE_ASSIGN, sw);
 
 			return response;
 		}

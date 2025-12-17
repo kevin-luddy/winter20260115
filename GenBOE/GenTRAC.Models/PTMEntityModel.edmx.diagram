@@ -117,6 +117,9 @@
         <AssociationConnector Association="genTRACModel.FK__Proposal__Reason__43EBED27" />
         <EntityTypeShape EntityType="genTRACModel.InsuranceTypeLU" Width="1.5" PointX="16.375" PointY="9.875" />
         <AssociationConnector Association="genTRACModel.FK_Contracts_InsuranceType" />
+        <EntityTypeShape EntityType="genTRACModel.AlternativePricingMethodology" Width="1.5" PointX="16.375" PointY="12.875" />
+        <AssociationConnector Association="genTRACModel.FK__Proposal__Altern__63B99E3B" />
+        <EntityTypeShape EntityType="genTRACModel.ReportXmlData" Width="1.5" PointX="16.375" PointY="15.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		ALL.testsettings = ALL.testsettings
 		AutoVersioning.ps1 = AutoVersioning.ps1
 		CustomDictionary.xml = CustomDictionary.xml
+		fortify-sca.properties = fortify-sca.properties
+		fortify_rules_filter.txt = fortify_rules_filter.txt
 		GenBOE.vsmdi = GenBOE.vsmdi
 		Local.testsettings = Local.testsettings
 		NODAL.runsettings = NODAL.runsettings
@@ -16,6 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		PPRDTemplate.docx = PPRDTemplate.docx
 		rules.ruleset = rules.ruleset
 		Settings.StyleCop = Settings.StyleCop
+		sonar-project.properties = sonar-project.properties
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject

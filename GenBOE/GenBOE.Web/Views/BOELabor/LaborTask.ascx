@@ -112,8 +112,8 @@
                                 var importedSpread = importedSpreads[spreadNdx];
 
                                 //fix resource and performing org for new spreads
-                                importedSpread.Resource = ImportLaborType.ImportedData[ltresultNdx].Resource;
-                                importedSpread.PerformingOrg = ImportLaborType.ImportedData[ltresultNdx].PerformingOrg;
+								importedSpread.Resource = ImportLaborType.ImportedData[ltresultNdx].Resource;
+								importedSpread.PerformingOrg = ImportLaborType.ImportedData[ltresultNdx].PerformingOrg;
 
                                 ImportLaborType.ImportedSpreadData.push(importedSpread);
                             }
@@ -1153,7 +1153,6 @@
                                                 placeholder="{{row.RationalePlaceholderText}}"
                                                 style="width: 100%; height: 14px; max-height: 45px; overflow-y: auto; resize: vertical;"
                                                 maxlength="255"></textarea>
-                                        </div>
                                     </td>
                                 </tr>
                                 <!-- Display the SKill Mix Summary Totals row. -->

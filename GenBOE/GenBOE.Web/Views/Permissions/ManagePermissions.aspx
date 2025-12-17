@@ -21,8 +21,7 @@
 		     controller: '<%:WebConstants.CONTROLLER_PERMISSIONS %>',
 		     action: '<%:WebConstants.ACTION_GET_WORKSPACE_PERMISSION_MODEL %>',
 		     exportAction: '<%: WebConstants.ACTION_EXPORT_PERMISSIONS %>',
-		     importAction: '<%:WebConstants.ACTION_IMPORT_PERMISSIONS %>',
-             workspaceState: '<%: ((GenBOEMasterModelView)Model).WorkspaceState %>'
+		     workspaceState: '<%: ((GenBOEMasterModelView)Model).WorkspaceState %>'
 	     });
 	 </script>
 

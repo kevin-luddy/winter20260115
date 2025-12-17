@@ -94,7 +94,7 @@ namespace GenBOE.Web.Controllers
         public JsonResult ApplyDateShift(string workspace, int id, Level dateShiftLevel, DateShiftModelView dateShiftModel, bool validateOnly)
         {
             Stopwatch sw;
-			DateShiftDTO dateShiftable = null;
+			DateShiftDTO dateShiftable;
 			Level parentLevel = Level.Workspace;
             try
             {
@@ -223,7 +223,8 @@ namespace GenBOE.Web.Controllers
         /// <param name="id">The identifier.</param>
         /// <param name="level">The date shift level.</param>
         /// <returns>The initial view for performing a DateShift.</returns>
-        public ActionResult Index(string workspace, int id, Level level)
+        [HttpGet]
+		public ActionResult Index(string workspace, int id, Level level)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             Level parentLevel = Level.Workspace;
@@ -314,28 +315,6 @@ namespace GenBOE.Web.Controllers
                     title = "Task - " + taskElement.TaskTitle ?? string.Empty;
                     sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, taskElement.BoeID);
                     break;
-                case Level.Travel:
-                    TravelDTO travel = this.Factory.CreateTravel(id);
-                    if (travel.Id != id)
-                    {
-                        throw new GenValidationException("The Travel Id passed in is invalid.");
-                    }
-
-                    if (!travel.StartDate.HasValue || !travel.EndDate.HasValue)
-                    {
-                        throw new GenValidationException("The Travel Id passed in does not already have Start and End date values.");
-                    }
-
-                    startDate = travel.StartDate.Value.ToMonthString();
-                    endDate = travel.EndDate.Value.ToMonthString();
-                    FullBoe travelBoe = this.Factory.CreateFullBoe(travel.BoeID);
-                    parentStart = travelBoe.StartDate.ToMonthString();
-                    parentEnd = travelBoe.EndDate.ToMonthString();
-                    parentLevel = Level.BOE;
-                    returnUrl = "/" + ws.Shortname + "/BOE/EditBOEIndex/boe/" + travel.BoeID.ToString() + "#Travel/travel/" + id.ToString();
-                    title = "Travel - " + travel.TaskTitle ?? string.Empty;
-                    sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, travel.BoeID);
-                    break;
                 case Level.Workspace:
                     if (ws.Id != id)
                     {
@@ -402,7 +381,11 @@ namespace GenBOE.Web.Controllers
 
         private bool CheckOutsidePop(IEnumerable<BoeTaskElementDTO> taskElements)
         {
-            return taskElements.Any(t => t.StartDate.HasValue && t.EndDate.HasValue && t.taskElementLabors.Any(l => l.StartDate.HasValue && l.EndDate.HasValue && (!l.StartDate.Value.IsInRange(t.StartDate.Value, t.EndDate.Value) || !l.EndDate.Value.IsInRange(t.StartDate.Value, t.EndDate.Value))));
+            return taskElements.Any(t => t.StartDate.HasValue && t.EndDate.HasValue && 
+				t.taskElementLabors.Any(l => (l.StartDate.HasValue && l.EndDate.HasValue && (!l.StartDate.Value.IsInRange(t.StartDate.Value, t.EndDate.Value) || !l.EndDate.Value.IsInRange(t.StartDate.Value, t.EndDate.Value))) ||
+					((l.SpreadCurveID == SpreadCurves.DiscreteHours || l.SpreadCurveID == SpreadCurves.DiscreteCost) && l.LaborSpreads != null && 
+						l.LaborSpreads.Any(s => s.LaborSpreadValue != 0m && !s.LaborSpreadDate.IsInRange(l.StartDateValue, l.EndDateValue))
+					)));
         }
     }
 }

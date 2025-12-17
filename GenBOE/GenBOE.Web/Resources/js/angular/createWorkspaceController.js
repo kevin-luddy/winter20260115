@@ -45,7 +45,7 @@
 		isLmNavigatorEnabled: CreateWorkspaceModelView.IsLmNavigatorEnabled,
 		updatePreviousWorkspace: false,         // Space only
 		openCurrentDialog: false,                // Space only
-		LineOfBusiness: '',		
+		LineOfBusiness: '',
 		resolveLobIdFromPLD: '',
 		lobIdLookup: '',
 		buildLobIdLookup: ''
@@ -54,8 +54,24 @@
 	$scope.model = $scope.model || {};
 	$scope.model.pldSearchTerm = '';
 	$scope.model.PLD_PANumber = '';
-	$scope.model.PLD_PATitle = ''; 
+	$scope.model.PLD_PATitle = '';
 	$scope.isFromSelection = false;
+	$scope.model.PLD_RFPNumber = '';
+	$scope.model.PLD_ContractStatus = '';
+
+	$scope.isPLDFieldReadonly = function (fieldName) {
+		if (!$scope.model.IsPLDIntegrated || ($scope.model.PLD_PANumber.trim() === '')) {
+			return false;
+		}
+
+		// Fields that are readonly when PLD is integrated and PA Number is set
+		var readonlyFields = ['WorkspaceName', 'LineOfBusiness', 'ContractStartDate', 'ContractEndDate', 'ProposalSubmittalDate', 'Description', 'RFPNumber', 'CostVolumeLeadPricerDisplayName'];
+		if (readonlyFields.indexOf(fieldName) !== -1) {
+			return true;
+		} else {
+			return false;
+		}
+	};
 
 	$scope.getSantizedUrl = function () {
 		if ($scope.model.IsPLDIntegrated) {
@@ -70,14 +86,14 @@
 	$scope.tryParsePLDSelection = function () {
 		var text = $scope.model.pldSearchTerm;
 
-		if (!text || text.trim().length === 0) {			
+		if (!text || text.trim().length === 0) {
 			return;
 		}
 
 		var cleanedText = text.trim();
 		var parts = cleanedText.split(" - ");
 
-		if (parts.length < 2) {		
+		if (parts.length < 2) {
 			return;
 		}
 
@@ -96,7 +112,7 @@
 		$scope.isFromSelection = true;
 		$scope.tryParsePLDSelection();
 	}
-	
+
 
 	$scope.$watch('model.pldSearchTerm',
 		function (newVal, oldVal) {
@@ -104,26 +120,26 @@
 			if (!newVal || newVal === oldVal) {
 				return;
 			}
-		
+
 			const match = $scope.filteredPLDPANumbers.find(x => x.Text.trim().toLowerCase() === newVal.trim().toLowerCase());
 			if (match) {
 				$scope.tryParsePLDSelection();
 				return;
 			}
-		
+
 			if ($scope.isFromSelection) {
 				$scope.isFromSelection = false;
-				return; 
+				return;
 			}
 
-			if (!newVal || newVal.length < 2) { 
+			if (!newVal || newVal.length < 2) {
 				$scope.filteredPLDPANumbers = [];
 				return;
 			}
 
 			clearTimeout(debounceTimer);
 
-		
+
 			debounceTimer = setTimeout(function () {
 
 				var searchPLDProposals = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.SearchPLDProposals);
@@ -139,16 +155,16 @@
 					.catch(function (err) {
 						$scope.filteredPLDPANumbers = [];
 					})
-									
 
-			}, 300);  
-			
-	});
 
-	
+			}, 300);
+
+		});
+
+
 
 	function parseDotNetDate(dotNetDate) {
-			
+
 		if (!dotNetDate || typeof dotNetDate !== 'string')
 			return 'N/A';
 
@@ -156,7 +172,7 @@
 		if (isNaN(timestamp)) return 'N/A';
 
 		var date = new Date(timestamp);
-		return $scope.getDateStringFromDate(date);		
+		return $scope.getDateStringFromDate(date);
 	}
 
 	$scope.data = {};
@@ -189,6 +205,7 @@
 			Shortname: '',
 			WorkspaceID: -1,                        // integer
 			WorkspaceName: '',
+			OriginalWorkspaceName: '',
 			RevisionWorkspaceName: '',
 			WorkspaceToCopyID: -1,                  // integer
 			WSExactCopy: null,
@@ -211,11 +228,121 @@
 	};
 
 	// NOTE:  All scope variables that are used inside ng-model must be objects and not primitives so that they can be used inside of ng-switch
-	// https://stackoverflow.com/a/15593652 
+	// https://stackoverflow.com/a/15593652
 
 	/////////////////////////////////////// WIZARD STEPS /////////////////////////////////////////////
 
+	// Helper function to sync jQuery-managed field values to $scope.data when leaving step 3.  This
+	// preserves data when back/next are used after data has been entered
+
+	$scope.saveUserEnteredValues = function () {
+		if ($scope.step !== 3) {
+			return; // Only sync when currently on step 3
+		}
+
+		// Sync lookupUser values (Lead Pricer)
+		var leadPricerDisplayName = $('#CostVolumeLeadPricerDisplayName').val();
+		var leadPricerNTID = $('#CostVolumeLeadPricerNTID').val();
+		if (leadPricerDisplayName !== undefined) {
+			$scope.data.CostVolumeLeadPricerDisplayName = leadPricerDisplayName;
+			$scope.model.CostVolumeLeadPricerDisplayName = leadPricerDisplayName;
+		}
+		if (leadPricerNTID !== undefined) {
+			$scope.data.CostVolumeLeadPricerNTID = leadPricerNTID;
+			$scope.model.CostVolumeLeadPricerNTID = leadPricerNTID;
+		}
+
+		// Shortname
+		var Shortname = $('#Shortname').val();
+		if (Shortname !== undefined && Shortname !== '') {
+			Shortname = Shortname.trim();
+			$scope.data.Shortname = Shortname;
+			$scope.model.Shortname = Shortname;
+			$scope.data.nextRevision = Shortname;
+			$scope.model.nextRevision = Shortname;
+		}
+
+		// Contract dates and Proposal Submittal Date
+		var contractStartDate = $('#ContractStartDate').val();
+		if (contractStartDate !== undefined && contractStartDate !== '') {
+			$scope.data.ContractStartDate = contractStartDate;
+			$scope.model.ContractStartDate = contractStartDate;
+		}
+
+		var contractEndDate = $('#ContractEndDate').val();
+		if (contractEndDate !== undefined && contractEndDate !== '') {
+			$scope.data.ContractEndDate = contractEndDate;
+			$scope.model.ContractEndDate = contractEndDate;
+		}
+
+		var proposalSubmittalDate = $('#ProposalSubmittalDate').val();
+		if (proposalSubmittalDate !== undefined && proposalSubmittalDate !== '') {
+			$scope.data.ProposalSubmittalDate = proposalSubmittalDate;
+			$scope.model.ProposalSubmittalDate = proposalSubmittalDate;
+		}
+
+		// WorkspaceName
+		var workspaceName = $('#WorkspaceName').val();
+		if (workspaceName !== undefined && workspaceName !== '') {
+			$scope.data.WorkspaceName = workspaceName;
+			$scope.model.WorkspaceName = workspaceName;
+			$scope.data.nextRevision = workspaceName;
+			$scope.model.nextRevision = workspaceName;
+		}
+
+		// Description
+		var Description = $('#Description').val();
+		if (Description !== undefined && Description !== '') {
+			$scope.data.Description = Description;
+			$scope.model.Description = Description;
+		}
+
+		// RFPNumber
+		var RFPNumber = $('#RFPNumber').val();
+		if (RFPNumber !== undefined && RFPNumber !== '') {
+			$scope.data.RFPNumber = RFPNumber;
+			$scope.model.RFPNumber = RFPNumber;
+		}
+
+		// UsingTemplateBoe
+		var UsingTemplateBoe = $('#UsingTemplateBoe').val();
+		if (UsingTemplateBoe !== undefined && UsingTemplateBoe !== '') {
+			if (UsingTemplateBoe === 'boolean:true') {
+				$scope.data.UsingTemplateBoe = true;
+				$scope.model.UsingTemplateBoe = true;
+			}
+			else if (UsingTemplateBoe === 'boolean:false') {
+				$scope.data.UsingTemplateBoe = false;
+				$scope.model.UsingTemplateBoe = false;
+			}
+			else if (UsingTemplateBoe === '? string: ?') {
+				$scope.data.UsingTemplateBoe = undefined;
+				$scope.model.UsingTemplateBoe = undefined;
+			}
+		}
+
+		// LineOfBusiness
+		var LineOfBusiness = $('#LineOfBusiness').val();
+		if (LineOfBusiness !== undefined && LineOfBusiness !== '') {
+			$scope.data.LineOfBusiness = LineOfBusiness;
+			$scope.model.LineOfBusiness = LineOfBusiness;
+		}
+
+		// LineOfBusinessId
+		var LineOfBusinessId = $('#LineOfBusinessId').val();
+		if (LineOfBusinessId !== undefined && LineOfBusinessId !== '') {
+			$scope.data.LineOfBusinessId = LineOfBusinessId;
+			$scope.model.LineOfBusinessId = LineOfBusinessId;
+		}
+	}
+
 	$scope.goToStep = function (newStep) {
+
+		// Sync Step 3 data BEFORE changing the step
+		if ($scope.step === 3 && newStep !== 3) {
+			$scope.saveUserEnteredValues();
+		}
+
 		$scope.errors = [];
 		$('#urlValidationBox').html('');
 		$scope.step = newStep;
@@ -228,17 +355,40 @@
 
 	$scope.setStepSpecificElements = function (newStep) {
 		if ($scope.model.IsPLDIntegrated) {
+			$scope.data.netRevision = $scope.model.netRevision;
 			$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
 			$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
+			$scope.data.CostVolumeLeadPricerDisplayName = $scope.model.CostVolumeLeadPricerDisplayName;
 		}
 
 		if ($scope.model.IsPLDIntegrated && newStep === 5) {
-
-			$scope.data.WorkspaceName = $scope.data.nextRevision + " " + $scope.data.WorkspaceName;
+			// Store the original user-entered workspace name if not already stored
+			if (!$scope.data.OriginalWorkspaceName) {
+				$scope.data.OriginalWorkspaceName = $scope.data.WorkspaceName;
+			}
+			// Concatenate PLD_PANumber with the user-entered workspace name
+			$scope.data.WorkspaceName = $scope.data.PLD_PANumber + " " + $scope.data.OriginalWorkspaceName;
 			$scope.data.Shortname = $scope.data.nextRevision;
 		}
 
+		if ($scope.model.IsPLDIntegrated && newStep !== 5) {
+			// When not step 5, restore the original workspace name for editing
+			if ($scope.data.OrignalWorkspaceName) {
+				$scope.data.WorkspaceName = $scope.data.OriginalWorkspaceName;
+			}
+		}
+
 		if ($scope.model.IsPLDIntegrated && newStep === 3) {
+			// Initialize UsingTemplateBoe with default value if not already set
+			if ($scope.data.UsingTemplateBoe == null || $scope.data.UsingTemplateBoe === undefined) {
+				$scope.data.UsingTemplateBoe = false;
+			}
+
+			// Initialize ResourceDecimalPrecision with default value if not already set
+			if ($scope.data.ResourceDecimalPrecision === null || $scope.data.ResourceDecimalPrecision === undefined) {
+				$scope.data.ResourceDecimalPrecision = 2;
+			}
+
 			var getPLDProposalDetails = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetPLDProposalDetails);
 
 			$http({
@@ -249,16 +399,44 @@
 				.then(function (res) {
 					const data = res.data;
 
-					$scope.model.LineOfBusiness = data.LineOfBusiness;
-					$scope.model.LineOfBusinessID = data.LineOfBusinessId;
-					$scope.data.LineOfBusiness = data.LineOfBusiness;
-					$scope.data.LineOfBusinessID = data.LineOfBusinessId;
-					$scope.model.Description = data.Description;
-					$scope.data.Description = data.Description;
+					$scope.model.LineOfBusiness = data.LineOfBusiness || '';
+					$scope.data.LineOfBusiness = data.LineOfBusiness || '';
+					if (data.LineOfBusinessId && data.LineOfBusinessId > 0) {
+						$scope.model.LineOfBusinessID = data.LineOfBusinessId;
+						$scope.data.LineOfBusinessID = data.LineOfBusinessId;
+					} else {
+						$scope.model.LineOfBusinessID = -1;
+						$scope.data.LineOfBusinessID = -1;
+					}
+
+					var description = data.Description || '';
+					if (description.length > 1000) {
+						description = description.substr(0, 1000);
+					}
+					$scope.model.Description = description;
+					$scope.data.Description = description;
+
+
+					// TODO: re-evaluate Pricer data pull after customer weighs in on need / bad data handling
+					// hold on bringing what PLD has for Pricer as it is not clean name data
+					//$scope.model.CostVolumeLeadPricerDisplayName = data.Pricing;
+					//$scope.data.CostVolumeLeadPricerDisplayName = data.Pricing;
+					//$scope.model.Pricer = data.Pricing;
+					//$scope.data.Pricer = data.Pricing;
+
 					$scope.model.ContractStartDate = parseDotNetDate(data.ProjectStartDate);
 					$scope.model.ContractEndDate = parseDotNetDate(data.ProjectEndDate);
 					$scope.data.ContractStartDate = $scope.model.ContractStartDate;
 					$scope.data.ContractEndDate = $scope.model.ContractEndDate;
+					$scope.model.ProjectStartDate = $scope.model.ContractStartDate;
+					$scope.model.ProjectEndDate = $scope.model.ContractEndDate;
+
+					$scope.model.RFPNumber = data.RFPNumber || '';
+					$scope.model.PLD_RFPNumber = data.RFPNumber || '';
+					$scope.data.RFPNumber = $scope.model.PLD_RFPNumber;
+
+					$scope.model.PLD_ContractStatus = data.ProposalStatus || '';
+					$scope.model.ContractStatus = $scope.model.PLD_ContractStatus;
 				})
 
 			var getNextPLDWorkspaceShortNameFromTrackingNumber = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetNextPLDWorkspaceShortNameFromTrackingNumber);
@@ -268,47 +446,60 @@
 				url: getNextPLDWorkspaceShortNameFromTrackingNumber,
 				params: { paNumber: $scope.data.TrackingNumber }
 			})
-			.then(function (res) {
-				const data = res.data;
+				.then(function (res) {
+					const data = res.data;
 
-				$scope.model.nextRevision = data.ShortName;
-				$scope.data.nextRevision = $scope.model.nextRevision;
-			})
-		}
-		
-		$scope.step = newStep;
-		switch ($scope.step) {
-			case 1:
-				$scope.model.stepTitle = 'Workspace Type';
-				$scope.model.showOCINote = false;
-				$scope.model.showBackButton = false;
-				break;
-			case 2:
-				$scope.model.stepTitle = 'Search & Copy Existing Workspace';
-				$scope.model.showOCINote = false;
-				$scope.model.showNextButton = true;
-				break;
-			case 3:
-				$scope.model.stepTitle = 'Workspace Identification';
-				$scope.model.showOCINote = true;
-				$scope.identificationPageSetup = false;
-				break;
-			case 4:
-				$scope.model.stepTitle = 'Share & Allow Search Settings';
-				$scope.model.showOCINote = false;
-				$scope.model.showNextButton = true;
-				break;
-			case 5:
-				$scope.model.stepTitle = 'Verify';
-				$scope.model.showOCINote = true;
-				$scope.model.showNextButton = false;
-				break;
-		}
+					$scope.model.nextRevision = data.ShortName;
+					$scope.data.nextRevision = $scope.model.nextRevision;
+					$scope.model.nextRevision = data.ShortName;
+					$scope.data.nextRevision = $scope.model.nextRevision;
+
+					//Shortname (URL): Set to nextRevision (auto-generate, read-only for PLD)
+					if ($scope.data.nextRevision) {
+						$scope.data.ShortName = $scope.data.nextRevision;
+					}
+				})
+		};
+
+
+	$scope.step = newStep;
+	switch ($scope.step) {
+		case 1:
+			$scope.model.stepTitle = 'Workspace Type';
+			$scope.model.showOCINote = false;
+			$scope.model.showBackButton = false;
+			break;
+		case 2:
+			$scope.model.stepTitle = 'Search & Copy Existing Workspace';
+			$scope.model.showOCINote = false;
+			$scope.model.showNextButton = true;
+			break;
+		case 3:
+			$scope.model.stepTitle = 'Workspace Identification';
+			$scope.model.showOCINote = true;
+			$scope.identificationPageSetup = false;
+			break;
+		case 4:
+			$scope.model.stepTitle = 'Share & Allow Search Settings';
+			$scope.model.showOCINote = false;
+			$scope.model.showNextButton = true;
+			break;
+		case 5:
+			$scope.model.stepTitle = 'Verify';
+			$scope.model.showOCINote = true;
+			$scope.model.showNextButton = false;
+			break;
 	};
 
 	$scope.back = function () {
 		$scope.errors = [];
 		$('#urlValidationBox').html('');
+
+		// Sync Step 3 data BEFORE leaving
+		if ($scope.step === 3) {
+			$scope.saveUserEnteredValues();
+		}
+
 		switch ($scope.step) {
 			case 2:
 				$scope.setStepSpecificElements(1);
@@ -333,120 +524,124 @@
 				break;
 		}
 
-		;
 	};
 
-	$scope.next = function () {		
-		if (!$scope.nextButtonDisabled()) {
-			
-			$scope.errors = [];
-			$('#urlValidationBox').html('');
-			switch ($scope.step) {
-				case 1:
-					$scope.model.showBackButton = true;
-					if ($scope.data.IsAttemptingToImport) {
-						// clear out the PTM Tracking Number if Workspace is not selected
-						if ($scope.model.workspaceToCopy.WorkspaceName === '') {
-							$scope.model.ptmTrackingNumber = '';
-							$scope.model.selectedPtmTrackingNumber = '';
+		$scope.next = function () {
+			if (!$scope.nextButtonDisabled()) {
+
+				$scope.errors = [];
+				$('#urlValidationBox').html('');
+				switch ($scope.step) {
+					case 1:
+						$scope.model.showBackButton = true;
+						if ($scope.data.IsAttemptingToImport) {
+							// clear out the PTM Tracking Number if Workspace is not selected
+							if ($scope.model.workspaceToCopy.WorkspaceName === '') {
+								$scope.model.ptmTrackingNumber = '';
+								$scope.model.selectedPtmTrackingNumber = '';
+							}
+							$scope.setStepSpecificElements(2);
+						} else {
+							// reset the data in case the user went back and forth
+
+							//$scope.data = $scope.resetData();
+							$scope.data.IsAttemptingToImport = false;
+
+							var pa = ($scope.model.PLD_PANumber || '').toString().trim();
+							var hasPA = pa.length > 0;
+
+							if ($scope.model.IsPLDIntegrated && !hasPA) {
+								Session.confirmDialog("PA Number", "A PA Number was not set, are you sure you want to continue?",
+									function () { $scope.$apply(function () { $scope.setStepSpecificElements(3); }) },
+									null
+								);
+								return;
+							}
+
+
+							if ($scope.model.isPTMIntegrated && ($scope.model.isAdmin || $scope.model.ptmTrackingNumberNotRequired) && $scope.model.ptmTrackingNumber === '') {
+								// show notification to System Admin that they did not (optionally) select a PTM Tracking Number
+								Session.confirmDialog("PTM Tracking Number", "A PTM Tracking Number was not set, are you sure you want to continue?",
+									function () { $scope.$apply(function () { $scope.setStepSpecificElements(3); }) },
+									null // user clicked cancel, do nothing
+								);
+							} else if ($scope.model.isPTMIntegrated) {
+								// if PTM is integrated, get the next tracking number revision
+								$scope.isWaitingForCallback = true;
+								var trackingPromise = $scope.getNextTrackingNumberRevision();
+								trackingPromise.then(
+									function (answer) {
+										$scope.setStepSpecificElements(3);
+										$scope.isWaitingForCallback = false;
+									}, function (error) {
+										$scope.isWaitingForCallback = false;
+									});
+							} else {
+								// just go to the next step
+								$scope.setStepSpecificElements(3);
+							}
 						}
-						$scope.setStepSpecificElements(2);
-					} else {
-						// reset the data in case the user went back and forth
-						$scope.data = $scope.resetData();
-						$scope.data.IsAttemptingToImport = false;
-
-						var pa = ($scope.model.PLD_PANumber || '').toString().trim();
-						var hasPA = pa.length > 0;
-
-						if ($scope.model.IsPLDIntegrated && !hasPA) {
-							Session.confirmDialog("PA Number", "A PA Number was not set, are you sure you want to continue?",
-								function () { $scope.$apply(function () { $scope.setStepSpecificElements(3); }) },
-								null
-							);
-							return;
-						} 
-
-
-						if ($scope.model.isPTMIntegrated && ($scope.model.isAdmin || $scope.model.ptmTrackingNumberNotRequired) && $scope.model.ptmTrackingNumber === '') {
-							// show notification to System Admin that they did not (optionally) select a PTM Tracking Number
-							Session.confirmDialog("PTM Tracking Number", "A PTM Tracking Number was not set, are you sure you want to continue?",
-								function () { $scope.$apply(function () { $scope.setStepSpecificElements(3); }) },
-								null // user clicked cancel, do nothing
-							);
-						} else if ($scope.model.isPTMIntegrated) {
-							// if PTM is integrated, get the next tracking number revision
-							$scope.isWaitingForCallback = true;
-							var trackingPromise = $scope.getNextTrackingNumberRevision();
-							trackingPromise.then(
+						break;
+					case 2:
+						$scope.isWaitingForCallback = true;
+						if ($scope.model.isPTMIntegrated && $scope.model.ptmTrackingNumber !== '') {
+							// If doing a copy, the user/admin has to choose a PTM Tracking # so we can safely get the new revision now
+							var trackingPromise2 = $scope.getNextTrackingNumberRevision();
+							trackingPromise2.then(
 								function (answer) {
-									$scope.setStepSpecificElements(3);
-									$scope.isWaitingForCallback = false;
+									$scope.step2Next();
 								}, function (error) {
 									$scope.isWaitingForCallback = false;
 								});
 						} else {
-							// just go to the next step
-							$scope.setStepSpecificElements(3);
+							$scope.step2Next();
 						}
-					}
-					break;
-				case 2:
-					$scope.isWaitingForCallback = true;
-					if ($scope.model.isPTMIntegrated && $scope.model.ptmTrackingNumber !== '') {
-						// If doing a copy, the user/admin has to choose a PTM Tracking # so we can safely get the new revision now
-						var trackingPromise2 = $scope.getNextTrackingNumberRevision();
-						trackingPromise2.then(
+
+						break;
+					case 3:
+
+						// Sync all JQuery-managed and angular bound field values before leaving Step 3
+						$scope.saveUserEnteredValues();
+
+						if ($scope.model.isPTMIntegrated && $scope.model.ptmTrackingNumber !== '') {
+							// set the real workspacename if we are integrating with PTM (and admin hasn't overwritten with no PTM listed)
+							$scope.data.WorkspaceName = $scope.model.nextRevision + " " + $scope.data.RevisionWorkspaceName;
+						}
+
+						// need to validate the data
+						$scope.isWaitingForCallback = true;
+						var validatePromise = $scope.validateWorkspace();
+
+						validatePromise.then(
 							function (answer) {
-								$scope.step2Next();
+								$scope.setStepSpecificElements(4);
+								$scope.isWaitingForCallback = false;
 							}, function (error) {
 								$scope.isWaitingForCallback = false;
 							});
-					} else {
-						$scope.step2Next();
-					}
-
-					break;
-				case 3:
-
-					if ($scope.model.isPTMIntegrated && $scope.model.ptmTrackingNumber !== '') {
-						// set the real workspacename if we are integrating with PTM (and admin hasn't overwritten with no PTM listed)
-						$scope.data.WorkspaceName = $scope.model.nextRevision + " " + $scope.data.RevisionWorkspaceName;
-					}
-
-					// need to validate the data
-					$scope.isWaitingForCallback = true;
-					var validatePromise = $scope.validateWorkspace();
-
-					validatePromise.then(
-						function (answer) {
-							$scope.setStepSpecificElements(4);
-							$scope.isWaitingForCallback = false;
-						}, function (error) {
-							$scope.isWaitingForCallback = false;
-						});
-					break;
-				case 4:
-					$scope.setStepSpecificElements(5);
-					break;
+						break;
+					case 4:
+						$scope.setStepSpecificElements(5);
+						break;
+				}
 			}
 		}
 	};
 
 	$scope.callbackTime = function () {
-		
+
 	}
 
 	$scope.copyPromiseCallBack = function (nextStep, isCurrentPTMWorkspace) {
 		var copyPromise = $scope.copyExactDetails(nextStep, isCurrentPTMWorkspace);
 
 		copyPromise.then(
-		function (answer) {
-			$scope.setStepSpecificElements(nextStep);
-			$scope.isWaitingForCallback = false;
-		}, function (error) {
-			$scope.isWaitingForCallback = false;
-		});
+			function (answer) {
+				$scope.setStepSpecificElements(nextStep);
+				$scope.isWaitingForCallback = false;
+			}, function (error) {
+				$scope.isWaitingForCallback = false;
+			});
 	}
 
 	$scope.currentWorkspaceDialog = function (nextStep) {
@@ -571,10 +766,8 @@
 	};
 
 	$scope.initAnticipatedDatepicker = function () {
-		if (!$scope.model.isPTMIntegrated || $scope.model.isAdmin) {
-			$("#ProposalSubmittalDate").datepicker({ dateFormat: 'mm/dd/yy' });
-		}
-	}
+		$("#ProposalSubmittalDate").datepicker({ dateFormat: 'mm/dd/yy' });
+	};
 
 	$scope.workspaceNameKeyUp = function () {
 		var workspaceNameText = $scope.data.WorkspaceName.toLowerCase();
@@ -583,6 +776,16 @@
 		for (index in workspaceNameCharArray) {
 			if (whiteList.indexOf(workspaceNameCharArray[index]) < 0) {
 				workspaceNameCharArray[index] = "_";
+			}
+		}
+		// create month pickers for contract dates
+		$timeout($scope.initContractMonthPickers);
+
+		$scope.initContractMonthPickers = function () {
+			// Initialize month pickers for contract dates
+			if (typeof SetupMonthPicker === 'function') {
+				SetupMonthPicker('#ContractStartDate');
+				SetupMonthPicker('#ContractEndDate');
 			}
 		}
 		var URLText = workspaceNameCharArray.join("");
@@ -630,14 +833,14 @@
 		if ($scope.data.IsAttemptingToImport) {
 			// if we are doing a workspace copy..
 			Session.confirmDialog("Resource Decimal Precision", "Decimal precision has been modified for this workspace copy.  This will cause the entire workspace to recalculate.  This is a long running process.  You will be redirected to your new workspace once the recalculation is complete.  Are you sure you want to make the change?",
-				 // Do nothing if they give postive confirmation.
-				 null,
-				 function () {
-					 // Negative confirmation. Restore old Resource Decimal Precision value.
-					 $scope.$apply(function () {
-						 $scope.data.ResourceDecimalPrecision = $scope.model.originalDecimalPrecision;
-					 });
-				 });
+				// Do nothing if they give postive confirmation.
+				null,
+				function () {
+					// Negative confirmation. Restore old Resource Decimal Precision value.
+					$scope.$apply(function () {
+						$scope.data.ResourceDecimalPrecision = $scope.model.originalDecimalPrecision;
+					});
+				});
 		}
 	};
 
@@ -645,14 +848,14 @@
 		if ($scope.data.IsAttemptingToImport) {
 			// if we are doing a workspace copy..
 			Session.confirmDialog("Cost Decimal Precision", "Cost decimal precision has been modified for this workspace copy.  This will cause the entire workspace to recalculate.  This is a long running process.  You will be redirected to your new workspace once the recalculation is complete.  Are you sure you want to make the change?",
-				 // Do nothing if they give postive confirmation.
-				 null,
-				 function () {
-					 // Negative confirmation. Restore old Resource Decimal Precision value.
-					 $scope.$apply(function () {
-						 $scope.data.CostDecimalPrecision = $scope.model.originalCostDecimalPrecision;
-					 });
-				 });
+				// Do nothing if they give postive confirmation.
+				null,
+				function () {
+					// Negative confirmation. Restore old Resource Decimal Precision value.
+					$scope.$apply(function () {
+						$scope.data.CostDecimalPrecision = $scope.model.originalCostDecimalPrecision;
+					});
+				});
 		}
 	};
 
@@ -679,7 +882,7 @@
 			$scope.data.ContractStartDate = $scope.getDateStringFromDate(today);
 			$scope.data.ContractEndDate = $scope.getDateStringFromDate(nextMonth);
 		}
-		else if (firstTime){
+		else if (firstTime) {
 			$scope.data.ContractStartDate = '';
 			$scope.data.ContractEndDate = '';
 		}
@@ -771,7 +974,7 @@
 					$scope.data.ProposalClass = response.data.ProposalClass;
 					$scope.data.SelectedContractTypes = response.data.ContractTypes;
 				}
-				$scope.data.CostVolumeLeadPricerDisplayName = response.data.DisplayName;
+				$scope.data.CostVolumeLeadPricerDisplayName = $scope.model.CostVolumeLeadPricerDisplayName;
 				$scope.data.CostVolumeLeadPricerNTID = response.data.CostVolumeLeadPricerNTID;
 			}
 
@@ -796,7 +999,7 @@
 
 		if ($scope.model.UpdatePreviousWorkspace) {
 			var postURL = GenSession.CreatePostURL($scope.model.workspaceToCopy.ShortName, CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.UpdateCurrentWorkspaceIdentification);
-						
+
 
 			$http({
 				method: 'POST',
@@ -817,17 +1020,17 @@
 				}
 			)
 		}
-		
+
 		// create the workspace
 		var createUrl = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.CreateWorkspaceAction);
-		
+
 		$http({
 			method: 'POST',
 			url: createUrl,
 			data: $scope.data
 		}).then(function successCallback(response) {
-				$window.location.href = '/' + $scope.data.Shortname;
-			},
+			$window.location.href = '/' + $scope.data.Shortname;
+		},
 			function errorCallback(error) {
 				$scope.model.showButtonLoader = false;
 				if (error && error.data && error.data.MessageList) {
@@ -911,9 +1114,9 @@
 			return true;
 		} else if ($scope.step === 2 && ($scope.model.workspaceToCopy.WorkspaceName === '' || $scope.data.WSExactCopy === null || ($scope.model.isPTMIntegrated && $scope.model.ptmTrackingNumber === '' && !$scope.model.ptmTrackingNumberNotRequired))) {
 			// if we are on the 2nd step and one of the following occurs, then disable the next button
-				// Exact Copy radio button not selected
-				// WorkspaceName not selected meaning no workspace to copy has been selected
-				// If PTM integrated, no PTM Tracking number selected yet
+			// Exact Copy radio button not selected
+			// WorkspaceName not selected meaning no workspace to copy has been selected
+			// If PTM integrated, no PTM Tracking number selected yet
 			return true;
 		} else if ($scope.step === 2 && $scope.model.showWorkspaceSearchBOELoader && $scope.data.WSExactCopy === false) {
 			// If we are on the second step and Non-Exact has been selected we still need to wait for the BOE list to be loaded
@@ -935,8 +1138,8 @@
 			url: validateUrl,
 			data: $scope.data
 		}).then(function successCallback(response) {
-				deferred.resolve();
-			},
+			deferred.resolve();
+		},
 			function errorCallback(error) {
 				if (error && error.data && error.data.MessageList) {
 					$scope.errors = error.data.MessageList;
@@ -954,28 +1157,28 @@
 		var nextRevisionUrl = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetNextTrackingNumberRevisionAction);
 		var postData = { trackingNumber: $scope.model.ptmTrackingNumber };
 		$http({
-				method: 'POST',
-				url: nextRevisionUrl,
-				data: postData
+			method: 'POST',
+			url: nextRevisionUrl,
+			data: postData
 		}).then(function successCallback(response) {
-				$scope.model.nextRevision = response.data.TrackingNumberRevision;
-				$scope.data.WorkspaceName = response.data.TrackingNumberRevision;
-				$scope.data.Shortname = response.data.TrackingNumberRevision;
-				$scope.data.RFPNumber = response.data.RFPNumber;
-				$scope.data.ProposalTitle = response.data.Title;
-				$scope.data.ProposalClass = response.data.ProposalClassId;
-				$scope.data.LineOfBusinessID = response.data.LOBId;
-				$scope.data.SelectedContractTypes = response.data.ContractTypes;
-				$scope.data.ProposalSubmittalDate = response.data.AnticipatedDeliveryDate;
-				$scope.data.RevisedSubmittalDate = response.data.RevisedSubmittalDate;
-				$scope.model.isSAPConfigurationEnabled = response.data.IsSAPEnabledConfig;
+			$scope.model.nextRevision = response.data.TrackingNumberRevision;
+			$scope.data.WorkspaceName = response.data.TrackingNumberRevision;
+			$scope.data.Shortname = response.data.TrackingNumberRevision;
+			$scope.data.RFPNumber = response.data.RFPNumber;
+			$scope.data.ProposalTitle = response.data.Title;
+			$scope.data.ProposalClass = response.data.ProposalClassId;
+			$scope.data.LineOfBusinessID = response.data.LOBId;
+			$scope.data.SelectedContractTypes = response.data.ContractTypes;
+			$scope.data.ProposalSubmittalDate = response.data.AnticipatedDeliveryDate;
+			$scope.data.RevisedSubmittalDate = response.data.RevisedSubmittalDate;
+			$scope.model.isSAPConfigurationEnabled = response.data.IsSAPEnabledConfig;
 
-				if (!$scope.data.IsAttemptingToImport) {
-					$scope.data.UsingTemplateBoe = response.data.UsingTemplateBoe;
-				}
+			if (!$scope.data.IsAttemptingToImport) {
+				$scope.data.UsingTemplateBoe = response.data.UsingTemplateBoe;
+			}
 
-				deferred.resolve();
-			},
+			deferred.resolve();
+		},
 			function errorCallback(error) {
 				if (error && error.data && error.data.MessageList) {
 					$scope.errors = error.data.MessageList;
@@ -1033,11 +1236,11 @@
 			url: postURL,
 			data: copyDetails
 		}).then(function successCallback(response) {
-				var SearchResults = $('#WorkspaceSearchBOEList');
-				SearchResults.html(response.data);
-				$scope.model.showWorkspaceSearchBOELoader = false;
-				deferred.resolve();
-			},
+			var SearchResults = $('#WorkspaceSearchBOEList');
+			SearchResults.html(response.data);
+			$scope.model.showWorkspaceSearchBOELoader = false;
+			deferred.resolve();
+		},
 			function errorCallback(error) {
 				if (error && error.data && error.data.MessageList) {
 					$scope.errors = error.data.MessageList;
@@ -1132,7 +1335,7 @@
 			} else {
 				$scope.data.EnableLmNavigator = false;
 			}
-				
+
 			if ($scope.data.WSExactCopy) {
 				$scope.data.ContainsOCI = result.ContainsOCI;
 				$scope.data.ContainsContentTemplates = result.ContainsContentTemplates;
@@ -1141,12 +1344,12 @@
 
 			deferred.resolve();
 		},
-		function errorCallback(error) {
-			if (error && error.data && error.data.MessageList) {
-				$scope.errors = error.data.MessageList;
-			}
-			deferred.reject(error);
-		});
+			function errorCallback(error) {
+				if (error && error.data && error.data.MessageList) {
+					$scope.errors = error.data.MessageList;
+				}
+				deferred.reject(error);
+			});
 
 		return deferred.promise;
 	};
@@ -1154,7 +1357,7 @@
 	$scope.workspaceToCopyChosen = function (event, data) {
 		$scope.model.WorkspaceToCopy = data.workspaceName;
 		$scope.data.WorkspaceToCopyID = data.workspaceID;
-		
+
 		if (!data.isProjectMap.isTrue()) {
 			$scope.getWorkspaceToCopyBOEList(data);
 		}
@@ -1230,5 +1433,5 @@
 	};
 
 	$scope.initialize();
-	
+
 }]);

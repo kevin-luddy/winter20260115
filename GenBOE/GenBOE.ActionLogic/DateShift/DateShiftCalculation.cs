@@ -613,16 +613,13 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <exception cref="NotSupportedException">The parentTask is set to Level.Labor but is not a Resource Labor Type.</exception>
 		internal static void PerformLaborSpreadShift(DateShiftDTO parentTask, DateShiftDetailModelView detail, DateShiftModelView modelView)
 		{
-			if (detail.ChildModificationType != ChildModificationType.NoChange)
+			if (parentTask.DateShiftLevel != Level.Labor)
 			{
-				if (parentTask.DateShiftLevel != Level.Labor)
-				{
-					throw new NotSupportedException("The parentTask is set to Level.Labor but is not a Resource Labor Type.");
-				}
-
-				// move the spreads
-				PerformSpreadsShift(parentTask, detail, modelView);
+				throw new NotSupportedException("The parentTask is set to Level.Labor but is not a Resource Labor Type.");
 			}
+
+			// move the spreads
+			PerformSpreadsShift(parentTask, detail, modelView);
 		}
 
 		/// <summary>

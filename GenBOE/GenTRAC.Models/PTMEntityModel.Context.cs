@@ -79,6 +79,8 @@ namespace GenTRAC.Models
         public virtual DbSet<CostVolumeToolLU> CostVolumeToolLUs { get; set; }
         public virtual DbSet<CcopdReasonsNo> CcopdReasonsNoes { get; set; }
         public virtual DbSet<InsuranceTypeLU> InsuranceTypeLUs { get; set; }
+        public virtual DbSet<AlternativePricingMethodology> AlternativePricingMethodologies { get; set; }
+        public virtual DbSet<ReportXmlData> ReportXmlDatas { get; set; }
     
         public virtual ObjectResult<Nullable<int>> archiveProposal(Nullable<System.DateTime> createStartDate, Nullable<System.DateTime> createEndDate, string lineOfBusinessID, string programAreaID)
         {
@@ -642,7 +644,7 @@ namespace GenTRAC.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertgenTRACUser", userIDParameter, updateDTParameter, nTIDParameter, displayNameParameter, emailAddressParameter, phoneNumberParameter, firstNameParameter, lastNameParameter, isGroupParameter, isUsPersonParameter, isSubcontractorParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertProposal(Nullable<int> proposalID, Nullable<System.DateTime> updateDate, string proposalTitle, string oTISOpportunityID, Nullable<int> proposalStatusID, Nullable<int> proposalTypeID, Nullable<bool> isIWTA, string programName, string customer, Nullable<int> customerTypeID, Nullable<int> iSGSRoleID, Nullable<int> requestTypeID, string rFPNumber, Nullable<int> lineOfBusinessID, Nullable<int> programAreaID, Nullable<int> pricingToolID, Nullable<int> bOEToolID, Nullable<System.DateTime> anticipatedDeliveryDate, string proposalCostElementXREF, Nullable<long> estimatedProposalValue, string proposalContractTypeXREF, Nullable<bool> dateAssigned, Nullable<int> createdByUserID, Nullable<System.DateTime> rFPIssuedDate, Nullable<System.DateTime> rFPReceivedDate, string comments, Nullable<int> contractTypeGroupID, Nullable<bool> isScheduleProposal, Nullable<int> proposalLocationID, string proposalLocationName, string bOEToolName, string pricingToolName, Nullable<int> proposalChecklistTypeID, Nullable<bool> changeChecklistFlag, Nullable<int> programProposalStatusID, Nullable<int> proposalClassID, Nullable<int> workflowStatus, Nullable<System.DateTime> workflowStatusLastUpdated, Nullable<System.DateTime> leadEstimatorSignedDT, string leadEstimatorSignComment, Nullable<System.DateTime> coverSheetApproverSignedDT, string coverSheetApproverSignComment, Nullable<System.DateTime> pricingVerifierSignedDT, string pricingVerifierSignComment, Nullable<System.DateTime> independentReviewerSignedDT, string independentReviewerSignComment, Nullable<System.DateTime> lOBEstimatingLeadSignedDT, string lOBEstimatingLeadSignComment, string approvalEmailText, Nullable<System.DateTime> revisedSubmittalDate, Nullable<bool> cCPDRequired, Nullable<bool> costVolumeClassified, Nullable<int> documentId, string forecastedTrackingID, string trackingID, Nullable<bool> isForecast, Nullable<System.DateTime> agreementDate, Nullable<System.DateTime> certificationDate, Nullable<int> cutOffDateUtilization, Nullable<System.DateTime> certificationTimelineCompleted, Nullable<System.DateTime> certificationLastEmailed, Nullable<System.DateTime> noBidDate, Nullable<bool> isRevision, Nullable<int> revisionOfId, Nullable<int> reasonCertificationNotRequired, string otherReasonComment, string setupComments, Nullable<System.DateTime> modExecutedLastEmailed, Nullable<System.DateTime> proposalCompletedDate, Nullable<int> contractActionType, string contractActionTypeOtherText, Nullable<int> costVolumeToolID, string costVolumeToolName, Nullable<bool> additionalClassification, Nullable<int> reasonCcopdNo, string reasonCcopdNoOther, Nullable<bool> isSupportDefinitizingUCA)
+        public virtual ObjectResult<Nullable<int>> upsertProposal(Nullable<int> proposalID, Nullable<System.DateTime> updateDate, string proposalTitle, string oTISOpportunityID, Nullable<int> proposalStatusID, Nullable<int> proposalTypeID, Nullable<bool> isIWTA, string programName, string customer, Nullable<int> customerTypeID, Nullable<int> iSGSRoleID, Nullable<int> requestTypeID, string rFPNumber, Nullable<int> lineOfBusinessID, Nullable<int> programAreaID, Nullable<int> pricingToolID, Nullable<int> bOEToolID, Nullable<System.DateTime> anticipatedDeliveryDate, string proposalCostElementXREF, Nullable<long> estimatedProposalValue, string proposalContractTypeXREF, Nullable<bool> dateAssigned, Nullable<int> createdByUserID, Nullable<System.DateTime> draftRfpIssuedDate, Nullable<System.DateTime> rFPIssuedDate, Nullable<System.DateTime> rFPReceivedDate, string comments, Nullable<int> contractTypeGroupID, Nullable<bool> isScheduleProposal, Nullable<int> proposalLocationID, string proposalLocationName, string bOEToolName, string pricingToolName, Nullable<int> proposalChecklistTypeID, Nullable<bool> changeChecklistFlag, Nullable<int> programProposalStatusID, Nullable<int> proposalClassID, Nullable<int> workflowStatus, Nullable<System.DateTime> workflowStatusLastUpdated, Nullable<System.DateTime> leadEstimatorSignedDT, string leadEstimatorSignComment, Nullable<System.DateTime> coverSheetApproverSignedDT, string coverSheetApproverSignComment, Nullable<System.DateTime> pricingVerifierSignedDT, string pricingVerifierSignComment, Nullable<System.DateTime> independentReviewerSignedDT, string independentReviewerSignComment, Nullable<System.DateTime> lOBEstimatingLeadSignedDT, string lOBEstimatingLeadSignComment, string approvalEmailText, Nullable<System.DateTime> revisedSubmittalDate, Nullable<bool> cCPDRequired, Nullable<bool> costVolumeClassified, Nullable<int> documentId, string forecastedTrackingID, string trackingID, Nullable<bool> isForecast, Nullable<System.DateTime> agreementDate, Nullable<System.DateTime> certificationDate, Nullable<int> cutOffDateUtilization, Nullable<System.DateTime> certificationTimelineCompleted, Nullable<System.DateTime> certificationLastEmailed, Nullable<System.DateTime> noBidDate, Nullable<bool> isRevision, Nullable<int> revisionOfId, Nullable<int> reasonCertificationNotRequired, string otherReasonComment, string setupComments, Nullable<System.DateTime> modExecutedLastEmailed, Nullable<System.DateTime> proposalCompletedDate, Nullable<int> contractActionType, string contractActionTypeOtherText, Nullable<int> costVolumeToolID, string costVolumeToolName, Nullable<bool> additionalClassification, Nullable<int> reasonCcopdNo, string reasonCcopdNoOther, Nullable<bool> isSupportDefinitizingUCA, Nullable<bool> subjectToAlternativePricingMethodology, Nullable<int> alternativePricingMethodology, string alternativePricingMethodologyOtherText)
         {
             var proposalIDParameter = proposalID.HasValue ?
                 new ObjectParameter("ProposalID", proposalID) :
@@ -735,8 +737,12 @@ namespace GenTRAC.Models
             var createdByUserIDParameter = createdByUserID.HasValue ?
                 new ObjectParameter("CreatedByUserID", createdByUserID) :
                 new ObjectParameter("CreatedByUserID", typeof(int));
-    
-            var rFPIssuedDateParameter = rFPIssuedDate.HasValue ?
+
+			var draftRfpIssuedDateParameter = draftRfpIssuedDate.HasValue ?
+				new ObjectParameter("DraftRfpIssuedDate", draftRfpIssuedDate) :
+				new ObjectParameter("DraftRfpIssuedDate", typeof(System.DateTime));
+
+			var rFPIssuedDateParameter = rFPIssuedDate.HasValue ?
                 new ObjectParameter("RFPIssuedDate", rFPIssuedDate) :
                 new ObjectParameter("RFPIssuedDate", typeof(System.DateTime));
     
@@ -952,7 +958,19 @@ namespace GenTRAC.Models
                 new ObjectParameter("IsSupportDefinitizingUCA", isSupportDefinitizingUCA) :
                 new ObjectParameter("IsSupportDefinitizingUCA", typeof(bool));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertProposal", proposalIDParameter, updateDateParameter, proposalTitleParameter, oTISOpportunityIDParameter, proposalStatusIDParameter, proposalTypeIDParameter, isIWTAParameter, programNameParameter, customerParameter, customerTypeIDParameter, iSGSRoleIDParameter, requestTypeIDParameter, rFPNumberParameter, lineOfBusinessIDParameter, programAreaIDParameter, pricingToolIDParameter, bOEToolIDParameter, anticipatedDeliveryDateParameter, proposalCostElementXREFParameter, estimatedProposalValueParameter, proposalContractTypeXREFParameter, dateAssignedParameter, createdByUserIDParameter, rFPIssuedDateParameter, rFPReceivedDateParameter, commentsParameter, contractTypeGroupIDParameter, isScheduleProposalParameter, proposalLocationIDParameter, proposalLocationNameParameter, bOEToolNameParameter, pricingToolNameParameter, proposalChecklistTypeIDParameter, changeChecklistFlagParameter, programProposalStatusIDParameter, proposalClassIDParameter, workflowStatusParameter, workflowStatusLastUpdatedParameter, leadEstimatorSignedDTParameter, leadEstimatorSignCommentParameter, coverSheetApproverSignedDTParameter, coverSheetApproverSignCommentParameter, pricingVerifierSignedDTParameter, pricingVerifierSignCommentParameter, independentReviewerSignedDTParameter, independentReviewerSignCommentParameter, lOBEstimatingLeadSignedDTParameter, lOBEstimatingLeadSignCommentParameter, approvalEmailTextParameter, revisedSubmittalDateParameter, cCPDRequiredParameter, costVolumeClassifiedParameter, documentIdParameter, forecastedTrackingIDParameter, trackingIDParameter, isForecastParameter, agreementDateParameter, certificationDateParameter, cutOffDateUtilizationParameter, certificationTimelineCompletedParameter, certificationLastEmailedParameter, noBidDateParameter, isRevisionParameter, revisionOfIdParameter, reasonCertificationNotRequiredParameter, otherReasonCommentParameter, setupCommentsParameter, modExecutedLastEmailedParameter, proposalCompletedDateParameter, contractActionTypeParameter, contractActionTypeOtherTextParameter, costVolumeToolIDParameter, costVolumeToolNameParameter, additionalClassificationParameter, reasonCcopdNoParameter, reasonCcopdNoOtherParameter, isSupportDefinitizingUCAParameter);
+            var subjectToAlternativePricingMethodologyParameter = subjectToAlternativePricingMethodology.HasValue ?
+                new ObjectParameter("SubjectToAlternativePricingMethodology", subjectToAlternativePricingMethodology) :
+                new ObjectParameter("SubjectToAlternativePricingMethodology", typeof(bool));
+    
+            var alternativePricingMethodologyParameter = alternativePricingMethodology.HasValue ?
+                new ObjectParameter("AlternativePricingMethodology", alternativePricingMethodology) :
+                new ObjectParameter("AlternativePricingMethodology", typeof(int));
+    
+            var alternativePricingMethodologyOtherTextParameter = alternativePricingMethodologyOtherText != null ?
+                new ObjectParameter("AlternativePricingMethodologyOtherText", alternativePricingMethodologyOtherText) :
+                new ObjectParameter("AlternativePricingMethodologyOtherText", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertProposal", proposalIDParameter, updateDateParameter, proposalTitleParameter, oTISOpportunityIDParameter, proposalStatusIDParameter, proposalTypeIDParameter, isIWTAParameter, programNameParameter, customerParameter, customerTypeIDParameter, iSGSRoleIDParameter, requestTypeIDParameter, rFPNumberParameter, lineOfBusinessIDParameter, programAreaIDParameter, pricingToolIDParameter, bOEToolIDParameter, anticipatedDeliveryDateParameter, proposalCostElementXREFParameter, estimatedProposalValueParameter, proposalContractTypeXREFParameter, dateAssignedParameter, createdByUserIDParameter, draftRfpIssuedDateParameter, rFPIssuedDateParameter, rFPReceivedDateParameter, commentsParameter, contractTypeGroupIDParameter, isScheduleProposalParameter, proposalLocationIDParameter, proposalLocationNameParameter, bOEToolNameParameter, pricingToolNameParameter, proposalChecklistTypeIDParameter, changeChecklistFlagParameter, programProposalStatusIDParameter, proposalClassIDParameter, workflowStatusParameter, workflowStatusLastUpdatedParameter, leadEstimatorSignedDTParameter, leadEstimatorSignCommentParameter, coverSheetApproverSignedDTParameter, coverSheetApproverSignCommentParameter, pricingVerifierSignedDTParameter, pricingVerifierSignCommentParameter, independentReviewerSignedDTParameter, independentReviewerSignCommentParameter, lOBEstimatingLeadSignedDTParameter, lOBEstimatingLeadSignCommentParameter, approvalEmailTextParameter, revisedSubmittalDateParameter, cCPDRequiredParameter, costVolumeClassifiedParameter, documentIdParameter, forecastedTrackingIDParameter, trackingIDParameter, isForecastParameter, agreementDateParameter, certificationDateParameter, cutOffDateUtilizationParameter, certificationTimelineCompletedParameter, certificationLastEmailedParameter, noBidDateParameter, isRevisionParameter, revisionOfIdParameter, reasonCertificationNotRequiredParameter, otherReasonCommentParameter, setupCommentsParameter, modExecutedLastEmailedParameter, proposalCompletedDateParameter, contractActionTypeParameter, contractActionTypeOtherTextParameter, costVolumeToolIDParameter, costVolumeToolNameParameter, additionalClassificationParameter, reasonCcopdNoParameter, reasonCcopdNoOtherParameter, isSupportDefinitizingUCAParameter, subjectToAlternativePricingMethodologyParameter, alternativePricingMethodologyParameter, alternativePricingMethodologyOtherTextParameter);
         }
     
         public virtual ObjectResult<Nullable<int>> upsertProposalChecklist(Nullable<int> proposalChecklistID, Nullable<System.DateTime> updateDate, Nullable<int> proposalID, Nullable<System.DateTime> proposalSubmittalDate, Nullable<long> iSGSTotalPrice, Nullable<long> profit, Nullable<long> com, Nullable<long> profitFeeWithCom, Nullable<decimal> rOSPercentage, Nullable<decimal> lMLaborHours, Nullable<long> lMLaborCost, Nullable<long> subcontractorCost, Nullable<long> materialCost, Nullable<long> iWTACost, Nullable<long> travelCost, Nullable<long> otherDirectCost, Nullable<bool> deliverChecklistDFARS, Nullable<long> absoluteValue, Nullable<long> costThroughCom, Nullable<bool> includeInternationalCosts)
@@ -1752,6 +1770,28 @@ namespace GenTRAC.Models
                 new ObjectParameter("AppVersion", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("UpdateDbVersion", dbVersionParameter, appVersionParameter);
+        }
+    
+        public virtual ObjectResult<string> getReportXML(string nonce)
+        {
+            var nonceParameter = nonce != null ?
+                new ObjectParameter("Nonce", nonce) :
+                new ObjectParameter("Nonce", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("getReportXML", nonceParameter);
+        }
+    
+        public virtual int insertReportXml(string nonce, string xml)
+        {
+            var nonceParameter = nonce != null ?
+                new ObjectParameter("Nonce", nonce) :
+                new ObjectParameter("Nonce", typeof(string));
+    
+            var xmlParameter = xml != null ?
+                new ObjectParameter("xml", xml) :
+                new ObjectParameter("xml", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertReportXml", nonceParameter, xmlParameter);
         }
     }
 }

@@ -30,6 +30,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.BOE;
 	using GenBOE.ActionLogic.ModelView.Clin;
+	using GenBOE.ActionLogic.ModelView.Workspace;
 	using GenBOE.ActionLogic.NewValidation;
 	using GenBOE.ActionLogic.Validation;
 	using GenBOE.ActionLogic.WBS;
@@ -85,6 +86,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		private readonly IMaterialDTODataLoader _MaterialLoader;
 		private readonly IWbsDTODataLoader wbsLoader;
 		private readonly ICommonDataMapper _CommonDataMapper;
+		private readonly IWorkspaceControllerLogic WorkspaceControllerLogic;
 
 		/// <summary>
 		/// Memory Cache
@@ -155,7 +157,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			IMaterialDTODataLoader inMaterialLoader,
 			ITravelDTODataLoader travelLoader,
 			IWorkspaceVersionMetaDataDTODataLoader versionLoader,
-			IWbsDTODataLoader wbsLoader)
+			IWbsDTODataLoader wbsLoader,
+			IWorkspaceControllerLogic workspaceControllerLogic)
 		{
 			this._BOESummary = inBOESummary;
 			this.UserLoader = inUserLoader;
@@ -195,6 +198,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this._TravelDTOLoader = travelLoader;
 			this.versionLoader = versionLoader;
 			this.wbsLoader = wbsLoader;
+			this.WorkspaceControllerLogic = workspaceControllerLogic;
 			memCache = new MemoryCache();
 		}
 
@@ -264,48 +268,40 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			theModelView.Description = GetBOEHeaderDescriptionMv(boe, ws);
 
 			//Load the customFields
-			Collection<BOECustomFieldViewModel> selectedOptionsMV = new Collection<BOECustomFieldViewModel>();
+			Collection<BOECustomFieldModelView> customFieldValues = GetCustomFieldModelViews(ws);
 			ICollection<CustomFieldValueContainer> selectedOptions = boe.CustomFieldValueContainers;
 
-			if (selectedOptions != null)
+			if (customFieldValues != null)
 			{
-				foreach (CustomFieldValueContainer xrefSelection in selectedOptions)
+				foreach (BOECustomFieldModelView customField in customFieldValues)
 				{
-					selectedOptionsMV.Add(new BOECustomFieldViewModel() { CustomFieldValueID = xrefSelection.CustomFieldValueID, SelectionID = xrefSelection.ContainerID, UpdateDate = xrefSelection.UpdateDate, OpenEndedValue = xrefSelection.OpenEndedValue, CustomFieldID = xrefSelection.CustomFieldID, IsOpenEnded = xrefSelection.IsOpenEnded });
-				}
-
-				theModelView.CustomFieldValues = selectedOptionsMV;
-			}
-
-			if (ws.CustomFields.Any())
-			{
-				IReadOnlyCollection<CustomFieldValueDTO> allCustomFieldValues = ws.CustomFieldValues;
-
-				foreach (CustomFieldDTO customField in ws.CustomFields)
-				{
-					BOECustomFieldsInUseGridModelView metadata = new BOECustomFieldsInUseGridModelView(customField);
-					Collection<CustomFieldValueDTO> options = allCustomFieldValues.Where(i => i.CustomFieldID == customField.Id).ToCollection();
-
-					if (metadata.CustomFieldDisplayID == CustomFieldType.BoeDisplay)
+					if (selectedOptions != null)
 					{
-						Collection<BOECustomFieldOptionModelView> optionstoAdd = new Collection<BOECustomFieldOptionModelView>();
-
-						foreach (CustomFieldValueDTO option in options)
+						foreach (CustomFieldValueContainer xrefSelection in selectedOptions)
 						{
-							optionstoAdd.Add(new BOECustomFieldOptionModelView(option));
-						}
+							BOECustomFieldViewModel selectedOptionsMV = new BOECustomFieldViewModel() { CustomFieldValueID = xrefSelection.CustomFieldValueID, SelectionID = xrefSelection.ContainerID, UpdateDate = xrefSelection.UpdateDate, UpdateDateLong = xrefSelection.UpdateDateLong, OpenEndedValue = xrefSelection.OpenEndedValue, CustomFieldID = xrefSelection.CustomFieldID, IsOpenEnded = xrefSelection.IsOpenEnded };
 
-						foreach (BOECustomFieldViewModel customFieldValue in theModelView.CustomFieldValues)
-						{
-							if (customFieldValue.CustomFieldID == options.Select(o => o.CustomFieldID).First())
+							if (customField.CustomFieldMetaData.CustomFieldID == xrefSelection.CustomFieldID)
 							{
-								customFieldValue.FieldName = metadata.FieldName;
-								customFieldValue.CustomFieldOptions = optionstoAdd;
+								customField.CustomFieldMetaData.CustomFieldValueID = selectedOptionsMV.CustomFieldValueID;
+								customField.CustomFieldMetaData.SelectionID = selectedOptionsMV.SelectionID;
+								customField.UpdateDate = selectedOptionsMV.UpdateDate;
+								customField.UpdateDateLong = selectedOptionsMV.UpdateDateLong;
 							}
+
+
 						}
+
 					}
 				}
+
+				theModelView.CustomFieldValues = customFieldValues;
 			}
+
+			// Get adjacent boe ids
+			HomeWorkspaceGridModelView wsModelView = this.WorkspaceControllerLogic.GetHomeWorkspaceGridData(ws);
+			theModelView.AdjacentBoeIds = this.WorkspaceControllerLogic.FindAdjacentBoes(wsModelView, boe.Id, "WbsText", SortOrder.Ascending);
+
 
 			return theModelView;
 		}
@@ -1108,6 +1104,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 
 			Collection<ValidationMessage> ValidationErrors = new Collection<ValidationMessage>();
+
+			if (string.IsNullOrEmpty(inBOEHeader.Title))
+			{
+				ValidationErrors.Add(new ValidationMessage("Title", "Title is required."));
+				throw new GenValidationException(ValidationErrors);
+
+			}
 
 			if (string.IsNullOrEmpty(inBOEHeaderDescription.Description))
 			{
@@ -2961,7 +2964,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="copyBOEID">ID of BOE being copied</param>
 		/// <param name="taskElementsToCopy">Task elements being copied</param>
 		/// <returns>Modelview of copy BOE conflicts</returns>
-		public BOECopyConflictsModelView DisplayCopyBOEConflicts(FullWorkspace ws, int boeID, int copyBOEID, ICollection<int> taskElementsToCopy, ICollection<int> travelElementsToCopy)
+		public BOECopyConflictsModelView DisplayCopyBOEConflicts(FullWorkspace ws, int boeID, int copyBOEID, ICollection<int> taskElementsToCopy)
         {
             if (ws == null)
             {
@@ -2972,7 +2975,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			boeCopyConflictsModelView.BoeId = boeID;
 			boeCopyConflictsModelView.CopyBoeId = copyBOEID;
 			boeCopyConflictsModelView.TaskElementsToCopy = taskElementsToCopy;
-			boeCopyConflictsModelView.TravelElementsToCopy = travelElementsToCopy;
 
 			FullBoe copyBoe = this.Factory.CreateFullBoe(copyBOEID);
 			FullBoe boe = this.Factory.CreateFullBoe(boeID);
@@ -3110,8 +3112,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			// Get candidate task elements to copy.
 			Collection<TaskElementModelView> taskElementModelViews = this.GetCandidateTaskElementsToCopy(boe, ws);
-			Collection<TravelElementModelView> travelElementModelViews = this.GetCandidateTravelElementsToCopy(boe);
-
+			
 			return new BOESearchResult()
 			{
 				WBSNumber = wbsNum,
@@ -3125,8 +3126,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				BOEDescription = boe.Description ?? string.Empty,
 				BOEID = boe.Id,
 				AuthorDisplayName = authors.Any() ? string.Join("; ", authors.Select(x => x.DisplayName)) : string.Empty,
-				TaskElements = taskElementModelViews,
-				TravelElements = travelElementModelViews
+				TaskElements = taskElementModelViews
 			};
 		}
 
@@ -3161,28 +3161,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 
 			return taskElementModelViews;
-		}
-
-		/// <summary>
-		/// Gets a list of travel elements from a BOE that are candidates to copy to another BOE.
-		/// </summary>
-		/// <param name="boe">Source BOE.</param>
-		/// <returns>Candidate travel elements to copy.</returns>
-		private Collection<TravelElementModelView> GetCandidateTravelElementsToCopy(FullBoe boe)
-		{
-			// Get candidate travel elements to copy.
-			Collection<TravelElementModelView> travelElementModelViews = new Collection<TravelElementModelView>();
-
-			// Weed out any travel elements that are N/A: i.e. Those in Material BOEs, others?
-			if (!boe.isMaterial && boe.Travels != null && boe.Travels.Any())
-			{
-				foreach (TravelDTO travelElement in boe.Travels)
-				{
-					travelElementModelViews.Add(new TravelElementModelView(travelElement));
-				}
-			}
-
-			return travelElementModelViews;
 		}
 
 		/// <summary>

@@ -220,6 +220,16 @@ namespace IES.Common
 		public const string PROPOSAL_CLASS_NTE = "NTE";
 
 		/// <summary>
+		/// Proposal Type - New Business - Competitive
+		/// </summary>
+		public const int PROPOSAL_TYPE_NEW_BUSINESS_COMPETITIVE = 2;
+
+		/// <summary>
+		/// Proposal Type - New Business - Non-Competitive
+		/// </summary>
+		public const int PROPOSAL_TYPE_NEW_BUSINESS_NON_COMPETITIVE = 3;
+
+		/// <summary>
 		/// The length of the YYYY-NNNNN legacy tracking number
 		/// </summary>
 		public const int LEGACY_TRACKING_NUMBER_LENGTH = 10;
@@ -1223,5 +1233,10 @@ namespace IES.Common
 		/// System Setting for listing which workspaces are blacklisted for Skill Mix
 		/// </summary>
 		public static readonly string SKILL_MIX_BLACKLIST = "SkillMixBlacklist";
+
+		/// <summary>
+		/// Error to display when a workspace has children with invalid PoP
+		/// </summary>
+		public static readonly string INVALID_WORKSPACE_POP = "There are Children objects (i.e. CLIN, BOE, Task, Resource) that are outside the PoP of their Parents";
 	}
 }

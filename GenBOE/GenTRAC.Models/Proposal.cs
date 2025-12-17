@@ -106,6 +106,10 @@ namespace GenTRAC.Models
         public Nullable<int> ReasonCcopdNo { get; set; }
         public string ReasonCcopdNoOther { get; set; }
         public Nullable<bool> IsSupportDefinitizingUCA { get; set; }
+        public Nullable<bool> SubjectToAlternativePricingMethodology { get; set; }
+        public Nullable<int> AlternativePricingMethodology { get; set; }
+        public string AlternativePricingMethodologyOtherText { get; set; }
+        public Nullable<System.DateTime> DraftRfpIssuedDate { get; set; }
     
         public virtual BOEToolLU BOEToolLU { get; set; }
         public virtual ContractTypeGroupLU ContractTypeGroupLU { get; set; }
@@ -149,5 +153,6 @@ namespace GenTRAC.Models
         public virtual ContractActionTypeLU ContractActionTypeLU { get; set; }
         public virtual CostVolumeToolLU CostVolumeToolLU { get; set; }
         public virtual CcopdReasonsNo CcopdReasonsNo { get; set; }
+        public virtual AlternativePricingMethodology AlternativePricingMethodology1 { get; set; }
     }
 }

@@ -67,7 +67,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="tableContainerElement">container element for the table</param>
 		/// <param name="boeExportModelView">Model View for the BOE Export with the resources to use</param>
-		protected override void PopulateResourceSummaryByResourceIDTable(StructuredDocumentTag tableContainerElement, BOEExportModelView boeExportModelView)
+		/// <param name="exportInputs">Export inputs</param>
+		protected override void PopulateResourceSummaryByResourceIDTable(StructuredDocumentTag tableContainerElement, BOEExportModelView boeExportModelView, BOEExportInputs exportInputs)
 		{
 			if (boeExportModelView != null)
 			{
@@ -97,7 +98,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						})
 						.OrderBy(x => x.ResourceType).ToList();
 
-				PopulateResourceSummaryTable(tableContainerElement, rollupData);
+				PopulateResourceSummaryTable(tableContainerElement, rollupData, exportInputs);
 			}
 			else
 			{
@@ -110,7 +111,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="tableContainerElement">container element for the table</param>
 		/// <param name="rollupData">rollup data to be displayed in the table</param>
-		protected override void PopulateResourceSummaryTable(StructuredDocumentTag tableContainerElement, ICollection<ResourceSummaryRowData> rollupData)
+		/// <param name="exportInputs">Export inputs</param>
+		protected override void PopulateResourceSummaryTable(StructuredDocumentTag tableContainerElement, ICollection<ResourceSummaryRowData> rollupData, BOEExportInputs exportInputs)
 		{
 			if (rollupData != null && rollupData.Any())
 			{
@@ -236,7 +238,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					})
 					.OrderBy(x => x.ResourceType).ToList();
 
-			PopulateResourceSummaryTable(tableElement, rollupData);
+			PopulateResourceSummaryTable(tableElement, rollupData, exportInputs);
 		}
 
 		#endregion

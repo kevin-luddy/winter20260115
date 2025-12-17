@@ -106,10 +106,15 @@ using IES.Common;
         /// </summary>
         public string RFPNumber { get; set; }
 
-        /// <summary>
-        /// RFP Issued Date
-        /// </summary>
-        public DateTime? RFPIssuedDate { get; set; }
+		/// <summary>
+		/// Draft RFP Issued Date
+		/// </summary>
+		public DateTime? DraftRfpIssuedDate { get; set; }
+
+		/// <summary>
+		/// RFP Issued Date
+		/// </summary>
+		public DateTime? RFPIssuedDate { get; set; }
 
         /// <summary>
         /// RFP Received Date
@@ -443,5 +448,20 @@ using IES.Common;
 		/// Is this proposal in support of definitizing an Undefinitized Contract Action
 		/// </summary>
 		public bool? IsSupportOfUndefinitized { get; set; }
+
+		/// <summary>
+		/// Is the Proposal subject to alternative pricing methodology?
+		/// </summary>
+		public bool? SubjectToAlternativePricingMethodology { get; set; }
+
+		/// <summary>
+		/// Selected alternative pricing methodology
+		/// </summary>
+		public AlternativePricingMethodology? AlternativePricingMethodology { get; set; }
+
+		/// <summary>
+		/// Text for "Other" Alternative Pricing Methodology
+		/// </summary>
+		public string AlternativePricingMethodologyOtherText { get; set; }
 	}
 }
