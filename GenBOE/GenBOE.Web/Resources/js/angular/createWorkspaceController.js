@@ -253,7 +253,7 @@
 		}
 
 		// Shortname
-		var Shortname = $('#Shortname').val();
+		var Shortname = $('#ShortName').val();
 		if (Shortname !== undefined && Shortname !== '') {
 			Shortname = Shortname.trim();
 			$scope.data.Shortname = Shortname;
@@ -367,7 +367,7 @@
 				$scope.data.OriginalWorkspaceName = $scope.data.WorkspaceName;
 			}
 			// Concatenate PLD_PANumber with the user-entered workspace name
-			$scope.data.WorkspaceName = $scope.data.PLD_PANumber + " " + $scope.data.OriginalWorkspaceName;
+			$scope.data.WorkspaceName = $scope.model.PLD_PANumber + " " + $scope.data.OriginalWorkspaceName;
 			$scope.data.Shortname = $scope.data.nextRevision;
 		}
 
@@ -751,7 +751,7 @@
 				checkNameCallbackHandler: function (valid) { }
 			});
 
-			if (!$scope.model.isPTMIntegrated || $scope.model.ptmTrackingNumber === '') {
+			if (!$scope.model.isPTMIntegrated || $scope.model.ptmTrackingNumber === '' || $scope.model.IsPLDIntegrated) {
 				// bind the workspacename and url for finding duplicates when no PTM Integration or Admin doesn't select Tracking Number
 				CreateWorkspace.CommonBindings();
 			}
