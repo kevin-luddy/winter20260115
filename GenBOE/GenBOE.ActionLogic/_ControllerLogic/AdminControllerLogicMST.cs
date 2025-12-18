@@ -199,16 +199,25 @@ namespace GenBOE.ActionLogic.ControllerLogic
             }
         }
 
-        #region Private Methods
+		/// <summary>
+		/// Get System Settings from the database
+		/// </summary>
+		/// <returns>System settings</returns>
+		public override ICollection<SystemSettingDTO> GetSystemSettings()
+		{
+			return systemSettingDTODataLoader.GetRmsSystemSettings();
+		}
 
-        /// <summary>
-        /// Validates and Pre-processes Origin data for saving
-        /// </summary>
-        /// <param name="inOrigins">Origin being saved</param>
-        /// <param name="originsToDelete">DTO for deleted origin</param>
-        /// <param name="originsToSave">DTO for upserted origin</param>
-        /// <param name="resourceDTOsDictionary">DTOs for upserted origin's resources</param>
-        private void ValidateAndPreProcessOriginDataForSaving(ICollection<MSTZoneTravelOriginModelView> inOrigins, ICollection<MSTZoneTravelOriginDTO> originsToDelete, ICollection<MSTZoneTravelOriginDTO> originsToSave, Dictionary<int, ICollection<MSTZoneTravelResourceDTO>> resourceDTOsDictionary)
+		#region Private Methods
+
+		/// <summary>
+		/// Validates and Pre-processes Origin data for saving
+		/// </summary>
+		/// <param name="inOrigins">Origin being saved</param>
+		/// <param name="originsToDelete">DTO for deleted origin</param>
+		/// <param name="originsToSave">DTO for upserted origin</param>
+		/// <param name="resourceDTOsDictionary">DTOs for upserted origin's resources</param>
+		private void ValidateAndPreProcessOriginDataForSaving(ICollection<MSTZoneTravelOriginModelView> inOrigins, ICollection<MSTZoneTravelOriginDTO> originsToDelete, ICollection<MSTZoneTravelOriginDTO> originsToSave, Dictionary<int, ICollection<MSTZoneTravelResourceDTO>> resourceDTOsDictionary)
         {
             foreach (MSTZoneTravelOriginModelView inOrigin in inOrigins)
             {
