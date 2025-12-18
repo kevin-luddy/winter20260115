@@ -657,7 +657,6 @@
     <Content Include="Resources\js\angular\workspaceCalculateActualsController.js" />
     <Content Include="Resources\js\angular\rteTemplatesController.js" />
     <Content Include="Resources\js\angular\boeBulkSubmitController.js" />
-    <Content Include="Resources\js\angular\createWorkspaceController.js" />
     <Content Include="Resources\js\angular\dateShiftController.js" />
     <Content Include="Resources\js\angular\manageTaskController.js" />
     <Content Include="Resources\js\angular\manageCLINController.js" />
