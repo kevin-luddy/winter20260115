@@ -274,7 +274,9 @@ namespace GenBOE
 			try { _log.Debug("GetMachineStoreForDomain : " + string.Join(",", IsolatedStorageFile.GetMachineStoreForDomain().GetDirectoryNames())); }
 			catch { _log.Error("GetMachineStoreForDomain : <security exception>"); }
 
-			BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+			SystemConfiguration SysConfig = SystemConfiguration.Instance();
+			BundleConfig.RegisterBundles(BundleTable.Bundles, SysConfig.CompanyMode.ToString());
 			try { AreaRegistration.RegisterAllAreas(); }
 			catch (Exception ex) { _log.Error(ex, "FATAL - AreaRegistration.RegisterAllAreas failed."); throw; }
 

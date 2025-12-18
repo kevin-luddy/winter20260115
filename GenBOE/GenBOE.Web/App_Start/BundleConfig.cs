@@ -21,7 +21,7 @@ namespace GenBOE.Web
         /// </summary>
         /// <param name="bundles">The bundles.</param>
         /// <exception cref="System.ArgumentNullException">bundles</exception>
-        public static void RegisterBundles(BundleCollection bundles)
+        public static void RegisterBundles(BundleCollection bundles, String Company)
         {
             if (bundles == null)
             {
@@ -158,15 +158,24 @@ namespace GenBOE.Web
             bundles.Add(new ScriptBundle("~/bundles/permission").Include(
                 "~/Resources/js/angular/permissionController.js"
                 ));
+			if (!String.IsNullOrEmpty(Company) && Company.Equals("MST"))
+			{
+				bundles.Add(new ScriptBundle("~/bundles/createWorkspace").Include(
+					"~/Resources/js/angular/createWorkspaceControllerRMS.js",
+					"~/Resources/js/Boe.js"
+					));
+			} 
+			else
+			{
+				bundles.Add(new ScriptBundle("~/bundles/createWorkspace").Include(
+					"~/Resources/js/angular/createWorkspaceControllerSpace.js",
+					"~/Resources/js/Boe.js"
+					));
+			}
 
-            bundles.Add(new ScriptBundle("~/bundles/createWorkspace").Include(
-                "~/Resources/js/angular/createWorkspaceController.js",
-                "~/Resources/js/Boe.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/workspace").Include(
-                "~/Resources/js/angular/workspaceHomeController.js"
-                ));
+				bundles.Add(new ScriptBundle("~/bundles/workspace").Include(
+					"~/Resources/js/angular/workspaceHomeController.js"
+					));
 
             bundles.Add(new ScriptBundle("~/bundles/manageCLIN").Include(
                 "~/Resources/js/angular/manageCLINController.js"
