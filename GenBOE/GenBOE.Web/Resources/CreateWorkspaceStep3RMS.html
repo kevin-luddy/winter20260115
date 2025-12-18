@@ -20,12 +20,14 @@
 		</div>
 	</div>
 </div>
-<div class="form-row">
+<div class="form-row" style="display: inline-flex">
 	<div class="form-label">
 		Description
 	</div>
 	<div class="form-element">
-		<textarea data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" data-ng-model="data.Description" name="Description" class="full ignoreValidation" id="Description" maxlength="1000" rows="2" cols="20" readonly="readonly"></textarea>
+		<div data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
+			<span>{{data.Description}} </span>
+		</div>
 		<textarea data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" data-ng-model="data.Description" name="Description" class="full ignoreValidation" id="Description" maxlength="1000" rows="2" cols="20"></textarea>
 	</div>
 </div>
@@ -53,7 +55,7 @@
 		<select name="ProjectMapType" id="ProjectMapType" data-ng-change="setDecimalPrecisionDefaults(false)" data-ng-options="item.Value as item.Text for item in model.projectMapTypes | filter:{Disabled:false}" data-ng-model="data.ProjectMapType"></select>
 	</div>
 </div>
-<div class="form-row">
+<div class="form-row" style="display: inline-flex">
 	<div class="form-label">
 		<span>Line of Business *</span>
 		<div id="LOB-Help" data-ng-show="model.isPTMIntegrated" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
@@ -67,8 +69,8 @@
 		</div>
 	</div>
 	<div class="form-element">
-		<span data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== '' && model.LineOfBusiness.Contains('Select')">{{getLOB()}}</span>
-		<select data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== '' && model.LineOfBusiness.Contains('Select')" name="LineOfBusiness" id="LineOfBusiness" data-ng-options="item.Id as item.Text for item in model.lobs | isActiveOrInitialPickListItem:data.LineOfBusinessID" data-ng-model="data.LineOfBusinessID"></select>
+		<span data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== '' && !model.LineOfBusiness.Contains('Select')">{{getLOB()}}</span>
+		<select data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== '' && !model.LineOfBusiness.Contains('Select')" name="LineOfBusiness" id="LineOfBusiness" data-ng-options="item.Id as item.Text for item in model.lobs | isActiveOrInitialPickListItem:data.LineOfBusinessID" data-ng-model="data.LineOfBusinessID"></select>
 	</div>
 </div>
 <div class="form-row">
@@ -191,7 +193,10 @@
 		RFP #
 	</div>
 	<div class="form-element">
-		<input class="full ignoreValidation" id="RFPNumber" maxlength="100" name="RFPNumber" type="text" data-ng-model="data.RFPNumber">
+		<input data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" class="full ignoreValidation" id="RFPNumber" maxlength="100" name="RFPNumber" type="text" data-ng-model="data.RFPNumber">
+		<div data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
+			<span>{{data.RFPNumber}} </span>
+		</div>
 	</div>
 </div>
 <div class="form-row" data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
@@ -271,6 +276,24 @@
 	</div>
 	<div class="form-element">
 		<select name="EnableAssignTaskAuthor" id="EnableAssignTaskAuthor" data-ng-model="data.EnableAssignTaskAuthor" data-ng-disabled="data.WorkspaceToCopyID > 0">
+			<option data-ng-value="true">Yes</option>
+			<option data-ng-value="false">No</option>
+		</select>
+	</div>
+</div>
+<div class="form-row" data-ng-show="model.isLmNavigatorEnabled">
+	<div class="form-label">
+		<span>LM Navigator Enabled *</span>
+		<div id="using-template-boe-help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);"></div>
+		<div id="using-template-boe-help-dialog" class="help-dialog" style="width: 200px;">
+			<div class="help-dialog-close"></div>
+			<div class="help-dialog-text">
+				Display a link to LM Navigator in all Rich Text Editors?
+			</div>
+		</div>
+	</div>
+	<div class="form-element">
+		<select name="EnableLmNavigator" id="EnableLmNavigator" data-ng-model="data.EnableLmNavigator" data-ng-disabled="data.WorkspaceToCopyID > 0">
 			<option data-ng-value="true">Yes</option>
 			<option data-ng-value="false">No</option>
 		</select>
