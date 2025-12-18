@@ -1213,7 +1213,7 @@ namespace IES.Common
 		private static Collection<string> skillMixBlacklistWorkspaces = new Collection<string>();
 
 		/// <summary>
-		/// Update the Skill Mix Blacklist settings--currently utilized by Space only
+		/// Update the Skill Mix Blacklist settings
 		/// </summary>
 		/// <param name="blackListWorkspaces">Comma-separated string of blacklisted workspaces (by short name)</param>
 		public static void UpdateSkillMixBlacklistSettings(string blackListWorkspaces)
@@ -1221,7 +1221,7 @@ namespace IES.Common
 			// Update the list of blacklisted Skill Mix workspaces (short name)
 			if (blackListWorkspaces != null)
 			{
-				skillMixBlacklistWorkspaces = blackListWorkspaces.Split(',').ToCollection();
+				skillMixBlacklistWorkspaces = blackListWorkspaces.Split(',').Select(x => x.Trim()).ToCollection();
 			}
 		}
 
@@ -1425,18 +1425,30 @@ namespace IES.Common
 			{
 				return false;
 			}
-
-			// Exclude UCOT showing for specific Workspace Shortnames.
-			string excludedShortspaces = ConfigurationUtilities.GetAppSetting("UcotExcludedWorkspaces");
-			string[] excludedShortspacesArray = excludedShortspaces?.Split(',').Select(s => s.Trim()).ToArray();
-
-			if (excludedShortspacesArray != null && excludedShortspacesArray.Any() && excludedShortspacesArray.Contains(shortname))
+			else if (ucotBlacklistWorkspaces != null && ucotBlacklistWorkspaces.Any() && ucotBlacklistWorkspaces.Contains(shortname))
 			{
 				return false;
 			}
 			else
 			{
 				return IsUCOTEnabledForSystem && workspaceCreationDate >= UCOTStartDate;
+			}
+		}
+
+		/// <summary>
+		/// Private for UCOT blacklisted workspaces
+		/// </summary>
+		private static Collection<string> ucotBlacklistWorkspaces = new Collection<string>();
+
+		/// <summary>
+		/// Update the UCOT Blacklist settings -- currently utilized by Space only
+		/// </summary>
+		/// <param name="blacklistWorkspaces">Comma separated string of blacklisted workspaces (by shortname)</param>
+		public static void UpdateUcotBlacklistSettings(string blacklistWorkspaces)
+		{
+			if (blacklistWorkspaces != null)
+			{
+				ucotBlacklistWorkspaces = blacklistWorkspaces.Split(',').Select(x => x.Trim()).ToCollection();
 			}
 		}
 
