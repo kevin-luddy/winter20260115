@@ -1450,6 +1450,10 @@ namespace IES.Common
 			{
 				ucotBlacklistWorkspaces = blacklistWorkspaces.Split(',').Select(x => x.Trim()).ToCollection();
 			}
+			else
+			{
+				ucotBlacklistWorkspaces = new Collection<string>();
+			}
 		}
 
 		/// <summary>
