@@ -693,18 +693,30 @@
                             </thead>
                             <tbody>
                                 <!-- Display the data for each of the Skill Mix Summary Table rows. -->
-                                <tr ng-repeat="row in skillMixRationale.data.SkillMixSummaryRows">
+                                <tr ng-repeat="row in skillMixRationale.data.SkillMixSummaryRows" data-ng-class="{'skillmix-no-historical': row.HistoricalSkillMix == 0.0, 'bold': row.ProposedSkillMix != 0.0}">
                                     <td>{{row.ResourceID}}</td>
                                     <td>{{row.BusinessResourceID}}</td>
                                     <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{row.HistoricalSkillMix | number:1}}%</td>
-                                    <td style="text-align: right">{{row.ProposedSkillMix | number:2}}%</td>
+                                    <td style="text-align: right">{{row.ProposedSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{row.ProposedLegacyResource}}</td>
                                     <td style="text-align: right">{{row.ProposedBrc}}</td>
                                     <td style="text-align: right">{{row.TotalProposedLegacyBrc}}</td>
                                     <td style="text-align: right">{{row.UCOTHours}}</td>
                                     <td style="text-align: right">{{row.GrandTotalHours}}</td>
-                                    <td>{{row.Rationale}}</td>
+                                    <td>
+                                        <!-- Rationale -->
+                                        <span ng-show="!row.UsesMixedCannedResponseAndUserInput">
+                                            {{row.Rationale}}
+                                        </span>
+                                        <!-- Canned response + Rationale -->
+                                        <div ng-show="row.UsesMixedCannedResponseAndUserInput"
+                                            style="display: flex; flex-direction: column; gap: 5px;">
+                                            <label style="margin: 0; white-space: normal; word-break: break-word; width: 100%;">
+                                                {{row.MixedCannedRationaleResponse}} {{row.Rationale}}
+                                            </label>
+                                        </div>
+                                    </td>
                                 </tr>
                                 <!-- Display the SKill Mix Summary Totals row. -->
                                 <tr>

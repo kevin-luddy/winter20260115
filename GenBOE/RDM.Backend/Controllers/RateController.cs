@@ -377,7 +377,9 @@ namespace RDM.Backend.Controllers
 				}
 				ICollection<RateDetailModelView> rates = this.rateDetailLoader.GetRatesByRevision(revision);
 				// Call the export function and get back the file name of the populated file.
-				string exportedFileName = RateCodeExporter.ExportToExcelFileWithYears(rates, expanded);
+
+				string serverFileName = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export/RatesImportExample.xlsx");
+				string exportedFileName = RateCodeExporter.ExportToExcelFileWithYears(serverFileName, rates, expanded);
 
 				string dateString = DateTime.Now.ToShortDateString().Replace('\\', '-').Replace('/', '-');
 				string fileName = "Rates_RDM_" + revision.Revision + "_" + dateString + ".xlsx";

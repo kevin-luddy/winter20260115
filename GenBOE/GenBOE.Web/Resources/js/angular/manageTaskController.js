@@ -213,7 +213,7 @@
 				else
 				{
 					$scope.skillMixRationale.data.SkillMixSummaryRows.forEach(function (row) {
-						if (row.Included === false || row.BusinessResourceID === '' || row.BusinessResourceID === null) {
+						if (row.Included === false || ((row.BusinessResourceID === '' || row.BusinessResourceID === null) && (row.ResourceID === '' || row.ResourceID === null))) {
 							row.metadata = {
 								ManuallySetIncluded: true
 							};
@@ -254,11 +254,7 @@
 		if ($scope.ManageTaskModel.IsSkillMixFeatureEnabled) {
 			if (!$scope.ManageTaskModel.IsSkillMixEnabled) {
 				let skillMixStart = ManageTaskModel.SkillMixStartDate.split(' ')[0].toDate();
-				if ($scope.ManageTaskModel.IsSpace) {
-					$scope.skillMixHelperText = "Skill Mix Tables are not showing because either Skill Mix is not enabled or blacklisted for this Workspace, or Workspace Creation Date is before " + skillMixStart.toLocaleDateString("en-US") + ".";
-				} else {
-					$scope.skillMixHelperText = "Skill Mix Tables are not showing because either Skill Mix is not enabled or Workspace Creation Date is before " + skillMixStart.toLocaleDateString("en-US") + ".";
-				}
+				$scope.skillMixHelperText = "Skill Mix Tables are not showing because either Skill Mix is not enabled or blacklisted for this Workspace, or Workspace Creation Date is before " + skillMixStart.toLocaleDateString("en-US") + ".";
 			} else if (!$scope.ManageTaskModel.UsingTemplateBOE) {
 				$scope.skillMixHelperText = "Skill Mix Tables are not showing because Workspace is not setup to use MOQ Templates.";
 			} else if ($scope.ManageTaskModel.IsSpace && !$scope.ManageTaskModel.SapConnectionEnabled) {
@@ -1520,6 +1516,7 @@
 	$scope.saveAndContinue = function () {
 		save(function () {
 			$scope.refresh();
+			$(document).trigger('BOESUMMARYGRID_RELOAD');
 		});
 	};
 

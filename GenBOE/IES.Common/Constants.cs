@@ -1160,6 +1160,56 @@ namespace IES.Common
 		public readonly static string RMS_BOE_SKILL_MIX_COLUMN_NAME = "BOE Skill Mix";
 
 		/// <summary>
+		/// When the historical skill mix = proposed skill mix for a line item (row) - If proposed hours >0 through 2028 only, canned response will be “Same skill mix as history is appropriate.”
+		/// </summary>
+		public readonly static string SPACE_SKILL_MIX_SUMMARY_RATIONALE_EQUAL_TO_2028 = "Same skill mix as history is appropriate.";
+
+		/// <summary>
+		/// When the historical skill mix = proposed skill mix for a line item (row) - If proposed hours >0 through 2028 and 2029+, canned response will be “Current hours have been converted to the appropriate Business Resource Code. Same skill mix as history is appropriate.”
+		/// </summary>
+		public readonly static string SPACE_SKILL_MIX_SUMMARY_RATIONALE_EQUAL_2028_2029 = "Current hours have been converted to the appropriate Business Resource Code. Same skill mix as history is appropriate.";
+
+		/// <summary>
+		/// When the historical skill mix = proposed skill mix for a line item (row) - If proposed hours >0 for 2029+ only, canned response will be “Current hours have been converted to the appropriate Business Resource Code. Same skill mix as history is appropriate.”
+		/// </summary>
+		public readonly static string SPACE_SKILL_MIX_SUMMARY_RATIONALE_EQUAL_2029 = "Current hours have been converted to the appropriate Business Resource Code. Same skill mix as history is appropriate.";
+
+		/// <summary>
+		/// When the historical skill mix ≤5% proposed skill mix for a line item (row) - If proposed hours >0 through 2028 only, canned response will be “Less than or equal to 5% change from historical mix and not material. Proposed skill mix is appropriate to complete this task.”
+		/// </summary>
+		public readonly static string SPACE_SKILL_MIX_SUMMARY_RATIONALE_LESS_THAN_5_PERCENT_TO_2028 = "Less than or equal to 5% change from historical mix and not material. Proposed skill mix is appropriate to complete this task.";
+
+		/// <summary>
+		/// When the historical skill mix ≤5% proposed skill mix for a line item (row) - If proposed hours >0 through 2028 and 2029+, canned response will be “Current hours have been converted to the appropriate Business Resource Code. Less than or equal to 5% change from historical mix and not material. Proposed skill mix is appropriate to complete this task.”
+		/// </summary>
+		public readonly static string SPACE_SKILL_SUMMARY_RATIONALE_LESS_THAN_5_PERCENT_2028_2029 = "Current hours have been converted to the appropriate Business Resource Code. Less than or equal to 5% change from historical mix and not material. Proposed skill mix is appropriate to complete this task.";
+
+		/// <summary>
+		/// When the historical skill mix ≤5% proposed skill mix for a line item (row) - If proposed hours >0 for 2029+ only, canned response will be “Current hours have been converted to the appropriate Business Resource Code. Less than or equal to 5% change from historical mix and not material. Proposed skill mix is appropriate to complete this task.”
+		/// </summary>
+		public readonly static string SPACE_SKILL_SUMMARY_RATIONALE_LESS_THAN_5_PERCENT_2029 = "Current hours have been converted to the appropriate Business Resource Code. Less than or equal to 5% change from historical mix and not material. Proposed skill mix is appropriate to complete this task.";
+
+		/// <summary>
+		/// If proposed hours >0 through 2028 and 2029+, canned text will state “Current hours have been converted to the appropriate Business Resource Code.”  
+		/// </summary>
+		public readonly static string SPACE_SKILL_SUMMARY_RATIONALE_GREATER_THAN_5_PERCENT_2028_2029 = "Current hours have been converted to the appropriate Business Resource Code.";
+
+		/// <summary>
+		/// If proposed hours >0 for 2029+ only, canned text will state “Current hours have been converted to the appropriate Business Resource Code.”
+		/// </summary>
+		public readonly static string SPACE_SKILL_SUMMARY_RATIONALE_GREATER_THAN_5_PERCENT_2029 = "Current hours have been converted to the appropriate Business Resource Code.";
+
+		/// <summary>
+		/// If proposed hours >0 through 2028 only, placeholder text will state “Include robust rationale here” 
+		/// </summary>
+		public readonly static string SPACE_SKILL_SUMMARY_RATIONALE_PLACEHOLDER_INCLUDE_GREATER_THAN_5_PERCENT = "Include robust rationale here";
+
+		/// <summary>
+		/// If proposed hours >0 through 2028 and 2029+ the placeholder text says “Add the aforementioned statement and additional robust rationale here”
+		/// </summary>
+		public readonly static string SPACE_SKILL_SUMMARY_RATIONALE_PLACEHOLDER_GREATER_THAN_5_PERCENT = "Add the aforementioned statement and additional robust rationale here";
+
+		/// <summary>
 		/// Error to display to the user when they encounter an application error.
 		/// </summary>
 		public static readonly string GENERIC_USER_ERROR = "The requested action could not be completed. If the problem persists, please contact your application administrator.";

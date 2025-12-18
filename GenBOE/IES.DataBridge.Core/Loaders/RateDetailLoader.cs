@@ -1069,7 +1069,7 @@ namespace IES.DataBridge.Loaders
 						int tempId = -1;
 						foreach (RateYearModelView rateYear in saveableRateYears)
 						{
-							if (rateYear.Id < 0)
+							if (rateYear.Id <= 0)
 							{
 								rateYear.Id = tempId;
 								tempId--;

@@ -4089,6 +4089,10 @@ div#LaborTypeWarningFlag .warning-message
 	width: 225px;
 }
 
+tr.skillmix-no-historical {
+	background-color: #c3c3c3 !important;
+}
+
 .module-content {
 	display: table-row;
 }

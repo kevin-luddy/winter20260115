@@ -11,6 +11,7 @@ namespace GenBOE.ActionLogic.IO.Export
 	using System.Collections.ObjectModel;
 	using System.Data;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Drawing;
 	using System.IO;
 	using System.Linq;
 	using System.Text.RegularExpressions;
@@ -1057,6 +1058,61 @@ namespace GenBOE.ActionLogic.IO.Export
 							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_UCOTHours), skillMixRow.UCOTHours.ToString(hoursStringFormat));
 							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_GrandTotalHours), skillMixRow.GrandTotalHours.ToString(hoursStringFormat));
 							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Rationale), skillMixRow.Rationale);
+
+							// Font Bold 
+							if (skillMixRow.ProposedSkillMix.HasValue && skillMixRow.ProposedSkillMix.Value > 0m)
+							{
+								foreach (TableCell cell in dataRow.Elements<TableCell>())
+								{
+									foreach (Paragraph paragraph in cell.Elements<Paragraph>())
+									{
+										foreach (Run run in paragraph.Descendants<Run>())
+										{
+											// Get or create RunProperties
+											RunProperties runProperties = run.GetFirstChild<RunProperties>();
+											if (runProperties == null)
+											{
+												runProperties = new RunProperties();
+												run.PrependChild(runProperties);
+											}
+
+											// Append Bold element
+											Bold bold = runProperties.GetFirstChild<Bold>();
+											if (bold == null)
+											{
+												bold = new Bold();
+												runProperties.Bold = bold;
+											}
+											bold.Val = OnOffValue.FromBoolean(true); // Ensure bold is enabled
+										}
+									}
+								}
+							}
+
+							// no historical for this row, change the background to #c3c3c3
+							if (skillMixRow.HistoricalSkillMix == 0m)
+							{
+								foreach (TableCell cell in dataRow.Elements<TableCell>())
+								{
+									TableCellProperties cellProperties = cell.GetFirstChild<TableCellProperties>();
+									if (cellProperties == null)
+									{
+										cellProperties = new TableCellProperties();
+										cell.InsertAt(cellProperties, 0);
+									}
+
+									Shading shading = cellProperties.GetFirstChild<Shading>();
+									if (shading == null)
+									{
+										shading = new Shading();
+										cellProperties.Append(shading);
+									}
+
+									shading.Fill = "C3C3C3"; 
+									shading.Val = ShadingPatternValues.Clear;
+									shading.Color = "auto"; 
+								}
+							}
 
 							// Add the row to the table
 							currentInsertionRow.InsertAfterSelf(dataRow);

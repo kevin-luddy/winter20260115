@@ -31,6 +31,7 @@ namespace GenBOE.Dtos
 			this.BOEID = -1;
 			this.BOETaskElementID = -1;
 			this.IsUserInput = false;
+			this.IsRationaleReadOnly = false;
 		}
 
 		/// <summary>
@@ -102,5 +103,25 @@ namespace GenBOE.Dtos
 		/// Is this data User Input
 		/// </summary>
 		public bool IsUserInput { get; set; }
+
+		/// <summary>
+		/// Is the skill mix rationale read only?
+		/// </summary>
+		public bool IsRationaleReadOnly { get; set; }
+
+		/// <summary>
+		/// Does the line item (row) use a mixture of cannned responses and user input.
+		/// </summary>
+		public bool UsesMixedCannedResponseAndUserInput { get; set; }
+
+		/// <summary>
+		/// Does the line item (row) need a placeholder text?
+		/// </summary>
+		public string RationalePlaceholderText { get; set; }
+
+		/// <summary>
+		/// The mixed canned response used when the histrocial and proposed skill mix difference is greater than 5%.
+		/// </summary>
+		public string MixedCannedRationaleResponse { get; set; }
 	}
 }

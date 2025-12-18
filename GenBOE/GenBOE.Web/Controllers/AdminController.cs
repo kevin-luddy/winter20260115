@@ -1372,7 +1372,7 @@ namespace GenBOE.Web.Controllers
 			}
 			else
 			{
-				systemSettings = this.systemSettingLoader.GetSystemSettings().Where(x => !x.Key.Contains(Constants.SKILL_MIX_BLACKLIST)).ToList();
+				systemSettings = this.systemSettingLoader.GetSystemSettings();
 			}
 
 			this.FinalizeAction(this._log, WebConstants.ACTION_SYSTEM_SETTINGS, sw);
