@@ -10,8 +10,11 @@ namespace GenBOE.Tests.DAL.DataLoaders
     using GenBOE.DataBridge.DTO;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using GenBOE.Dtos;
+	using System.Collections.Generic;
+	using System.Linq;
+	using IES.Common;
 
-    [TestClass]
+	[TestClass]
     public class SystemSettingDTODataLoaderTest : MOQLoaderObject
     {
         [TestMethod]
@@ -70,5 +73,33 @@ namespace GenBOE.Tests.DAL.DataLoaders
 
             ResetTestData();
         }
-    }
+
+		/// <summary>
+		/// Test GetSpaceSystemSettings only returns the expected settings
+		/// </summary>
+		[TestMethod]
+		public void GetSpaceSystemSettings()
+		{
+			ISystemSettingDTODataLoader sut = new SystemSettingDTODataLoader();
+			ICollection<SystemSettingDTO> result = sut.GetSpaceSystemSettings();
+
+			Assert.IsTrue(result.Any(x => x.Key == Constants.SKILL_MIX_BLACKLIST));
+			Assert.IsTrue(result.Any(x => x.Key == Constants.UCOT_BLACKLIST));
+			Assert.IsFalse(result.Any(x => x.Key != Constants.SKILL_MIX_BLACKLIST && x.Key != Constants.UCOT_BLACKLIST));
+		}
+
+		/// <summary>
+		/// Test GetSpaceSystemSettings only returns the expected settings
+		/// </summary>
+		[TestMethod]
+		public void GetRmsSystemSettings()
+		{
+			ISystemSettingDTODataLoader sut = new SystemSettingDTODataLoader();
+			ICollection<SystemSettingDTO> result = sut.GetRmsSystemSettings();
+
+			Assert.IsTrue(result.Any());
+			Assert.IsFalse(result.Any(x => x.Key == Constants.UCOT_BLACKLIST));
+		}
+
+	}
 }

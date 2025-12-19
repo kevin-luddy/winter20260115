@@ -14,6 +14,7 @@ namespace GenBOE.DataBridge.Core.Common
 
 		#region Skill Mix Settings
 		public static readonly string SKILL_MIX_BLACKLIST = "SkillMixBlacklist";
+		public static readonly string UCOT_BLACKLIST = "UCOTBlacklist";
 		#endregion
 
 		/// <summary>

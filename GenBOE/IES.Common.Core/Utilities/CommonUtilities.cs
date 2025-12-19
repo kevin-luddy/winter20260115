@@ -1103,18 +1103,34 @@ namespace IES.Common.Core.Utilities
 			{
 				return false;
 			}
-
-			// Exclude UCOT showing for specific PTM tracking numbers.
-			string excludedShortspaces = ConfigurationUtilities.GetAppSetting("UcotExcludedWorkspaces");
-			string[] excludedShortspacesArray = excludedShortspaces?.Split(',').Select(s => s.Trim()).ToArray();
-
-			if (excludedShortspacesArray != null && excludedShortspacesArray.Any() && excludedShortspacesArray.Contains(shortname))
+			else if (ucotBlacklistWorkspaces != null && ucotBlacklistWorkspaces.Any() && ucotBlacklistWorkspaces.Contains(shortname))
 			{
 				return false;
 			}
 			else
 			{
 				return IsUCOTEnabledForSystem && workspaceCreationDate >= UCOTStartDate;
+			}
+		}
+
+		/// <summary>
+		/// Private for UCOT blacklisted workspaces
+		/// </summary>
+		private static Collection<string> ucotBlacklistWorkspaces = new Collection<string>();
+
+		/// <summary>
+		/// Update the UCOT Blacklist settings -- currently utilized by Space only
+		/// </summary>
+		/// <param name="blacklistWorkspaces">Comma separated string of blacklisted workspaces (by shortname)</param>
+		public static void UpdateUcotBlacklistSettings(string blacklistWorkspaces)
+		{
+			if (blacklistWorkspaces != null)
+			{
+				ucotBlacklistWorkspaces = blacklistWorkspaces.Split(',').Select(x => x.Trim()).ToCollection();
+			}
+			else
+			{
+				ucotBlacklistWorkspaces = new Collection<string>();
 			}
 		}
 
