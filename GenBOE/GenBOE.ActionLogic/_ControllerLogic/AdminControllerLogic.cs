@@ -26,12 +26,17 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using IES.Common.Exceptions;
     using ModelView;
 
-    public class AdminControllerLogic : IAdminControllerLogic
+    public class AdminControllerLogic : IAdminControllerLogic, IDisposable
     {
-        #region Private Properties
+		#region Private Properties
 
-        // Create static Regex objects.
-        private static readonly Regex regexHourlyRate = new Regex(@"(^\d{0,3}([.]\d{1,2})?$)");
+		/// <summary>
+		/// Whether this instance has been disposed
+		/// </summary>
+		private bool disposedValue;
+
+		// Create static Regex objects.
+		private static readonly Regex regexHourlyRate = new Regex(@"(^\d{0,3}([.]\d{1,2})?$)");
         private static readonly Regex regexPercentToOffload = new Regex(@"(^[0]?(?:\.[0-9]{1,3})$)");
 		private readonly BOEReportsHttpService boeReportsHttpService = new BOEReportsHttpService();
 
@@ -549,6 +554,35 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			{
 				await this.boeReportsHttpService.RefreshSystemSettings();
 			}
+		}
+
+		/// <summary>
+		/// Dispose managed resources
+		/// </summary>
+		/// <param name="disposing"></param>
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					if (this.boeReportsHttpService != null)
+					{
+						this.boeReportsHttpService.Dispose();
+					}
+				}
+
+				// TODO: free unmanaged resources (unmanaged objects) and override finalizer
+				// TODO: set large fields to null
+				disposedValue = true;
+			}
+		}
+
+		public void Dispose()
+		{
+			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+			Dispose(disposing: true);
+			GC.SuppressFinalize(this);
 		}
 	}
 }

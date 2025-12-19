@@ -16,6 +16,7 @@ namespace GenBOE.Reports.Backend.Controllers
 	using GenBOE.DataBridge.Core.DTO.Export.BOE;
 	using GenBOE.DataBridge.Core.Loaders.SystemSetting;
 	using GenBOE.DataBridge.Core.ModelView;
+	using GenBOE.Models;
 	using GenBOE.Reports.Backend.Services;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Interfaces;
@@ -62,15 +63,41 @@ namespace GenBOE.Reports.Backend.Controllers
 		/// <summary>
 		/// Refresh System Settings
 		/// </summary>
-		[HttpPost("[action]")]
-		public void RefreshSystemSettings()
+		/// <returns>True if successful, otherwise false</returns>
+		[HttpGet("[action]")]
+		public async Task<IESResponse<bool>> RefreshSystemSettings()
 		{
-			ICollection<SystemSettingDTO> skillMixSettings = systemSettingLoader.GetSkillMixSettings();
-			CommonUtilities.UpdateSkillMixBlacklistSettings(
-				skillMixSettings.FirstOrDefault(x => x.Key.Equals(SystemSettingConstants.SKILL_MIX_BLACKLIST)) == null ? string.Empty :
-					skillMixSettings.FirstOrDefault(x => x.Key.Equals(SystemSettingConstants.SKILL_MIX_BLACKLIST)).Value);
+			bool refreshed = true;
+			try
+			{
 
-			// TODO: Update UCOT settings
+				ICollection<SystemSettingDTO> systemSettings = SystemConfiguration.Instance().CompanyMode == IES.Common.Core.Enums.CompanyConfiguration.SpaceSystems ? systemSettingLoader.GetSpaceSystemSettings() : systemSettingLoader.GetRmsSystemSettings();
+
+				// Update Skill Mix and UCOT Blacklists if settings are included
+				if (systemSettings.Any(x => x.Key == SystemSettingConstants.SKILL_MIX_BLACKLIST))
+				{
+					CommonUtilities.UpdateSkillMixBlacklistSettings(
+						systemSettings.Any(x => x.Key.Equals(SystemSettingConstants.SKILL_MIX_BLACKLIST))
+						? systemSettings.FirstOrDefault(x => x.Key.Equals(SystemSettingConstants.SKILL_MIX_BLACKLIST)).Value
+						: string.Empty);
+				}
+
+				if (systemSettings.Any(x => x.Key == SystemSettingConstants.UCOT_BLACKLIST))
+				{
+					CommonUtilities.UpdateUcotBlacklistSettings(
+						systemSettings.Any(x => x.Key.Equals(SystemSettingConstants.UCOT_BLACKLIST))
+						? systemSettings.FirstOrDefault(x => x.Key.Equals(SystemSettingConstants.UCOT_BLACKLIST)).Value
+						: string.Empty);
+				}
+
+			}
+			catch (Exception ex)
+			{
+				refreshed = false;
+				this.log.LogError(ex, "Error refreshing System settings");
+			}
+
+			return new IESResponse<bool> { Data = refreshed };
 		}
 
 			/// <summary>
