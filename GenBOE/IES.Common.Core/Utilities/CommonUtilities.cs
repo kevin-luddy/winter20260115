@@ -1072,6 +1072,10 @@ namespace IES.Common.Core.Utilities
 			{
 				skillMixBlacklistWorkspaces = blackListWorkspaces.Split(',').ToCollection();
 			}
+			else
+			{
+				skillMixBlacklistWorkspaces = new Collection<string>();
+			}
 		}
 
 		/// <summary>

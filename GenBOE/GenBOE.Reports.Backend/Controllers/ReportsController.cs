@@ -11,13 +11,15 @@ namespace GenBOE.Reports.Backend.Controllers
 	using System.IO;
 	using System.Linq;
 	using System.Threading.Tasks;
+	using GenBOE.DataBridge.Core.Common;
+	using GenBOE.DataBridge.Core.DTO;
 	using GenBOE.DataBridge.Core.DTO.Export.BOE;
+	using GenBOE.DataBridge.Core.Loaders.SystemSetting;
 	using GenBOE.DataBridge.Core.ModelView;
 	using GenBOE.Reports.Backend.Services;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.Models;
-	using IES.Common.Core.OfficeUtilities;
 	using IES.Common.Core.Utilities;
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
@@ -28,7 +30,15 @@ namespace GenBOE.Reports.Backend.Controllers
 	[Route("Reports")]
 	public class ReportsController : IES.Common.Core.IESController
 	{
+		/// <summary>
+		/// BOE Export Service
+		/// </summary>
 		private readonly IBoeExportService boeExportService;
+
+		/// <summary>
+		/// System Settings loader
+		/// </summary>
+		private ISystemSettingDTODataLoader systemSettingLoader;
 
 		private static readonly string[] Summaries = new[]
 		{
@@ -43,23 +53,38 @@ namespace GenBOE.Reports.Backend.Controllers
 		/// <param name="securityInformation">security information</param>
 		/// <param name="configuration">configuration</param>
 		public ReportsController(ILogger<ReportsController> logger, IBoeExportService boeExportService,
-			ISecurityInformation securityInformation, IConfiguration configuration) : base(logger, securityInformation, configuration)
+			ISecurityInformation securityInformation, IConfiguration configuration, ISystemSettingDTODataLoader systemSettingLoader) : base(logger, securityInformation, configuration)
 		{
 			this.boeExportService = boeExportService;
+			this.systemSettingLoader = systemSettingLoader;
 		}
 
 		/// <summary>
-		/// Exports BOE(s) to Word document, may be zipped
+		/// Refresh System Settings
 		/// </summary>
-		/// <param name="workspace">The current workspace</param>
-		/// <param name="selectedComponents">List of BOEs to be included in the report; if null, then include ALL</param>
-		/// <param name="isCustomExport">Flag indicating whether the export is a custom export</param>
-		/// <param name="wsExportFormatDTO">the Workspace Format DTO</param>
-		/// <param name="exportInputs">the export inputs</param>
-		/// <param name="boeExportModelViews">the boe export model views</param>
-		/// <param name="boeSummaryGridModelViews">the boe summary grid model views</param>
-		/// <param name="segmentedOutput">Should the output be broken into segments and zipped</param>
 		[HttpPost("[action]")]
+		public void RefreshSystemSettings()
+		{
+			ICollection<SystemSettingDTO> skillMixSettings = systemSettingLoader.GetSkillMixSettings();
+			CommonUtilities.UpdateSkillMixBlacklistSettings(
+				skillMixSettings.FirstOrDefault(x => x.Key.Equals(SystemSettingConstants.SKILL_MIX_BLACKLIST)) == null ? string.Empty :
+					skillMixSettings.FirstOrDefault(x => x.Key.Equals(SystemSettingConstants.SKILL_MIX_BLACKLIST)).Value);
+
+			// TODO: Update UCOT settings
+		}
+
+			/// <summary>
+			/// Exports BOE(s) to Word document, may be zipped
+			/// </summary>
+			/// <param name="workspace">The current workspace</param>
+			/// <param name="selectedComponents">List of BOEs to be included in the report; if null, then include ALL</param>
+			/// <param name="isCustomExport">Flag indicating whether the export is a custom export</param>
+			/// <param name="wsExportFormatDTO">the Workspace Format DTO</param>
+			/// <param name="exportInputs">the export inputs</param>
+			/// <param name="boeExportModelViews">the boe export model views</param>
+			/// <param name="boeSummaryGridModelViews">the boe summary grid model views</param>
+			/// <param name="segmentedOutput">Should the output be broken into segments and zipped</param>
+			[HttpPost("[action]")]
 		public async Task<IESResponse<byte[]>> ExportBoeToWord(ExportBoeWordRequestViewModel requestModel)
 		{
 			IESResponse<byte[]> response = new();

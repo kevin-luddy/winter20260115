@@ -2997,7 +2997,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="systemSettings">System settings to save</param>
         /// <returns>JsonResult of the save.</returns>
 		[HttpPost]
-        public virtual JsonResult SaveSystemSettings(ICollection<SystemSettingDTO> systemSettings)
+        public virtual async Task<JsonResult> SaveSystemSettings(ICollection<SystemSettingDTO> systemSettings)
         {
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_SYSTEM_SETTINGS, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
@@ -3037,6 +3037,8 @@ namespace GenBOE.Web.Controllers
 						systemSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)) == null ? string.Empty :
 							systemSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)).Value);
 				}
+
+				await this._ControllerLogic.RefreshReportsSystemSettings();
             }
             else
             {
