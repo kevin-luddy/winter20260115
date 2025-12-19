@@ -715,7 +715,6 @@ namespace GenBOE.Web.Controllers
 						Value = proposal.TrackingNumber
 					});
 
-					model.CostVolumeLeadPricerDisplayName = proposal.CostVolumeToolName;
 				}
 			}
 

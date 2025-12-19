@@ -4,12 +4,12 @@
     using GenBOE.Dtos;
 
     public interface ISystemSettingDTODataLoader
-    {
-        /// <summary>
-        /// Get all system setting DTOs
-        /// </summary>
-        /// <returns>All system settings</returns>
-        ICollection<SystemSettingDTO> GetSystemSettings();
+	{
+		/// <summary>
+		/// Get all RMS System Setting DTOs
+		/// </summary>
+		/// <returns>All System Settings for RMS</returns>
+		ICollection<SystemSettingDTO> GetRmsSystemSettings();
 
         /// <summary>
         /// Get the system setting DTO
@@ -31,9 +31,9 @@
         void ClearSystemSetting(string key);
 
 		/// <summary>
-		/// Get Skill Mix setting DTOs only
+		/// Get all Space System Setting DTOs
 		/// </summary>
-		/// <returns>All Skill Mix settings</returns>
-		ICollection<SystemSettingDTO> GetSkillMixSettings();
+		/// <returns>All System Settings for Space</returns>
+		ICollection<SystemSettingDTO> GetSpaceSystemSettings();
     }
 }

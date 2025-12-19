@@ -49,7 +49,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly ICommonDataMapper commonDataMapper;
         private readonly IResourceListDTODataLoader resourceListDTODataLoader;
 		private readonly IPermissionsDTODataLoader permissionsDTODataLoader;
-		private readonly ISystemSettingDTODataLoader systemSettingDTODataLoader;
+		protected ISystemSettingDTODataLoader systemSettingDTODataLoader { get; set; }
 
 		/// <summary>
 		/// Constructor
@@ -526,5 +526,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             return groups;
         }
+
+		/// <summary>
+		/// Get System Settings from the database
+		/// </summary>
+		/// <returns>System settings</returns>
+		public virtual ICollection<SystemSettingDTO> GetSystemSettings()
+		{
+			return systemSettingDTODataLoader.GetSpaceSystemSettings();
+		}
     }
 }

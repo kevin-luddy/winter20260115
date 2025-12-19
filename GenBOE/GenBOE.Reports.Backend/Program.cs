@@ -77,10 +77,15 @@ using (IServiceScope scope = app.Services.CreateScope())
 {
 	// Avoid calling the method to get the Skill Mix system settings on every blacklist check - initialize the value on startup (and only update it on every update)
 	ISystemSettingDTODataLoader systemSettingLoader = scope.ServiceProvider.GetRequiredService<ISystemSettingDTODataLoader>();
-	ICollection<SystemSettingDTO> skillMixSettings = systemSettingLoader.GetSkillMixSettings();
-	CommonUtilities.UpdateSkillMixBlacklistSettings(
-		skillMixSettings.FirstOrDefault(x => x.Key.Equals(SystemSettingConstants.SKILL_MIX_BLACKLIST)) == null ? string.Empty :
-			skillMixSettings.FirstOrDefault(x => x.Key.Equals(SystemSettingConstants.SKILL_MIX_BLACKLIST)).Value);
+	ICollection<SystemSettingDTO> skillMixSettings = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems 
+		? systemSettingLoader.GetSpaceSystemSettings() 
+		: systemSettingLoader.GetRmsSystemSettings();
+	CommonUtilities.UpdateSkillMixBlacklistSettings(skillMixSettings.Any(x => x.Key.Equals(SystemSettingConstants.SKILL_MIX_BLACKLIST))
+		? skillMixSettings.First(x => x.Key.Equals(SystemSettingConstants.SKILL_MIX_BLACKLIST)).Value
+		: string.Empty);
+	CommonUtilities.UpdateUcotBlacklistSettings(skillMixSettings.Any(x => x.Key.Equals(SystemSettingConstants.UCOT_BLACKLIST))
+		? skillMixSettings.First(x => x.Key.Equals(SystemSettingConstants.UCOT_BLACKLIST)).Value
+		: string.Empty);
 }
 
 app.Run();

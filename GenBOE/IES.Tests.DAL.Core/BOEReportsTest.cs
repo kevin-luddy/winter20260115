@@ -278,13 +278,18 @@ namespace IES.Tests.Core
 
 			Document doc = LoadTemplate();
 			StructuredDocumentTag sdt = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.FieldName_ProgramName);
+			Node parentNode = sdt.ParentNode;
 			WordUtilities.SetElementTextWithHTML(doc, sdt, html);
 
+			
 			// now we compare to the output
-			if (sdt.ParentNode is Paragraph paragraph)
+			if (parentNode is Paragraph paragraph)
 			{
 				string text = paragraph.ParentNode.GetText();
 				Assert.IsTrue(text.Contains("Proposal/Program Name"));
+				Node node = parentNode.NextSibling;
+				Assert.IsNotNull(node);
+				text = node.GetText();		
 				Assert.IsTrue(text.Contains("BoldedText"));
 				Assert.IsTrue(text.Contains("NextParagraph"));
 				Assert.IsTrue(text.IndexOf("BoldedText") < text.IndexOf("NextParagraph"));
