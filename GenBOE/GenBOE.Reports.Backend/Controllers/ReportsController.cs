@@ -71,24 +71,21 @@ namespace GenBOE.Reports.Backend.Controllers
 			try
 			{
 
-				ICollection<SystemSettingDTO> systemSettings = SystemConfiguration.Instance().CompanyMode == IES.Common.Core.Enums.CompanyConfiguration.SpaceSystems ? systemSettingLoader.GetSpaceSystemSettings() : systemSettingLoader.GetRmsSystemSettings();
+				ICollection<SystemSettingDTO> systemSettings = 
+					SystemConfiguration.Instance().CompanyMode == IES.Common.Core.Enums.CompanyConfiguration.SpaceSystems 
+						? systemSettingLoader.GetSpaceSystemSettings() 
+						: systemSettingLoader.GetRmsSystemSettings();
 
 				// Update Skill Mix and UCOT Blacklists if settings are included
-				if (systemSettings.Any(x => x.Key == SystemSettingConstants.SKILL_MIX_BLACKLIST))
-				{
-					CommonUtilities.UpdateSkillMixBlacklistSettings(
-						systemSettings.Any(x => x.Key.Equals(SystemSettingConstants.SKILL_MIX_BLACKLIST))
-						? systemSettings.FirstOrDefault(x => x.Key.Equals(SystemSettingConstants.SKILL_MIX_BLACKLIST)).Value
+				CommonUtilities.UpdateSkillMixBlacklistSettings(
+					systemSettings.Any(x => x.Key.Equals(SystemSettingConstants.SKILL_MIX_BLACKLIST))
+						? systemSettings.First(x => x.Key.Equals(SystemSettingConstants.SKILL_MIX_BLACKLIST)).Value
 						: string.Empty);
-				}
-
-				if (systemSettings.Any(x => x.Key == SystemSettingConstants.UCOT_BLACKLIST))
-				{
-					CommonUtilities.UpdateUcotBlacklistSettings(
-						systemSettings.Any(x => x.Key.Equals(SystemSettingConstants.UCOT_BLACKLIST))
-						? systemSettings.FirstOrDefault(x => x.Key.Equals(SystemSettingConstants.UCOT_BLACKLIST)).Value
+				
+				CommonUtilities.UpdateUcotBlacklistSettings(
+					systemSettings.Any(x => x.Key.Equals(SystemSettingConstants.UCOT_BLACKLIST))
+						? systemSettings.First(x => x.Key.Equals(SystemSettingConstants.UCOT_BLACKLIST)).Value
 						: string.Empty);
-				}
 
 			}
 			catch (Exception ex)
@@ -97,7 +94,7 @@ namespace GenBOE.Reports.Backend.Controllers
 				this.log.LogError(ex, "Error refreshing System settings");
 			}
 
-			return new IESResponse<bool> { Data = refreshed };
+			return new IESResponse<bool> { Data = refreshed, IsSuccessful = true };
 		}
 
 			/// <summary>
