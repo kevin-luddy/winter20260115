@@ -107,7 +107,7 @@
 	</div>
 	<div class="form-element static">{{data.ContractEndDate}}</div>
 </div>
-<div class="form-row" data-ng-show="model.isSSC || !model.IsPLDIntegrated">
+<div class="form-row">
 	<div class="form-label" data-ng-hide="model.isSSC">
 		<b>Proposal Submittal Date:</b>
 	</div>
@@ -115,12 +115,6 @@
 		<b>Anticipated Delivery Date:</b>
 	</div>
 	<div class="form-element static">{{data.ProposalSubmittalDate}}</div>
-</div>
-<div class="form-row">
-	<div class="form-label" data-ng-show="model.isSSC && model.isPTMIntegrated">
-		<b>Revised Anticipated Delivery Date:</b>
-	</div>
-	<div class="form-element static">{{data.RevisedSubmittalDate}}</div>
 </div>
 <div class="form-row">
 	<div class="form-label">

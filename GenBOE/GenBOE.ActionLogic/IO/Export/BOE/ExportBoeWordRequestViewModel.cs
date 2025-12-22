@@ -68,6 +68,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			this.Workspace = exportInputs.Workspace;
 			this.WorkspaceHistory = exportInputs.FullWorkspace.WorkspaceHistory.ToList();
 			this.WorkspaceVariables = exportInputs.WorkspaceVariables.ToList();
+			this.IncludeCostVolumeUCOTText = exportInputs.IncludeCostVolumeUCOTText;
 		}
 
 		/// <summary>
@@ -79,6 +80,11 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// Should this use Custom Exporter or BOE Exporter
 		/// </summary>
 		public bool IsCustomExport { get; set; }
+
+		/// <summary>
+		/// Indicates if to include Cost Volume UCOT Text in export
+		/// </summary>
+		public bool IncludeCostVolumeUCOTText { get; set; }
 
 		/// <summary>
 		/// Export Format Template

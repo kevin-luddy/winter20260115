@@ -27,9 +27,9 @@ namespace GenBOE.Web.Controllers
 
     public class BOEHistoryController : GenBOEController
     {
-        Logger _log = new Logger(typeof(BOEHistoryController));
+		private readonly Logger _log = new Logger(typeof(BOEHistoryController));
 
-        BOEHistoryDTODataLoader _boeHistoryDataLoader = null;
+		private readonly BOEHistoryDTODataLoader _boeHistoryDataLoader = null;
 
         /// <summary>
         /// Constructor
@@ -50,12 +50,13 @@ namespace GenBOE.Web.Controllers
         /// <param name="workspace"></param>
         /// <param name="boeID"></param>
         /// <returns></returns>
-        public ViewResult DisplayBOEHistory(string workspace, int boeID)
+        [HttpPost]
+		public ViewResult DisplayBOEHistory(string workspace, int boeID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DisplayBOEHistory", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_HISTORY, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
 
             // Perform Action
             Collection<BOEHistoryModelView> theModelViews = new Collection<BOEHistoryModelView>();
@@ -136,7 +137,7 @@ namespace GenBOE.Web.Controllers
             ViewResult toReturn = View(WebConstants.VIEW_BOE_HISTORY_GRID, theModelViews);
 
             // Finalize Action
-            FinalizeAction(_log, "DisplayBOEHistory", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_HISTORY, sw);
             return toReturn;
         }
     }

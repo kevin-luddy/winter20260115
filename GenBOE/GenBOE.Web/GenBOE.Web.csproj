@@ -276,8 +276,10 @@
     <Compile Include="Common\SimpleFileDownloadResult.cs" />
     <Compile Include="Common\StringNonPrintableCharRemovalModelBinder.cs" />
     <Compile Include="Common\WorkspaceIdentificationModelBinder.cs" />
+    <Compile Include="Controllers\Backend\BOECommentsController.cs" />
     <Compile Include="Controllers\Backend\BOEConfigurationController.cs" />
     <Compile Include="Controllers\Backend\BOEController.cs" />
+    <Compile Include="Controllers\Backend\BOELaborController.cs" />
     <Compile Include="Controllers\Backend\CLINController.cs" />
     <Compile Include="Controllers\Backend\ImportController.cs" />
     <Compile Include="Controllers\Backend\ManagePermissionsController.cs" />
@@ -326,6 +328,8 @@
     <Compile Include="ModelView\PagedSystemOffloadRateModelView.cs" />
     <Compile Include="ModelView\PBOEData.cs" />
     <Compile Include="ModelView\RteTemplateModelView.cs" />
+    <Compile Include="ModelView\SaveBoeHeaderModelView.cs" />
+    <Compile Include="ModelView\SaveDuplicateTaskElementModelView.cs" />
     <Compile Include="ModelView\SaveNewPermissionsModelView.cs" />
     <Compile Include="ModelView\SendToProPricerModelView.cs" />
     <Compile Include="ModelView\BOEFormData.cs" />
@@ -439,6 +443,7 @@
     <Content Include="Content\ui-grid.min.css" />
     <Content Include="Content\ui-grid.svg" />
     <Content Include="fonts\fontawesome-webfont.svg" />
+    <Content Include="Resources\CreateWorkspaceStep3RMS.html" />
     <Content Include="Resources\css\images\homepage\LM-logo-White.png" />
     <Content Include="Resources\css\images\IconsForTinyMce\LmNavigatorIcon.png" />
     <Content Include="Resources\css\laborTask.css" />
@@ -647,10 +652,11 @@
     <Content Include="Content\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Resources\css\tinymce.css" />
     <Content Include="Resources\js\angular\boeConfidenceReportController.js" />
+    <Content Include="Resources\js\angular\createWorkspaceControllerRMS.js" />
+    <Content Include="Resources\js\angular\createWorkspaceControllerSpace.js" />
     <Content Include="Resources\js\angular\workspaceCalculateActualsController.js" />
     <Content Include="Resources\js\angular\rteTemplatesController.js" />
     <Content Include="Resources\js\angular\boeBulkSubmitController.js" />
-    <Content Include="Resources\js\angular\createWorkspaceController.js" />
     <Content Include="Resources\js\angular\dateShiftController.js" />
     <Content Include="Resources\js\angular\manageTaskController.js" />
     <Content Include="Resources\js\angular\manageCLINController.js" />
@@ -745,6 +751,7 @@
     <Content Include="Scripts\angularjs-dropdown-multiselect.min.js" />
     <Content Include="Scripts\bignumber.js" />
     <Content Include="Scripts\bignumber.min.js" />
+    <Content Include="Resources\CreateWorkspaceStep3Space.html" />
     <None Include="Scripts\jquery-1.12.4.intellisense.js" />
     <Content Include="Scripts\jquery-1.12.4.js" />
     <Content Include="Scripts\jquery-1.12.4.min.js" />

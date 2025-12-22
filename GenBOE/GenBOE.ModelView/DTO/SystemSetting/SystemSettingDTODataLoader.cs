@@ -42,10 +42,10 @@ namespace GenBOE.DataBridge.DTO
 		}
 
         /// <summary>
-        /// Get all system setting DTOs
+        /// Get all RMS System Setting DTOs
         /// </summary>
-        /// <returns>All system settings</returns>
-        public virtual ICollection<SystemSettingDTO> GetSystemSettings()
+        /// <returns>All System Settings for RMS</returns>
+        public virtual ICollection<SystemSettingDTO> GetRmsSystemSettings()
         {
             ICollection<SystemSettingDTO> toReturn = new Collection<SystemSettingDTO>();
             using (StopwatchTimer sw = new StopwatchTimer(this._log))
@@ -54,7 +54,8 @@ namespace GenBOE.DataBridge.DTO
                 {
                     toReturn =
                        (from ss in gbe.SystemSettings
-                        select new SystemSettingDTO
+						where !ss.Key.Contains(Constants.UCOT_BLACKLIST)
+						select new SystemSettingDTO
                         {
                             Key = ss.Key,
                             Value = ss.Value
@@ -66,8 +67,11 @@ namespace GenBOE.DataBridge.DTO
             return toReturn;
         }
 
-
-		public virtual ICollection<SystemSettingDTO> GetSkillMixSettings()
+		/// <summary>
+		/// Get all Space System Setting DTOs
+		/// </summary>
+		/// <returns>All System Settings for Space</returns>
+		public virtual ICollection<SystemSettingDTO> GetSpaceSystemSettings()
 		{
 			ICollection<SystemSettingDTO> toReturn = new Collection<SystemSettingDTO>();
 			using (StopwatchTimer sw = new StopwatchTimer(this._log))
@@ -76,7 +80,7 @@ namespace GenBOE.DataBridge.DTO
 				{
 					toReturn =
 					   (from ss in gbe.SystemSettings
-						where ss.Key.Contains(Constants.SKILL_MIX_BLACKLIST)
+						where ss.Key.Contains(Constants.SKILL_MIX_BLACKLIST) || ss.Key.Contains(Constants.UCOT_BLACKLIST)
 						select new SystemSettingDTO
 						{
 							Key = ss.Key,

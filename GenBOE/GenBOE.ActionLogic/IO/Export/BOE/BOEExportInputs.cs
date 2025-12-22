@@ -284,6 +284,11 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		public IReadOnlyCollection<BoeDTO> Boes { get; }
 
 		/// <summary>
+		/// Indicates if to include Cost Volume UCOT Text in export
+		/// </summary>
+		public bool IncludeCostVolumeUCOTText { get; set; }
+
+		/// <summary>
 		/// Gets the task elements.
 		/// </summary>
 		public IReadOnlyCollection<BoeTaskElementDTO> TaskElements { get; }

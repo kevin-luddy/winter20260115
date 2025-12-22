@@ -40,6 +40,11 @@
 		public List<BOESummaryGridModelView> BoeSummaryGridModelViews { get; set; }
 
 		/// <summary>
+		/// Indicates if to include Cost Volume UCOT Text in export
+		/// </summary>
+		public bool IncludeCostVolumeUCOTText { get; set; }
+
+		/// <summary>
 		/// If true, break out the output into separate files and return zip file
 		/// </summary>
 		public bool SegmentedOutput { get; set; }

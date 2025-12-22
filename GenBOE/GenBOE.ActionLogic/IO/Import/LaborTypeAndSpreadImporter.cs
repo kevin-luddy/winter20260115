@@ -815,6 +815,7 @@ namespace GenBOE.ActionLogic.IO.Import
 				}
 				else
 				{
+					toReturn.InvalidPerformingOrg = importfromfile[PERFORMING_ORG_COL];
 					toReturn.ImportTypes.Add(LaborTypeImportResult.InvalidData);
 				}
 			}
@@ -1235,6 +1236,7 @@ namespace GenBOE.ActionLogic.IO.Import
 			}
 			else
 			{
+				toReturn.InvalidResource = importfromfile[ImportExportConstants.RESOURCE_COLUMN_HEADER];
 				toReturn.ImportTypes.Add(LaborTypeImportResult.InvalidData);
 			}
 
@@ -1259,6 +1261,7 @@ namespace GenBOE.ActionLogic.IO.Import
 			}
 			else
 			{
+				toReturn.InvalidBusinessResourceCode = importfromfile[ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER];
 				toReturn.ImportTypes.Add(LaborTypeImportResult.InvalidData);
 			}
 
@@ -1722,13 +1725,54 @@ namespace GenBOE.ActionLogic.IO.Import
 			}
 		}
 
+		/// <summary>
+		/// The LaborTypeID
+		/// </summary>
 		public int? LaborTypeID { get; set; }
 
+		/// <summary>
+		/// The Resource to import
+		/// </summary>
 		public string Resource { get; set; }
+
+		/// <summary>
+		/// Invalid Resource kept to specify for validation message
+		/// </summary>
+		public string InvalidResource { get; set; }
+
+		/// <summary>
+		/// The BRC
+		/// </summary>
 		public string BusinessResourceCode { get; set; }
+
+		/// <summary>
+		/// Invalid BRC kept to specify for validation message
+		/// </summary>
+		public string InvalidBusinessResourceCode { get; set; }
+
+		/// <summary>
+		/// The WBS
+		/// </summary>
 		public string Wbs { get; set; }
+
+		/// <summary>
+		/// The CLIN
+		/// </summary>
 		public string Clin { get; set; }
+
+		/// <summary>
+		/// The PerformingOrg
+		/// </summary>
 		public string PerformingOrg { get; set; }
+
+		/// <summary>
+		/// Invalid PerformingOrg kept to specify for validation message
+		/// </summary>
+		public string InvalidPerformingOrg { get; set; }
+
+		/// <summary>
+		/// The Curve
+		/// </summary>
 		public string Curve { get; set; }
 	}
 }

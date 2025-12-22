@@ -1365,15 +1365,7 @@ namespace GenBOE.Web.Controllers
             Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SYSTEM_SETTINGS, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
 			// Get the current system settings
-			ICollection<SystemSettingDTO> systemSettings;
-			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-			{
-				systemSettings = this.systemSettingLoader.GetSkillMixSettings();
-			}
-			else
-			{
-				systemSettings = this.systemSettingLoader.GetSystemSettings();
-			}
+			ICollection<SystemSettingDTO> systemSettings = _ControllerLogic.GetSystemSettings();
 
 			this.FinalizeAction(this._log, WebConstants.ACTION_SYSTEM_SETTINGS, sw);
 
@@ -1652,8 +1644,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">the workspace</param>
 		/// <returns>the ProPricer grid view</returns>
-		[HttpPost]
-        public ViewResult DisplayProPricerGrid()
+		public ViewResult DisplayProPricerGrid()
         {
             // Initialize Action
             Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_DISPLAY_EXPORT_TO_PROPRICER_GRID, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
@@ -3030,15 +3021,23 @@ namespace GenBOE.Web.Controllers
                     scope.Complete();
                 }
 
-				// Skill Mix settings only (Space only) - update the utilities method
-				IEnumerable<string> systemSettingsForSkillMix = systemSettings.Select(x => x.Key);
-				if (systemSettingsForSkillMix.Contains(Constants.SKILL_MIX_BLACKLIST))
+				// Update Skill Mix and UCOT Blacklists if settings are included
+				if (systemSettings.Any(x => x.Key == Constants.SKILL_MIX_BLACKLIST))
 				{
 					Utilities.UpdateSkillMixBlacklistSettings(
-						systemSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)) == null ? string.Empty :
-							systemSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)).Value);
+						systemSettings.Any(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)) 
+						? systemSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)).Value
+						: string.Empty);
 				}
-            }
+
+				if (systemSettings.Any(x => x.Key == Constants.UCOT_BLACKLIST))
+				{
+					Utilities.UpdateUcotBlacklistSettings(
+						systemSettings.Any(x => x.Key.Equals(Constants.UCOT_BLACKLIST))
+						? systemSettings.FirstOrDefault(x => x.Key.Equals(Constants.UCOT_BLACKLIST)).Value
+						: string.Empty);
+				}
+			}
             else
             {
                 throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(ModelState));
@@ -3867,8 +3866,8 @@ namespace GenBOE.Web.Controllers
                     // was submitted
                     PerformingOrgListDTO listDTO = new PerformingOrgListDTO();
                     listDTO.Updateable = UpdateType.Upsert;
-                    listDTO.UpdateDate = new DateTime(long.Parse(Request["PerformingOrgListUpdateDateLong"]));
-                    listDTO.PerformingOrgListID = int.Parse(Request["PerformingOrgListID"]);
+                    listDTO.UpdateDate = new DateTime(long.Parse(Request.Form["PerformingOrgListUpdateDateLong"]));
+                    listDTO.PerformingOrgListID = int.Parse(Request.Form["PerformingOrgListID"]);
 
                     // Call the business layer to parse the uploaded file
                     // If the file was successfully parsed, add the results to the genBOE database
@@ -4880,7 +4879,7 @@ namespace GenBOE.Web.Controllers
 	                       TripID = x.TripID,
 	                       ImportType = x.ImportType
 	                   });
-            ViewData["DOCUMENT_DOMAIN"] = Request["documentDomain"];
+            ViewData["DOCUMENT_DOMAIN"] = Request.Form["documentDomain"];
 
             toReturn = View(WebConstants.VIEW_MANAGE_TRIPS_IMPORT_VERIFICATION, theModelView);
 

@@ -6,40 +6,37 @@
 
 namespace GenBOE.Web.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Linq;
-    using System.Web.Mvc;
-    using System.Web.Script.Serialization;
-    using GenBOE.ActionLogic;
-    using GenBOE.ActionLogic.Common;
-    using GenBOE.ActionLogic.Common.Calculations;
-    using GenBOE.ActionLogic.ControllerLogic;
-    using GenBOE.ActionLogic.IO.Export;
-    using GenBOE.ActionLogic.IO.Import;
-    using GenBOE.ActionLogic.Metrics;
-    using GenBOE.ActionLogic.ModelView;
-    using GenBOE.DataBridge.Common;
-    using GenBOE.DataBridge.Common.Interfaces;
-    using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using GenBOE.Web.Common;
-    using GenBOE.Web.ModelView;
-    using IES.Common;
-    using IES.Common.Exceptions;
-    using IES.Common.OfficeUtilities;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics;
+	using System.IO;
+	using System.Linq;
+	using System.Web.Mvc;
+	using System.Web.Script.Serialization;
+	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.ControllerLogic;
+	using GenBOE.ActionLogic.IO.Export;
+	using GenBOE.ActionLogic.Metrics;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.DataBridge.Common;
+	using GenBOE.DataBridge.Common.Interfaces;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
+	using GenBOE.Web.Common;
+	using GenBOE.Web.ModelView;
+	using IES.Common;
+	using IES.Common.Exceptions;
+	using IES.Common.OfficeUtilities;
 
-    public class BOEOtherDirectCostController : GenBOEController
+	public class BOEOtherDirectCostController : GenBOEController
     {
-        Logger _log = new Logger(typeof(BOEOtherDirectCostController));
-
-        private ResourceDTODataLoader _ResourceDTODataLoader = null;
-        private IBOEOtherDirectCostControllerLogic _BOEOtherDirectCostControllerLogic = null;
-        private IPerformingOrgDTODataLoader perfOrgLoader;
+		private readonly Logger _log = new Logger(typeof(BOEOtherDirectCostController));
+        private readonly ResourceDTODataLoader _ResourceDTODataLoader = null;
+        private readonly IBOEOtherDirectCostControllerLogic _BOEOtherDirectCostControllerLogic = null;
+        private readonly IPerformingOrgDTODataLoader perfOrgLoader;
 
         /// <summary>
         /// Constructor
@@ -62,12 +59,13 @@ namespace GenBOE.Web.Controllers
             this.perfOrgLoader = perfOrgLoader;
         }
 
+		[HttpPost]
         public virtual ViewResult DisplayBOEOtherDirectCostComposite(string workspace, int boeID, int? odcElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DisplayBOEOtherDirectCostComposite", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_OTHER_DIRECT_COST_COMPOSITE, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
 
             bool IsSubContractor = (from p in this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(ws.Id)
                                     where p.Role == Role.SubcontractorAuthor && p.ETIUserId == ws.CurrentActiveUser.UserID
@@ -87,11 +85,12 @@ namespace GenBOE.Web.Controllers
             ViewResult toReturn = View(WebConstants.VIEW_ODC_ELEMENT_COMPOSITE);
 
             // Finalize Action
-            FinalizeAction(_log, "DisplayBOEOtherDirectCostComposite", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_OTHER_DIRECT_COST_COMPOSITE, sw);
             return toReturn;
         }
 
-        public ViewResult DisplayBOEOtherDirectCostGrid(string workspace, int boeID)
+		[HttpPost]
+		public ViewResult DisplayBOEOtherDirectCostGrid(string workspace, int boeID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -103,7 +102,7 @@ namespace GenBOE.Web.Controllers
             try
             {
                 // Initialize Action
-                sw = InitializeAction(_log, "DisplayBOEOtherDirectCost", SecurityPage.BoeODCGrid, SecurityAuthorization.Read, ws, boeID);
+                sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_OTHER_DIRECT_COST_GRID, SecurityPage.BoeODCGrid, SecurityAuthorization.Read, ws, boeID);
             }
             catch (AuthorizationException)
             {
@@ -161,22 +160,21 @@ namespace GenBOE.Web.Controllers
                     ViewData["DISABLE_ADD_ODC"] = true;
                 }
 
-
-
                 toReturn = View(WebConstants.VIEW_BOE_OTHER_DIRECT_COST_GRID, theModelViews);
             }
 
             // Finalize Action
-            FinalizeAction(_log, "DisplayBOEOtherDirectCost", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_OTHER_DIRECT_COST_GRID, sw);
             return toReturn;
         }
 
+		[ChildActionOnly, HttpGet]
         public ViewResult DisplayBOEODCElementDetails(string workspace, int boeID, int? odcElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DisplayBOEOtherDirectCost", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_ODC_ELEMENT_DETAILS, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
 
             ViewResult toReturn;
 
@@ -221,16 +219,17 @@ namespace GenBOE.Web.Controllers
             }
 
             // Finalize Action
-            FinalizeAction(_log, "DisplayBOEOtherDirectCost", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_ODC_ELEMENT_DETAILS, sw);
             return toReturn;
         }
 
-        public ViewResult DisplayBOEODCTypes(string workspace, int boeID, int? odcElementID)
+		[ChildActionOnly, HttpGet]
+		public ViewResult DisplayBOEODCTypes(string workspace, int boeID, int? odcElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DisplayBOEODCTypes", SecurityPage.BoeLaborTypes, SecurityAuthorization.Read, ws, boeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_ODC_TYPES, SecurityPage.BoeLaborTypes, SecurityAuthorization.Read, ws, boeID);
 
             ViewData["BOEID"] = boeID;
             ViewData["ODCID"] = odcElementID;
@@ -238,16 +237,17 @@ namespace GenBOE.Web.Controllers
             ViewResult toReturn = View(WebConstants.VIEW_ODC_TYPES);
 
             // Finalize Action
-            FinalizeAction(_log, "DisplayBOEODCTypes", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_ODC_TYPES, sw);
             return toReturn;
         }
 
-        public ViewResult DisplayBOEODCTypesGrid(string workspace, int boeID, int? odcElementID)
+		[ChildActionOnly, HttpGet]
+		public ViewResult DisplayBOEODCTypesGrid(string workspace, int boeID, int? odcElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DisplayBOEODCTypesGrid", SecurityPage.BoeLaborTypes, SecurityAuthorization.Read, ws, boeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_ODC_TYPES_GRID, SecurityPage.BoeLaborTypes, SecurityAuthorization.Read, ws, boeID);
 
             int resourceListID = ws.ResourceListID;
 
@@ -344,30 +344,32 @@ namespace GenBOE.Web.Controllers
             ViewResult toReturn = View(WebConstants.VIEW_ODC_TYPES_GRID, theModelViews);
 
             // Finalize Action
-            FinalizeAction(_log, "DisplayBOEODCTypesGrid", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_ODC_TYPES_GRID, sw);
             return toReturn;
         }
 
-        public ViewResult DisplayBOEODCSpread(string workspace, int boeID, int? odcElementID)
+		[ChildActionOnly, HttpGet]
+		public ViewResult DisplayBOEODCSpread(string workspace, int boeID, int? odcElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DisplayBOEODCSpread", SecurityPage.BoeLaborTypes, SecurityAuthorization.Read, ws, boeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_ODC_SPREAD, SecurityPage.BoeLaborTypes, SecurityAuthorization.Read, ws, boeID);
             ViewData["BOEID"] = boeID;
             ViewData["ODCID"] = odcElementID;
 
-            FinalizeAction(_log, "DisplayBOEODCSpread", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_ODC_SPREAD, sw);
             return View(WebConstants.VIEW_ODC_SPREAD);
         }
 
-        public ViewResult DisplayBOEODCSpreadGrid(string workspace, int boeID, int? odcElementID)
+		[HttpPost]
+		public ViewResult DisplayBOEODCSpreadGrid(string workspace, int boeID, int? odcElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             FullBoe boe = this.Factory.CreateFullBoe(boeID);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DisplayBOEODCSpreadGrid", SecurityPage.BoeLaborTypes, SecurityAuthorization.Read, ws, boeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_ODC_SPREAD_GRID, SecurityPage.BoeLaborTypes, SecurityAuthorization.Read, ws, boeID);
             ViewData["BOEID"] = boeID;
             ViewData["ODCID"] = odcElementID;
 
@@ -396,22 +398,22 @@ namespace GenBOE.Web.Controllers
             }
 
             ViewData["ODCSJSON"] = serializer.Serialize(returnData);
-            FinalizeAction(_log, "DisplayBOEODCSpreadGrid", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_ODC_SPREAD_GRID, sw);
             return View(WebConstants.VIEW_ODC_SPREAD_GRID, returnData);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        public virtual ActionResult ExportODCSpread(string workspace, int boeID, int odcElementID)
+        [HttpGet]
+		public virtual ActionResult ExportODCSpread(string workspace, int boeID, int odcElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ExportODCSpread", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_ODC_SPREAD, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
 
             OtherDirectCostDTO taskElement = this.Factory.CreateOtherDirectCost(odcElementID);
-            string exportedFileName = string.Empty;
-
-            if (taskElement != null)
+			string exportedFileName;
+			if (taskElement != null)
             {
                 DataRelationshipVerifier.VerifyDataRelation(taskElement, boeID);
                 exportedFileName = ODCSpreadExporter.ExportToExcelFile(Server.MapPath("~/Templates/Export/ODCSpread.xlsx"), taskElement.ODCTypes, _ResourceDTODataLoader, this.perfOrgLoader);
@@ -426,7 +428,7 @@ namespace GenBOE.Web.Controllers
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
-            FinalizeAction(_log, "ExportODCSpread", sw);
+            FinalizeAction(_log, WebConstants.ACTION_EXPORT_ODC_SPREAD, sw);
 
             return File(
                 fileStream: fs,
@@ -435,12 +437,13 @@ namespace GenBOE.Web.Controllers
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        public virtual ActionResult ExportODCType(string workspace, int boeID, int odcElementID)
+		[HttpGet]
+		public virtual ActionResult ExportODCType(string workspace, int boeID, int odcElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ExportODCType", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_ODC_TYPE, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
 
             OtherDirectCostDTO thisTaskElement = null;
 
@@ -457,7 +460,7 @@ namespace GenBOE.Web.Controllers
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
-            FinalizeAction(_log, "ExportODCType", sw);
+            FinalizeAction(_log, WebConstants.ACTION_EXPORT_ODC_TYPE, sw);
 
             return File(
                 fileStream: fs,
@@ -465,14 +468,15 @@ namespace GenBOE.Web.Controllers
                 fileDownloadName: fileName);
         }
 
-        /// <summary>
-        /// reorders odc taskelement
-        /// </summary>
-        /// <param name="theModelView">user order</param>
-        /// <param name="workspace">workspace </param>
-        /// <param name="boeID">current boeid</param>
-        /// <returns></returns>
-        public virtual JsonResult SaveReorderODCTaskElements(TaskElementOrderCollection theModelView, string workspace, int boeID)
+		/// <summary>
+		/// reorders odc taskelement
+		/// </summary>
+		/// <param name="theModelView">user order</param>
+		/// <param name="workspace">workspace </param>
+		/// <param name="boeID">current boeid</param>
+		/// <returns></returns>
+		[HttpPost]
+		public virtual JsonResult SaveReorderODCTaskElements(TaskElementOrderCollection theModelView, string workspace, int boeID)
         {
             throw new GenValidationException("ODC Tasks can no longer be reordered");
         }

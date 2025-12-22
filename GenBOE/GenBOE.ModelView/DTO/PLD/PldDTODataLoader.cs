@@ -22,12 +22,12 @@ namespace GenBOE.DataBridge.DTO
 	{
 
 		#region Fields
-		
+
 		/// <summary>
 		/// activeStatuses is for the known Active States that the Column in the View returns
 		/// </summary>
 		private static readonly string[] ACTIVE_STATUSES = new[] { "Open", "Submitted", "Negotiated", "In Negotiation" };
-		
+
 		/// <summary>
 		/// boolean for dispose
 		/// </summary>
@@ -79,7 +79,9 @@ namespace GenBOE.DataBridge.DTO
 					p.PA_Title.Contains(search));
 				}
 
-				query = query.Where(p => p.Last_Modified_Date >= Utilities.GetPLDCutoffDate())
+				DateTime cutoffDate = Utilities.GetPLDCutoffDate();
+
+				query = query.Where(p => p.Last_Modified_Date >= cutoffDate)
 					.OrderByDescending(p => p.Last_Modified_Date);
 
 
@@ -94,7 +96,7 @@ namespace GenBOE.DataBridge.DTO
 
 				return results;
 			}
-						
+
 		}
 
 		/// <summary>
@@ -143,7 +145,7 @@ namespace GenBOE.DataBridge.DTO
 		public ICollection<PLDProposalDTO> GetAllActiveProposals()
 		{
 			List<PLDProposalDTO> results = new List<PLDProposalDTO>();
-			
+
 			using (StopwatchTimer sw = new StopwatchTimer(logger))
 			{
 				try
@@ -217,6 +219,24 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		/// <summary>
+		/// Get the Last Modified Date for the Proposal with the given PA Number
+		/// </summary>
+		/// <param name="PaNumber">PA Number of the proposal</param>
+		/// <returns>Last Modified Date if exists, otherwise null</returns>
+		public DateTime? GetLastModifiedDate(string PaNumber)
+		{
+			using (PldDBContext ctx = new PldDBContext())
+			{
+				DateTime? result = ctx.Proposals
+					.Where(p => p.PA_Number == PaNumber)
+					.Select(p => p.Last_Modified_Date)
+					.FirstOrDefault();
+
+				return result;
+			}
+		}
+
+		/// <summary>
 		///  Releases all resources used by the current instance of the class.  This does call the protected method to release unmanaged resources.
 		///  This also suppresses finalization to prevent the finalizer from running.
 		/// </summary>
@@ -251,7 +271,7 @@ namespace GenBOE.DataBridge.DTO
 			{
 				string lobConvertedName = string.Empty;
 
-				switch (proposal.LineOfBusiness.Trim())
+				switch (proposal.LineOfBusiness.ToLower().Trim())
 				{
 					case "sac":
 						lobConvertedName = "Sikorsky";
@@ -272,10 +292,16 @@ namespace GenBOE.DataBridge.DTO
 					case "cyber, ships & advanced technologies":
 						lobConvertedName = "Cyber, Ships & Advanced Technologies";
 						break;
+					case "mic2":
+						lobConvertedName = "Mission Integrated Command and Control (MIC2)";
+						break;
+					case "sems":
+						lobConvertedName = "Sensors, Effectors & Mission Systems (SEMS)";
+						break;
 					default:
 						lobConvertedName = string.Empty;
 						break;
-				}				
+				}
 
 				PickListDto match = this.lobPickList.FirstOrDefault(p => string.Equals(p.Text.Trim(), lobConvertedName.Trim(), StringComparison.OrdinalIgnoreCase));
 
@@ -287,6 +313,8 @@ namespace GenBOE.DataBridge.DTO
 				else
 				{
 					proposal.LineOfBusiness = string.Empty;
+					proposal.LineOfBusinessId = (int)0;
+					continue;
 				}
 			}
 		}

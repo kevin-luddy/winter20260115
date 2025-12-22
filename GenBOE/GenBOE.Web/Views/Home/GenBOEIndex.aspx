@@ -35,8 +35,6 @@
             sessionStorage.errorMessage = '';
 
             $('.header .title').addClass('genBOE');
-
-            var chooseWorkspaceURL = CreateSystemAdminPostURL('<%: WebConstants.CONTROLLER_WORKSPACE %>', '<%: WebConstants.ACTION_DISPLAY_CHOOSE_WORKSPACE %>');
         });
     </script>
     

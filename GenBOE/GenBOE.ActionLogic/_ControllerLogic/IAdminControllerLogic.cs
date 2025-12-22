@@ -131,5 +131,11 @@ namespace GenBOE.ActionLogic
         /// </summary>
         /// <returns>Training course groups</returns>
         ICollection<TrainingCourseGroupModelView> GetTrainingCourseGroups();
-    }
+
+		/// <summary>
+		/// Get System Settings from the database
+		/// </summary>
+		/// <returns>System settings</returns>
+		ICollection<SystemSettingDTO> GetSystemSettings();
+	}
 }

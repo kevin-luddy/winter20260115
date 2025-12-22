@@ -40,5 +40,8 @@ namespace GenBOE.ActionLogic.ModelView
         /// Gets/Sets bool noting if Custom Field is in use
         /// </summary>
         public bool inUse { get; set; }
-    }
+
+		public int CustomFieldValueID { get; set; }
+		public int SelectionID { get; set; }
+	}
 }

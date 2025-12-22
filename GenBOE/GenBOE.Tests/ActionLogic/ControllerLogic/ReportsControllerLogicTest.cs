@@ -97,10 +97,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), TestMethod]
         public async Task ExportAllBOEsReportTest()
-        {
-            //Value Declarations
-            FullWorkspace workspace = new FullWorkspace() { Id = 1, BOEExportSortByID = 2, TemplateID = 2, ProjectMapType = ProjectMapType.StandardWithoutOffload };
-            bool isSubContractorUser = true;
+		{
+			//Value Declarations
+			FullWorkspace workspace = new FullWorkspace() { Id = 1, BOEExportSortByID = 2, TemplateID = 2, ProjectMapType = ProjectMapType.StandardWithoutOffload, TrackingNumber = "Track1" };
+			ProposalDto proposal = new ProposalDto() { Id = 1, CostVolumeTool = CostVolumeTool.NotSet };
+
+			bool isSubContractorUser = true;
             int? oftid2 = 2;
             List<int> selectBOEs = new List<int> { 1, 3, 4 };
             ICollection<BoeCustomReportComponent> selectedComponents = new Collection<BoeCustomReportComponent>();
@@ -182,8 +184,10 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             _retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(dtoID);
             _retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(MaterialID);
             _retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+			proposalLoader.Setup(x => x.GetIdByTrackingNumber(workspace.TrackingNumber)).Returns(proposal.Id);
+			proposalLoader.Setup(x => x.GetById(proposal.Id)).Returns(proposal);
 
-            ResourceLoader.Setup(x => x.GetByIds(resourceIds)).Returns(resourcesFromDB);
+			ResourceLoader.Setup(x => x.GetByIds(resourceIds)).Returns(resourcesFromDB);
             boeCustomExporter.Setup(x => x.SetWorkspacePrecisionVariables(workspace));
             httpResponse.Setup(x => x.Cookies).Returns(new HttpCookieCollection());
 
@@ -218,7 +222,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             sut.PrepareAllBOEsReport(workspace, isSubContractorUser, null, selectBOEs, viewDataDictionary, out isCustomExport, out wsExportFormat, out exportInputs,
                 out boeExportModelViews, out boeSummaryGridModelViews, false);
             await sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, isCustomExport, wsExportFormat, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
-            sut.PrepareAllBOEsReport(workspace, isSubContractorUser, null, selectBOEs, viewDataDictionary, out isCustomExport, out wsExportFormat, out exportInputs,
+			sut.PrepareAllBOEsReport(workspace, isSubContractorUser, null, selectBOEs, viewDataDictionary, out isCustomExport, out wsExportFormat, out exportInputs,
                 out boeExportModelViews, out boeSummaryGridModelViews, true);
             await sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, isCustomExport, wsExportFormat, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
 
@@ -226,8 +230,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             boeSummary.Verify(x => x.GetBOESummaryGridModelViews(boes.ToCollection()[0], It.IsAny<BOEExportInputs>(), isSubContractorUser), Times.Exactly(3));
             boeSummary.Verify(x => x.GetBOESummaryGridModelViews(boes.ToCollection()[1], It.IsAny<BOEExportInputs>(), isSubContractorUser), Times.Never());
             boeSummary.Verify(x => x.GetBOESummaryGridModelViews(boes.ToCollection()[2], It.IsAny<BOEExportInputs>(), isSubContractorUser), Times.Exactly(3));
-            boeCustomExporter.Verify(x => x.ExportBOEToWordFile(It.IsAny<BOEExportInputs>(), boeModelCollection, listOfBOEs, workspace, selectedComponents, httpResponse.Object, string.Format("genBOECustomExport-{0}.docx", workspace.WorkspaceName), wsExportFormatDTO), Times.Exactly(2));
-            boeCustomExporter.Verify(x => x.ExportBOEToWordFile(It.IsAny<BOEExportInputs>(), sortedBoeModelCollection, listOfBOEs, workspace, selectedComponents, httpResponse.Object, string.Format("genBOECustomExport-{0}.docx", workspace.WorkspaceName), wsExportFormatDTO), Times.Exactly(1));
+            boeCustomExporter.Verify(x => x.ExportBOEToWordFile(It.Is<BOEExportInputs>(p => p.IncludeCostVolumeUCOTText == true), boeModelCollection, listOfBOEs, workspace, selectedComponents, httpResponse.Object, string.Format("genBOECustomExport-{0}.docx", workspace.WorkspaceName), wsExportFormatDTO), Times.Exactly(2));
+            boeCustomExporter.Verify(x => x.ExportBOEToWordFile(It.Is<BOEExportInputs>(p => p.IncludeCostVolumeUCOTText == true), sortedBoeModelCollection, listOfBOEs, workspace, selectedComponents, httpResponse.Object, string.Format("genBOECustomExport-{0}.docx", workspace.WorkspaceName), wsExportFormatDTO), Times.Exactly(1));
         }
 
         /// <summary>
@@ -336,12 +340,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             //Assert
             boeExporter.Verify(x => x.ExportBOEToWordFile(exportInputs, boeModelCollection, listOfBOEs, workspace, httpResponse.Object, string.Format("genBOEExport-{0}.docx", workspace.WorkspaceName), wsExportFormatDTO.PhysicalFilePathCache, wsExportFormatDTO.ExportFormat.TemplateType), Times.Once());
-        }
+		}
 
-        /// <summary>
-        /// This will test the SummarizeByCustomFieldOptions method.
-        /// </summary>
-        [TestMethod]
+		/// <summary>
+		/// This will test the SummarizeByCustomFieldOptions method.
+		/// </summary>
+		[TestMethod]
         public void Test_SummarizeByCustomFieldOptions()
         {
             ReportsControllerLogic sut = CreateSut();

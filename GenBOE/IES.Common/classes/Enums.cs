@@ -50,7 +50,11 @@ namespace IES.Common
 		[Description("Cyber, Ships and Advanced Technologies")]
 		MSTShipAndAviationSystems = 2005,
 		[Description("Sikorsky")]
-		MSTSikorsky = 2006
+		MSTSikorsky = 2006,
+		[Description("Mission Integrated Command and Control (MIC2)")]
+		MSTMissionIntegratedCommandAndControl = 2007,
+		[Description("Sensors, Effectors & Mission Systems (SEMS)")]
+		MSTSensorsEffectorsAndMissionSystems = 2008
 	}
 
 	/// <summary>
@@ -68,7 +72,7 @@ namespace IES.Common
 		/// Identifies the maximum enum value that can be validly selected by a user for the Line of Business
 		/// Used to validate the users input.
 		/// </summary>
-		public const int MSTMaximumSelectableValue = (int)LineOfBusinessType.MSTSikorsky;
+		public const int MSTMaximumSelectableValue = (int)LineOfBusinessType.MSTSensorsEffectorsAndMissionSystems;
 	}
 
 	/// <summary>
@@ -1179,6 +1183,30 @@ namespace IES.Common
 		/// </summary>
 		[Description("Other Exception Applies")]
 		OtherExceptionApplies = 5,
+	}
+
+	/// <summary>
+	/// The CCOPD Dollar Threshold, for NLF
+	/// </summary>
+	public enum CCOPDDollarThreshold
+	{
+		/// <summary>
+		/// No dollar threshold selected
+		/// </summary>
+		[Description("")]
+		Blank = 0,
+
+		/// <summary>
+		/// $15M threshold 
+		/// </summary>
+		[Description("$15M")]
+		FifteenMillionDollarThreshold = 1,
+
+		/// <summary>
+		/// $20M threshold
+		/// </summary>
+		[Description("$20M")]
+		TwentyMillionDollarThreshold = 2
 	}
 
 	/// <summary>

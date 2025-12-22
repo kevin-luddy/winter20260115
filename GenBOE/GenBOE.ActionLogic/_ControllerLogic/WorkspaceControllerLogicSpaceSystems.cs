@@ -80,7 +80,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			IBOEStateMachine boeStateMachine,
 			IBoeMediator boeMediator,
 			ISystemSettingDTODataLoader systemSettingDTODataLoader,
-			WorkspaceStateMachine workspaceStateMachine)
+			WorkspaceStateMachine workspaceStateMachine,
+			IBoeApproverResponseDTODataLoader inBoeApproverResponseDTODataLoader)
 			: base(
 				workspaceLoader,
 				inuserLoader,
@@ -105,7 +106,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				boeStateMachine,
 				boeMediator,
 				systemSettingDTODataLoader,
-				workspaceStateMachine
+				workspaceStateMachine,
+				inBoeApproverResponseDTODataLoader
 		)
 		{
 			// nothing to do here

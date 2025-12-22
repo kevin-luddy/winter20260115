@@ -15,7 +15,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.IO.Export;
-	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.ModelView.Workspace;
 	using GenBOE.ActionLogic.WorkspaceTransitions;
 	using GenBOE.DataBridge.Common;
@@ -36,6 +35,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		private IEscalationRatesDTOLoader systemEscalationRatesLoader;
 		private IMSTTravelNonzoneFeesAndCostsDTODataLoader systemFeesLoader;
 		private IOffloadRatesDTOLoader offloadRatesLoader;
+		private IPldDTODataLoader pldDTODataLoader;
 
 		/// <summary>
 		/// Constructor
@@ -64,6 +64,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="contractTypeLoader">Contract Type Loader</param>
 		/// <param name="workspaceExporter">WS Exporter</param>
 		/// <param name="moqTypeLoader">Moq Type Loader</param>
+		/// <param name="pldDTODataLoader">PLD DTO Data Loader</param>
 		/// <param name="systemSettingDTODataLoader">System Settings data loader</param>
 		public WorkspaceControllerLogicMST(
 			IWorkspaceDTODataLoader workspaceLoader,
@@ -93,7 +94,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			IBOEStateMachine boeStateMachine,
 			IBoeMediator boeMediator,
 			ISystemSettingDTODataLoader systemSettingDTODataLoader,
-			WorkspaceStateMachine workspaceStateMachine
+			WorkspaceStateMachine workspaceStateMachine,
+			IBoeApproverResponseDTODataLoader inBoeApproverResponseDTODataLoader,
+			IPldDTODataLoader pldDTODataLoader
 			)
 			: base(
 				workspaceLoader,
@@ -119,13 +122,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				boeStateMachine,
 				boeMediator,
 				systemSettingDTODataLoader,
-				workspaceStateMachine
+				workspaceStateMachine,
+				inBoeApproverResponseDTODataLoader
 		)
 		{
 			this.zoneTravelRatesFeesLoader = zoneTravelRatesFeesLoader;
 			this.systemEscalationRatesLoader = systemEscalationRatesLoader;
 			this.systemFeesLoader = systemFeesLoader;
 			this.offloadRatesLoader = offloadRatesDTOLoader;
+			this.pldDTODataLoader = pldDTODataLoader;
 		}
 
 		/// <summary>
@@ -142,7 +147,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			UserDTO costVolumeLeadDTO = this.UserLoader.GetUserByID(workspace.CostVolumeLeadPricerUserID);
 
-			return new WorkspaceIdentificationMSTModelView(workspace, costVolumeLeadDTO);
+			WorkspaceIdentificationMSTModelView modelView = new WorkspaceIdentificationMSTModelView(workspace, costVolumeLeadDTO);
+
+			if (Utilities.ShowPLDIsIntegrated && !string.IsNullOrEmpty(modelView.TrackingNumber))
+			{
+				DateTime? lastModifiedDate = pldDTODataLoader.GetLastModifiedDate(modelView.TrackingNumber);
+				modelView.PldLastUpdateDate = lastModifiedDate.HasValue ? lastModifiedDate.Value.ToString("MM/dd/yyyy") : "N/A";
+			}
+
+			return modelView;
 		}
 
 		/// <summary>
@@ -334,6 +347,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			if (workspaceIdentificationMSTModelView != null)
 			{
 				workspace.AllowGridEdit = workspaceIdentificationMSTModelView.AllowGridEdit;
+			}
+
+			if (Utilities.ShowPLDIsIntegrated && !string.IsNullOrEmpty(workspace.TrackingNumber))
+			{
+				if (!string.IsNullOrWhiteSpace(workspaceIdentificationMSTModelView.WorkspaceNameInput))
+				{
+					workspace.WorkspaceName = workspaceIdentificationMSTModelView.WorkspaceName.Trim() + " " + workspaceIdentificationMSTModelView.WorkspaceNameInput.Trim();
+				}
+
+				workspace.ProposalTitle = workspaceIdentificationMSTModelView.ProposalTitle;
 			}
 		}
 

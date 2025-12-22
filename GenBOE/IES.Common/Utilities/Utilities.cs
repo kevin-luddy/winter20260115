@@ -465,14 +465,42 @@ namespace IES.Common
 		/// <returns>Task title with prefix</returns>
 		public static string appendCopyPrefixToTitle(string originalTitle, int duplicateNumber)
 		{
-			String prefix = "COPY " + duplicateNumber + " - ";
-			String updatedTitle = prefix + originalTitle;
-			//Truncate any characters over the max title length of 100
-			if (updatedTitle.Length > 100)
+			// Regular expression to check if the title already starts with "COPY X - " pattern
+			Regex regex = new Regex(@"^COPY\s+(\d+)\s+-\s+(.*)$");
+			Match match = regex.Match(originalTitle);
+
+			if (match.Success)
 			{
-				updatedTitle = updatedTitle.Remove(100);
+				// Extract the existing copy number and the actual title
+				int existingNumber = int.Parse(match.Groups[1].Value);
+				string actualTitle = match.Groups[2].Value;
+
+				// Create a new title with incremented number
+				String prefix = "COPY " + (existingNumber + duplicateNumber) + " - ";
+				String updatedTitle = prefix + actualTitle;
+
+				// Truncate any characters over the max title length of 100
+				if (updatedTitle.Length > 100)
+				{
+					updatedTitle = updatedTitle.Remove(100);
+				}
+
+				return updatedTitle;
 			}
-			return updatedTitle;
+			else
+			{
+				// Original behavior when no copy prefix exists
+				String prefix = "COPY " + duplicateNumber + " - ";
+				String updatedTitle = prefix + originalTitle;
+
+				// Truncate any characters over the max title length of 100
+				if (updatedTitle.Length > 100)
+				{
+					updatedTitle = updatedTitle.Remove(100);
+				}
+
+				return updatedTitle;
+			}
 		}
 		#endregion
 
@@ -996,6 +1024,8 @@ namespace IES.Common
 
 				return isPLDIntegrated.Value;
 			}
+			// Internal set for testing purposes
+			internal set => isPLDIntegrated = value;
 		}
 
 
@@ -1183,7 +1213,7 @@ namespace IES.Common
 		private static Collection<string> skillMixBlacklistWorkspaces = new Collection<string>();
 
 		/// <summary>
-		/// Update the Skill Mix Blacklist settings--currently utilized by Space only
+		/// Update the Skill Mix Blacklist settings
 		/// </summary>
 		/// <param name="blackListWorkspaces">Comma-separated string of blacklisted workspaces (by short name)</param>
 		public static void UpdateSkillMixBlacklistSettings(string blackListWorkspaces)
@@ -1191,7 +1221,7 @@ namespace IES.Common
 			// Update the list of blacklisted Skill Mix workspaces (short name)
 			if (blackListWorkspaces != null)
 			{
-				skillMixBlacklistWorkspaces = blackListWorkspaces.Split(',').ToCollection();
+				skillMixBlacklistWorkspaces = blackListWorkspaces.Split(',').Select(x => x.Trim()).ToCollection();
 			}
 		}
 
@@ -1395,18 +1425,34 @@ namespace IES.Common
 			{
 				return false;
 			}
-
-			// Exclude UCOT showing for specific Workspace Shortnames.
-			string excludedShortspaces = ConfigurationUtilities.GetAppSetting("UcotExcludedWorkspaces");
-			string[] excludedShortspacesArray = excludedShortspaces?.Split(',').Select(s => s.Trim()).ToArray();
-
-			if (excludedShortspacesArray != null && excludedShortspacesArray.Any() && excludedShortspacesArray.Contains(shortname))
+			else if (ucotBlacklistWorkspaces != null && ucotBlacklistWorkspaces.Any() && ucotBlacklistWorkspaces.Contains(shortname))
 			{
 				return false;
 			}
 			else
 			{
 				return IsUCOTEnabledForSystem && workspaceCreationDate >= UCOTStartDate;
+			}
+		}
+
+		/// <summary>
+		/// Private for UCOT blacklisted workspaces
+		/// </summary>
+		private static Collection<string> ucotBlacklistWorkspaces = new Collection<string>();
+
+		/// <summary>
+		/// Update the UCOT Blacklist settings -- currently utilized by Space only
+		/// </summary>
+		/// <param name="blacklistWorkspaces">Comma separated string of blacklisted workspaces (by shortname)</param>
+		public static void UpdateUcotBlacklistSettings(string blacklistWorkspaces)
+		{
+			if (blacklistWorkspaces != null)
+			{
+				ucotBlacklistWorkspaces = blacklistWorkspaces.Split(',').Select(x => x.Trim()).ToCollection();
+			}
+			else
+			{
+				ucotBlacklistWorkspaces = new Collection<string>();
 			}
 		}
 

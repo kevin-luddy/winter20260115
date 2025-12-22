@@ -274,7 +274,9 @@ namespace GenBOE
 			try { _log.Debug("GetMachineStoreForDomain : " + string.Join(",", IsolatedStorageFile.GetMachineStoreForDomain().GetDirectoryNames())); }
 			catch { _log.Error("GetMachineStoreForDomain : <security exception>"); }
 
-			BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+			SystemConfiguration SysConfig = SystemConfiguration.Instance();
+			BundleConfig.RegisterBundles(BundleTable.Bundles, SysConfig.CompanyMode);
 			try { AreaRegistration.RegisterAllAreas(); }
 			catch (Exception ex) { _log.Error(ex, "FATAL - AreaRegistration.RegisterAllAreas failed."); throw; }
 
@@ -644,7 +646,8 @@ namespace GenBOE
 						new ResolvedParameter(typeof(IMaterialDTODataLoader)),
 						new ResolvedParameter(typeof(ITravelDTODataLoader)),
 						new ResolvedParameter(typeof(IWorkspaceVersionMetaDataDTODataLoader)),
-						new ResolvedParameter(typeof(IWbsDTODataLoader))));
+						new ResolvedParameter(typeof(IWbsDTODataLoader)),
+						new ResolvedParameter(typeof(IWorkspaceControllerLogic))));
 					GenBOEUnityContainer.Container.RegisterType(typeof(IBOEOtherDirectCostControllerLogic), typeof(BOEOtherDirectCostControllerLogicMST), GetLifetimeManager(), new InjectionConstructor());
 					GenBOEUnityContainer.Container.RegisterType(typeof(IBOEMaterialControllerLogic), typeof(BOEMaterialControllerLogicMST), GetLifetimeManager(), new InjectionConstructor());
 					GenBOEUnityContainer.Container.RegisterType(typeof(IGenBOEControllerLogic), typeof(GenBOEControllerLogicMST), GetLifetimeManager(), new InjectionMember[] { });
@@ -720,7 +723,8 @@ namespace GenBOE
 						new ResolvedParameter(typeof(IMaterialDTODataLoader)),
 						new ResolvedParameter(typeof(ITravelDTODataLoader)),
 						new ResolvedParameter(typeof(IWorkspaceVersionMetaDataDTODataLoader)),
-						new ResolvedParameter(typeof(IWbsDTODataLoader))));
+						new ResolvedParameter(typeof(IWbsDTODataLoader)),
+						new ResolvedParameter(typeof(IWorkspaceControllerLogic))));
 					GenBOEUnityContainer.Container.RegisterType(typeof(IBOEOtherDirectCostControllerLogic), typeof(BOEOtherDirectCostControllerLogicSpaceSystems), GetLifetimeManager(), new InjectionConstructor());
 					GenBOEUnityContainer.Container.RegisterType(typeof(IBOEMaterialControllerLogic), typeof(BOEMaterialControllerLogicSpaceSystems), GetLifetimeManager(), new InjectionConstructor());
 					GenBOEUnityContainer.Container.RegisterType(typeof(IGenBOEControllerLogic), typeof(GenBOEControllerLogic), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(ISystemSettingDTODataLoader))));
@@ -834,7 +838,9 @@ namespace GenBOE
 																															  new ResolvedParameter(typeof(IBOEStateMachine)),
 																															  new ResolvedParameter(typeof(IBoeMediator)),
 																															  new ResolvedParameter(typeof(ISystemSettingDTODataLoader)),
-																															  new ResolvedParameter(typeof(WorkspaceStateMachine))));
+																															  new ResolvedParameter(typeof(WorkspaceStateMachine)),
+																															  new ResolvedParameter(typeof(IBoeApproverResponseDTODataLoader)),
+																															  new ResolvedParameter(typeof(IPldDTODataLoader))));
 
 					GenBOEUnityContainer.Container.RegisterType(typeof(IAdminControllerLogic), typeof(AdminControllerLogicMST), GetLifetimeManager(), new InjectionConstructor(
 																															  new ResolvedParameter(typeof(ICommonDataMapper)),
@@ -877,7 +883,8 @@ namespace GenBOE
 																															  new ResolvedParameter(typeof(IBOEStateMachine)),
 																															  new ResolvedParameter(typeof(IBoeMediator)),
 																															  new ResolvedParameter(typeof(ISystemSettingDTODataLoader)),
-																															  new ResolvedParameter(typeof(WorkspaceStateMachine))));
+																															  new ResolvedParameter(typeof(WorkspaceStateMachine)),
+																															  new ResolvedParameter(typeof(IBoeApproverResponseDTODataLoader))));
 
 					GenBOEUnityContainer.Container.RegisterType(typeof(IHomeControllerLogic), typeof(HomeControllerLogicSpaceSystems), GetLifetimeManager(), new InjectionConstructor(
 																															  new ResolvedParameter(typeof(IActiveDirectoryUtilities))
@@ -918,6 +925,8 @@ namespace GenBOE
 																														));
 
 			GenBOEUnityContainer.Container.RegisterType(typeof(BOECommentsControllerLogic), typeof(BOECommentsControllerLogic), GetLifetimeManager(), new InjectionConstructor(
+																														  new ResolvedParameter(typeof(IFullObjectFactory)),
+																														  new ResolvedParameter(typeof(BOEHistoryDTODataLoader)),
 																														  new ResolvedParameter(typeof(BOECommentDTODataLoader)),
 																														  new ResolvedParameter(typeof(UserDTODataLoader)),
 																														  new ResolvedParameter(typeof(ISecurityInformation)),
@@ -1416,7 +1425,8 @@ namespace GenBOE
 																																new ResolvedParameter(typeof(IMSTZoneTravelValidator)),
 																																new ResolvedParameter(typeof(RMSZoneTravelRatesFeesDataLoader)),
 																																new ResolvedParameter(typeof(IOffloadRatesDTOLoader)),
-																																new ResolvedParameter(typeof(IRteTemplateDataLoader))));
+																																new ResolvedParameter(typeof(IRteTemplateDataLoader)),
+																																new ResolvedParameter(typeof(IValidateWorkspaceDataLoader))));
 					break;
 				case CompanyConfiguration.SpaceSystems:
 					GenBOEUnityContainer.Container.RegisterType(typeof(IValidateBOE), typeof(ValidateBOESpaceSystems), GetLifetimeManager(), new InjectionConstructor(
@@ -1426,7 +1436,8 @@ namespace GenBOE
 																																new ResolvedParameter(typeof(IMiscTravelRateDTOLoader)),
 																																new ResolvedParameter(typeof(ILocationDTODataLoader)),
 																																new ResolvedParameter(typeof(IOffloadRatesDTOLoader)),
-																																new ResolvedParameter(typeof(IRteTemplateDataLoader))));
+																																new ResolvedParameter(typeof(IRteTemplateDataLoader)),
+																																new ResolvedParameter(typeof(IValidateWorkspaceDataLoader))));
 					break;
 
 				default:
@@ -1437,7 +1448,8 @@ namespace GenBOE
 																																new ResolvedParameter(typeof(IMiscTravelRateDTOLoader)),
 																																new ResolvedParameter(typeof(ILocationDTODataLoader)),
 																																new ResolvedParameter(typeof(IOffloadRatesDTOLoader)),
-																																new ResolvedParameter(typeof(IRteTemplateDataLoader))));
+																																new ResolvedParameter(typeof(IRteTemplateDataLoader)),
+																																new ResolvedParameter(typeof(IValidateWorkspaceDataLoader))));
 					break;
 			}
 
@@ -1574,16 +1586,22 @@ namespace GenBOE
 			GenBOEUnityContainer.Container.RegisterType(typeof(ISystemSettingDTODataLoader), typeof(SystemSettingDTODataLoader), GetLifetimeManager());
 
 			// Avoid calling the method to get the Skill Mix system settings on every blacklist check - initialize the value on startup (and only update it on every update)
-			ISystemSettingDTODataLoader systemSettingLoader = GenBOEUnityContainer.Resolve<ISystemSettingDTODataLoader>();
-			ICollection<SystemSettingDTO> skillMixSettings = systemSettingLoader.GetSkillMixSettings();
+			IAdminControllerLogic adminControllerLogic = GenBOEUnityContainer.Resolve<IAdminControllerLogic>();
+			ICollection<SystemSettingDTO> skillMixSettings = adminControllerLogic.GetSystemSettings();
+
 			Utilities.UpdateSkillMixBlacklistSettings(
-				skillMixSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)) == null ? string.Empty :
-					skillMixSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)).Value);
+				skillMixSettings.Any(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)) 
+				? skillMixSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)).Value
+				: string.Empty);
+
+			Utilities.UpdateUcotBlacklistSettings(skillMixSettings.Any(x => x.Key.Equals(Constants.UCOT_BLACKLIST))
+					? skillMixSettings.First(x => x.Key.Equals(Constants.UCOT_BLACKLIST)).Value
+					: string.Empty);
 
 			GenBOEUnityContainer.Container.RegisterType(typeof(IRteTemplateDataLoader), typeof(RteTemplateDataLoader), GetLifetimeManager());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IMOQTypeSelectionTableDataResourceHoursDTOLoader), typeof(MOQTypeSelectionTableDataResourceHoursDTOLoader), GetLifetimeManager());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IMoqTypeDataLoader), typeof(MoqTypeDataLoader), this.GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IMoqTypeTableCustomFieldValueXREFLoader)), new ResolvedParameter(typeof(IMOQTypeSelectionTableDataResourceHoursDTOLoader)))).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
-
+			GenBOEUnityContainer.Container.RegisterType(typeof(IValidateWorkspaceDataLoader), typeof(ValidateWorkspaceDataLoader), this.GetLifetimeManager());
 		}
 
 		protected ContainerControlledLifetimeManager GetLifetimeManager()

@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\GenTRAC.Models\AlternativePricingMethodology.cs" Link="AlternativePricingMethodology.cs" />
     <Compile Include="..\GenTRAC.Models\Attachment.cs" Link="Attachment.cs" />
     <Compile Include="..\GenTRAC.Models\AttachmentTypeLU.cs" Link="AttachmentTypeLU.cs" />
     <Compile Include="..\GenTRAC.Models\BoeDatabaseVersion.cs" Link="BoeDatabaseVersion.cs" />
@@ -67,6 +68,7 @@
 		<DependentUpon>PTMEntityModel.edmx</DependentUpon>
 	</Compile>
     <Compile Include="..\GenTRAC.Models\ReasonCertificationNotRequiredLU.cs" Link="ReasonCertificationNotRequiredLU.cs" />
+	  <Compile Include="..\GenTRAC.Models\ReportXmlData.cs" Link="ReportXmlData.cs" />
     <Compile Include="..\GenTRAC.Models\RequestTypeLU.cs" Link="RequestTypeLU.cs" />
     <Compile Include="..\GenTRAC.Models\ResponseLU.cs" Link="ResponseLU.cs" />
     <Compile Include="..\GenTRAC.Models\ResponseTypeLU.cs" Link="ResponseTypeLU.cs" />

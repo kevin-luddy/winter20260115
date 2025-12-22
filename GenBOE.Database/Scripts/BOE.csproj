@@ -258,6 +258,7 @@
     <Content Include="Object Scripts\Stored Procedures\upsertWorkspaceRMSTravelEscalationRate.sql" />
     <Content Include="Object Scripts\Stored Procedures\upsertWorkspaceRMSTravelNonzoneFeesAndCosts.sql" />
     <Content Include="Object Scripts\Stored Procedures\upsertWorkspaceVariable.sql" />
+    <Content Include="Object Scripts\Stored Procedures\validateWorkspacePoP.sql" />
     <Content Include="Object Scripts\Table Based Processing\SkillMixSummaryViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\CommonDisclosureSkillMixViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\LaborSpreadViaTable.sql" />
@@ -358,11 +359,17 @@
     <Content Include="Release Scripts\Older\Release 2025.09\1 - Release 2025.09 Script.sql" />
     <Content Include="Release Scripts\Release 2025.15\1 - Release 2025.15 Script.sql" />
     <Content Include="Release Scripts\Release 2025.16\1 - Release 2025.16 Script.sql" />
+    <Content Include="Release Scripts\Release 2025.17\1 - Release 2025.17 Script.sql" />
     <Content Include="Release Scripts\Older\Release 2025.10\1 - Release 2025.10 Script.sql" />
     <Content Include="Release Scripts\Older\Release 2025.11\1 - Release 2025.11 Script.sql" />
     <Content Include="Release Scripts\Older\Release 2025.12\1 - Release 2025.12 Script.sql" />
     <Content Include="Release Scripts\Older\Release 2025.14\1 - Release 2025.14 Script.sql" />
     <Content Include="Release Scripts\Older\Release 2025.13\1 - Release 2025.13 Script.sql" />
+    <Content Include="Release Scripts\Release 2025.18\1 - Release 2025.18 Script.sql" />
+    <Content Include="Release Scripts\Release 2025.19\1 - Release 2025.19 Script.sql" />
+    <Content Include="_Full Script Files For Specific Versions\BOE - 2025.17 Generated On 11_5_2025.sql" />
+    <Content Include="_Full Script Files For Specific Versions\BOE - 2025.17.1 Generated On 11_10_2025.sql" />
+    <Content Include="_Full Script Files For Specific Versions\BOE - 2025.19 Generated On 12_18_2025.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\ClassifiedRelease2025.29\BOE - 2025.11 Generated On 8_6_2025.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\ClassifiedRelease2025.29\BOE - 2025.12 Generated On 8_13_2025.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\ClassifiedRelease2025.29\BOE - 2025.13 Generated On 9_2_2025.sql" />
