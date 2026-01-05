@@ -31,7 +31,7 @@ namespace IES.Tests.Core
 		private static Document LoadTemplate()
 		{
 			Document doc;
-			using (MemoryStream ms = new (Properties.Resources.UCOTTemplate))
+			using (MemoryStream ms = new(Properties.Resources.UCOTTemplate))
 			{
 				doc = new Document(ms);
 			}
@@ -113,7 +113,7 @@ namespace IES.Tests.Core
 		/// </summary>
 		[TestMethod]
 		public void RemoveTableRowWithTaggedElementTest()
-		{ 
+		{
 			Document doc = LoadTemplate();
 			StructuredDocumentTag boeContainer = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.Container_BOE);
 			Assert.IsNotNull(boeContainer);
@@ -281,7 +281,7 @@ namespace IES.Tests.Core
 			Node parentNode = sdt.ParentNode;
 			WordUtilities.SetElementTextWithHTML(doc, sdt, html);
 
-			
+
 			// now we compare to the output
 			if (parentNode is Paragraph paragraph)
 			{
@@ -289,7 +289,7 @@ namespace IES.Tests.Core
 				Assert.IsTrue(text.Contains("Proposal/Program Name"));
 				Node node = parentNode.NextSibling;
 				Assert.IsNotNull(node);
-				text = node.GetText();		
+				text = node.GetText();
 				Assert.IsTrue(text.Contains("BoldedText"));
 				Assert.IsTrue(text.Contains("NextParagraph"));
 				Assert.IsTrue(text.IndexOf("BoldedText") < text.IndexOf("NextParagraph"));
@@ -361,7 +361,7 @@ namespace IES.Tests.Core
 
 			Document doc = LoadTemplate();
 			StructuredDocumentTag sdt = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.FieldName_ProgramName);
-			
+
 			WordUtilities.SetElementTextWithHTML(doc, sdt, html);
 
 			// now we compare to the output
@@ -408,7 +408,7 @@ namespace IES.Tests.Core
 			Table? table = boeContainer.GetChild(NodeType.Table, 0, true) as Table;
 			Assert.IsNotNull(table);
 
-			Table newTable = new (doc);
+			Table newTable = new(doc);
 			newTable.AppendChild(new Row(doc));
 			newTable.FirstRow.AppendChild(new Cell(doc));
 			Paragraph para = newTable.FirstRow.FirstCell.AppendChild(new Paragraph(doc));
@@ -419,7 +419,7 @@ namespace IES.Tests.Core
 			WordUtilities.CleanupDocumentXml(doc);
 			table = boeContainer.GetChild(NodeType.Table, 0, true) as Table;
 			Cell firstCell = table.FirstRow.FirstCell;
-			
+
 			newTable = firstCell.GetChild(NodeType.Table, 0, true) as Table;
 			Assert.IsNotNull(newTable);
 
@@ -489,7 +489,7 @@ namespace IES.Tests.Core
 			Assert.IsNotNull(table);
 			int numRows = table.Rows.Count;
 			StructuredDocumentTag sdt = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.FieldName_ProgramName);
-			
+
 			this.RemoveElementRow(sdt);
 
 			sdt = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.FieldName_ProgramName);
@@ -516,7 +516,7 @@ namespace IES.Tests.Core
 			BOEExportTaskElement task = GetTaskElement();
 
 			StructuredDocumentTag moqElement = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.Container_MOQSelection);
-			
+
 			this.PopulateMOQTypeData(task, [], doc, moqElement, false, exportInputs);
 
 			//string filename = Path.GetTempFileName();
@@ -535,7 +535,7 @@ namespace IES.Tests.Core
 			BOEExportTaskElement task = GetTaskElement();
 
 			StructuredDocumentTag moqElement = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.Container_MOQSelection);
-			
+
 			this.PopulateMOQTypeData(task, [], doc, moqElement, true, exportInputs);
 		}
 
@@ -571,7 +571,7 @@ namespace IES.Tests.Core
 		{
 			Document doc = LoadTemplate();
 			List<BOEExportModelView> boes = GetBOEModelViews();
-			BOEExporter sut = new (null, null, null, null, null);
+			BOEExporter sut = new(null, null, null, null, null);
 			sut.PopulateGeneralContent(doc, boes.First());
 		}
 
@@ -826,11 +826,11 @@ namespace IES.Tests.Core
 
 		private static BOEExportInputs GetExportInputs()
 		{
-			
+
 			ExportBoeWordRequestViewModel viewModel = new()
 			{
 				ExportFormatDTO = new GenBOE.DataBridge.Core.WorkspaceExportFormatDTO(),
-				AllWorkspaceBoes =GetBOEs(),
+				AllWorkspaceBoes = GetBOEs(),
 				AssignedBoeIdsAndCustomFieldValuesMapping = [],
 				BoeIdsAndLastUserToSubmitThemForApprovalMapping = [],
 				BoeExportModelViews = GetBOEModelViews(),
@@ -864,7 +864,7 @@ namespace IES.Tests.Core
 				SelectedComponents = [],
 				SummarizeByCustomField = "CLIN",
 				WbsElements = GetWBSs(),
-				Workspace = new ()
+				Workspace = new()
 				{
 					Id = 1,
 					IsUsingEquivalentPerson = false,
@@ -879,7 +879,7 @@ namespace IES.Tests.Core
 				WorkspaceHistory = [],
 				WorkspaceVariables = [],
 			};
-			BOEExportInputs exportInputs = new (viewModel);
+			BOEExportInputs exportInputs = new(viewModel);
 
 			return exportInputs;
 		}

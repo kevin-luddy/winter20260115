@@ -1027,10 +1027,10 @@
                                     <td>Totals</td>
                                     <td></td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.HistoricalHours | number:2}}</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.LaborSkillMix | number:1}}%</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.HistoricalSkillMix | number:1}}%</td>
                                     <td></td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.BoeSkillMix | number:1}}%</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.ProposedHours}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.ProposedSkillMix | number:1}}%</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.ProposedLegacyResource}}</td>
                                     <td></td>
                                     <td></td>
                                 </tr>
@@ -1080,10 +1080,10 @@
                                     <td>Totals</td>
                                     <td></td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.HistoricalHours | number:2}}</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.LaborSkillMix | number:1}}%</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.HistoricalSkillMix | number:1}}%</td>
                                     <td></td>
-                                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.BoeSkillMix | number:1}}%</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.ProposedHours}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.ProposedSkillMix | number:1}}%</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.ProposedLegacyResource}}</td>
                                     <td></td>
                                 </tr>
                             </tbody>
