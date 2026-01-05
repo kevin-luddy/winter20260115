@@ -572,12 +572,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					}
 				}
 
-				// TODO: free unmanaged resources (unmanaged objects) and override finalizer
-				// TODO: set large fields to null
 				disposedValue = true;
 			}
 		}
 
+		/// <summary>
+		/// Disposes of managed resources
+		/// </summary>
 		public void Dispose()
 		{
 			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
