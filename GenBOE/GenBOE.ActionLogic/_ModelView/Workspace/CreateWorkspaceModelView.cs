@@ -172,9 +172,9 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		[StringLength(100, ErrorMessage = "Workspace Name must not exceed 100 chars.")]
 		[ServerValidation(ErrorMessage = "Workspace Name must be Unique", ValidationToPerform = ValidationType.WorkspaceUniqueName)]
 		public string WorkspaceName
-		{ 
+		{
 			get => _workspaceName;
-			set => _workspaceName = TruncateString(value,MAX_WORKSPACE_NAME);
+			set => _workspaceName = TruncateString(value, MAX_WORKSPACE_NAME);
 		}
 
 		private string _description = "";
@@ -368,6 +368,13 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// </summary>
 		[Required(ErrorMessage = "Enable LM Navigator is required.")]
 		public bool EnableLmNavigator { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating if PLD data should be refreshed after copy.
+		/// This is set to true ONLY when user explicitly selects a new PA Number in the copy workflow.
+		/// When false, PLD refresh is skipped and copied workspace data is preserved.
+		/// </summary>
+		public bool RefreshPLDOnCopy { get; set; }
 
 		/// <summary>
 		/// TruncateString Utility
