@@ -59,6 +59,12 @@
 	$scope.model.PLD_RFPNumber = '';
 	$scope.model.PLD_ContractStatus = '';
 
+	// Copy workflow PLD variables - reuses same pattern as Create blank workflow
+	$scope.model.copyPldSearchTerm = '';
+	$scope.model.Copy_PLD_PANumber = '';
+	$scope.model.Copy_PLD_PATitle = '';
+	$scope.isCopyFromSelection = false;
+
 	$scope.isPLDFieldReadonly = function (fieldName) {
 		if (!$scope.model.IsPLDIntegrated || ($scope.model.PLD_PANumber.trim() === '')) {
 			return false;
@@ -108,11 +114,94 @@
 	$scope.filteredPLDPANumbers = [];
 	let debounceTimer;
 
+	// Copy workflow PLD search results - reuses same pattern
+	$scope.filteredCopyPLDPANumbers = [];
+	let copyDebounceTimer;
+
 	$scope.handleDropdownSelection = function () {
 		$scope.isFromSelection = true;
 		$scope.tryParsePLDSelection();
 	}
 
+	// Parse Copy PLD selection - reuses same pattern as tryParsePLDSelection
+	// Sets RefreshPLDOnCopy=true when user explicitly selects a PA Number
+	$scope.tryParseCopyPLDSelection = function () {
+		var text = $scope.model.copyPldSearchTerm;
+
+		if (!text || text.trim().length === 0) {
+			// User cleared the field - clear the PA Number and DON'T refresh PLD
+			$scope.model.Copy_PLD_PANumber = '';
+			$scope.model.Copy_PLD_PATitle = '';
+			$scope.data.RefreshPLDOnCopy = false;
+			// Keep TrackingNumber empty so backend won't try to pull PLD data
+			$scope.data.TrackingNumber = '';
+			return;
+		}
+
+		var cleanedText = text.trim();
+		var parts = cleanedText.split(" - ");
+
+		if (parts.length < 2) {
+			// Not a valid selection format - don't update anything
+			return;
+		}
+
+		$scope.model.Copy_PLD_PANumber = parts[0].trim();
+		$scope.model.Copy_PLD_PATitle = parts.slice(1).join(' - ').trim();
+		// Set tracking number for the copy workflow
+		$scope.data.TrackingNumber = $scope.model.Copy_PLD_PANumber;
+		$scope.data.ProposalTitle = $scope.model.Copy_PLD_PATitle;
+		// CRITICAL: Set flag to true - user explicitly selected a new PA Number, so we SHOULD refresh PLD
+		$scope.data.RefreshPLDOnCopy = true;
+	};
+
+	$scope.handleCopyDropdownSelection = function () {
+		$scope.isCopyFromSelection = true;
+		$scope.tryParseCopyPLDSelection();
+	}
+
+	// Called on ng-change to handle datalist selection and trigger search
+	$scope.onCopyPldSearchChange = function () {
+		var text = $scope.model.copyPldSearchTerm;
+
+		// If text is empty, let tryParseCopyPLDSelection handle clearing
+		if (!text || text.trim().length === 0) {
+			$scope.tryParseCopyPLDSelection();
+			return;
+		}
+
+		// Check if the value exactly matches a datalist option (user selected from dropdown)
+		if ($scope.filteredCopyPLDPANumbers && $scope.filteredCopyPLDPANumbers.length > 0) {
+			var match = $scope.filteredCopyPLDPANumbers.find(function (x) {
+				return x.Text.trim().toLowerCase() === text.trim().toLowerCase();
+			});
+			if (match) {
+				// User selected from dropdown - parse immediately
+				$scope.tryParseCopyPLDSelection();
+				return;
+			}
+		}
+
+		// Check if text is in valid selection format "PA - Title"
+		// This handles the case where:
+		// 1. User selected from browser-cached datalist but filteredCopyPLDPANumbers is empty
+		// 2. Search results haven't loaded yet but user already selected valid format text
+		// 3. User dismissed confirmation dialog and then selected a PA Number
+		var parts = text.trim().split(" - ");
+		if (parts.length >= 2) {
+			// Text is in valid format, try to parse it to enable the Next button
+			$scope.tryParseCopyPLDSelection();
+			return;
+		}
+
+		// User is typing/editing (not selecting from dropdown)
+		// Clear stale search results so $watch will trigger a fresh search
+		// This fixes the issue where old results prevent new searches after navigating back from Step 3
+		$scope.filteredCopyPLDPANumbers = [];
+
+		// Reset the selection flag to ensure search will work
+		$scope.isCopyFromSelection = false;
+	};
 
 	$scope.$watch('model.pldSearchTerm',
 		function (newVal, oldVal) {
@@ -161,6 +250,51 @@
 
 		});
 
+	// Copy workflow PLD search - reuses same SearchPLDProposals endpoint as Create blank workflow
+	$scope.$watch('model.copyPldSearchTerm',
+		function (newVal, oldVal) {
+
+			if (!newVal || newVal === oldVal) {
+				return;
+			}
+
+			const match = $scope.filteredCopyPLDPANumbers.find(x => x.Text.trim().toLowerCase() === newVal.trim().toLowerCase());
+			if (match) {
+				$scope.tryParseCopyPLDSelection();
+				return;
+			}
+
+			if ($scope.isCopyFromSelection) {
+				$scope.isCopyFromSelection = false;
+				return;
+			}
+
+			if (!newVal || newVal.length < 2) {
+				$scope.filteredCopyPLDPANumbers = [];
+				return;
+			}
+
+			clearTimeout(copyDebounceTimer);
+
+			copyDebounceTimer = setTimeout(function () {
+				// REUSE: Same SearchPLDProposals endpoint as Create blank workflow
+				var searchPLDProposals = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.SearchPLDProposals);
+
+				$http({
+					method: 'GET',
+					url: searchPLDProposals,
+					params: { term: newVal }
+				})
+					.then(function (res) {
+						$scope.filteredCopyPLDPANumbers = Array.isArray(res.data) ? res.data : [];
+					})
+					.catch(function (err) {
+						$scope.filteredCopyPLDPANumbers = [];
+					})
+
+			}, 300);
+
+		});
 
 
 	function parseDotNetDate(dotNetDate) {
@@ -223,7 +357,8 @@
 			EnableAssignTaskAuthor: false,
 			isAssignTaskAuthorEnabled: CreateWorkspaceModelView.IsAssignTaskAuthorEnabled,
 			EnableLmNavigator: CreateWorkspaceModelView.IsLmNavigatorEnabled ? true : false,
-			isLmNavigatorEnabled: CreateWorkspaceModelView.IsLmNavigatorEnabled
+			isLmNavigatorEnabled: CreateWorkspaceModelView.IsLmNavigatorEnabled,
+			RefreshPLDOnCopy: false  // Only set to true when user explicitly selects a new PA Number in copy workflow
 		};
 	};
 
@@ -258,8 +393,11 @@
 			Shortname = Shortname.trim();
 			$scope.data.Shortname = Shortname;
 			$scope.model.Shortname = Shortname;
-			$scope.data.nextRevision = Shortname;
-			$scope.model.nextRevision = Shortname;
+			// Only set nextRevision for non-copy workflow (PTM integration uses this for revision prefix)
+			if (!$scope.data.IsAttemptingToImport) {
+				$scope.data.nextRevision = Shortname;
+				$scope.model.nextRevision = Shortname;
+			}
 		}
 
 		// Contract dates and Proposal Submittal Date
@@ -286,8 +424,11 @@
 		if (workspaceName !== undefined && workspaceName !== '') {
 			$scope.data.WorkspaceName = workspaceName;
 			$scope.model.WorkspaceName = workspaceName;
-			$scope.data.nextRevision = workspaceName;
-			$scope.model.nextRevision = workspaceName;
+			// Only set nextRevision for non-copy workflow (PTM integration uses this for revision prefix)
+			if (!$scope.data.IsAttemptingToImport) {
+				$scope.data.nextRevision = workspaceName;
+				$scope.model.nextRevision = workspaceName;
+			}
 		}
 
 		// Description
@@ -336,6 +477,131 @@
 		}
 	}
 
+	// Helper function to derive shortname from workspace name
+	// Shortname = WorkspaceName truncated to 21 chars with invalid chars replaced
+	// IMPORTANT: Preserves uniqueness suffix (_01, _02, etc.) by truncating base name, not suffix
+	$scope.deriveShortname = function (workspaceName) {
+		if (!workspaceName) return '';
+		// Replace invalid characters (keep alphanumeric, dash, underscore, space)
+		var cleaned = workspaceName.replace(/[^a-zA-Z0-9-_ ]/g, '_');
+
+		// If already within limit, return as-is
+		if (cleaned.length <= 21) {
+			return cleaned.trim();
+		}
+
+		// Check for uniqueness suffix pattern (_01, _02, _10, etc.)
+		var suffixMatch = cleaned.match(/_(\d+)$/);
+		if (suffixMatch) {
+			// Has _NN suffix - preserve it by truncating the base name
+			var suffix = suffixMatch[0]; // e.g., "_01", "_10"
+			var base = cleaned.substring(0, cleaned.length - suffix.length);
+			// Truncate base to fit within 21 chars with suffix
+			var maxBaseLength = 21 - suffix.length;
+			if (maxBaseLength > 0) {
+				return base.substring(0, maxBaseLength).trim() + suffix;
+			}
+		}
+
+		// No suffix or suffix too long, just truncate
+		return cleaned.substring(0, 21).trim();
+	};
+
+	// Flag to track if uniqueness algorithm has been applied to workspace name
+	$scope._uniquenessApplied = false;
+	// Store the original source workspace name (before uniqueness is applied)
+	$scope._sourceWorkspaceName = '';
+
+	// Helper function to zero-pad a number to 2 digits (e.g., 1 -> "01", 10 -> "10")
+	$scope.zeroPad = function (num) {
+		return num < 10 ? '0' + num : '' + num;
+	};
+
+	// Uniqueness algorithm: Modify workspace name to ensure it's likely unique
+	// Called on transition from Step 2 to Step 3 in copy workflow
+	// Appends "_01" suffix (or increments to "_02", "_03", etc. if already present)
+	// This matches the established server-side algorithm in NextPLDTrackingNumber
+	$scope.applyUniquenessAlgorithm = function () {
+		if ($scope._uniquenessApplied) {
+			return; // Already applied, don't modify again
+		}
+
+		var baseName = $scope._sourceWorkspaceName || $scope.data.WorkspaceName || '';
+		if (!baseName) {
+			return; // No workspace name to modify
+		}
+
+		// Apply uniqueness: append "_01" suffix (zero-padded)
+		// If the name already ends with "_NN", increment the number
+		var uniqueName;
+		var numericSuffixPattern = /_(\d+)$/;
+		var match = baseName.match(numericSuffixPattern);
+
+		if (match) {
+			// Already has _NN suffix, increment and zero-pad
+			var num = parseInt(match[1]) + 1;
+			uniqueName = baseName.replace(numericSuffixPattern, '_' + $scope.zeroPad(num));
+		} else {
+			// No numeric suffix, add _01 (zero-padded)
+			uniqueName = baseName + '_01';
+		}
+
+		// Set the workspace name with uniqueness applied
+		$scope.data.WorkspaceName = uniqueName;
+
+		// Derive shortname from the modified workspace name (with length/character constraints)
+		// deriveShortname preserves the _NN suffix by truncating the base name if needed
+		$scope.data.Shortname = $scope.deriveShortname(uniqueName);
+
+		// Mark as applied
+		$scope._uniquenessApplied = true;
+	};
+
+	// Helper function to fetch PLD data for copy workflow
+	// This only fetches PLD data (LOB, dates, RFP, description) - NO uniqueness algorithm
+	// Uniqueness is validated by existing live validation and backend validateWorkspace()
+	$scope.fetchPLDDataForCopy = function () {
+		if (!$scope.data.IsAttemptingToImport || !$scope.model.IsPLDIntegrated) {
+			return; // Not applicable
+		}
+
+		var getPLDProposalDetails = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetPLDProposalDetails);
+
+		$http({
+			method: 'GET',
+			url: getPLDProposalDetails,
+			params: { paNumber: $scope.data.TrackingNumber }
+		}).then(function (res) {
+			var data = res.data;
+
+			$scope.model.LineOfBusiness = data.LineOfBusiness || '';
+			$scope.data.LineOfBusiness = data.LineOfBusiness || '';
+			if (data.LineOfBusinessId && data.LineOfBusinessId > 0) {
+				$scope.model.LineOfBusinessID = data.LineOfBusinessId;
+				$scope.data.LineOfBusinessID = data.LineOfBusinessId;
+			} else {
+				$scope.model.LineOfBusinessID = -1;
+				$scope.data.LineOfBusinessID = -1;
+			}
+
+			var description = data.Description || '';
+			if (description.length > 1000) {
+				description = description.substr(0, 1000);
+			}
+			$scope.model.Description = description;
+			$scope.data.Description = description;
+
+			$scope.model.ContractStartDate = parseDotNetDate(data.ProjectStartDate);
+			$scope.model.ContractEndDate = parseDotNetDate(data.ProjectEndDate);
+			$scope.data.ContractStartDate = $scope.model.ContractStartDate;
+			$scope.data.ContractEndDate = $scope.model.ContractEndDate;
+
+			$scope.model.RFPNumber = data.RFPNumber || '';
+			$scope.model.PLD_RFPNumber = data.RFPNumber || '';
+			$scope.data.RFPNumber = $scope.model.PLD_RFPNumber;
+		});
+	};
+
 	$scope.goToStep = function (newStep) {
 
 		// Sync Step 3 data BEFORE changing the step
@@ -345,19 +611,53 @@
 
 		$scope.errors = [];
 		$('#urlValidationBox').html('');
-		$scope.step = newStep;
 
+		// When transitioning to Step 3, apply uniqueness algorithm
+		// This is the established approach using _01, _02, etc. suffix
+		// Applied to BOTH copy workflow AND create new workflow for consistency
+		if (newStep === 3) {
+			if ($scope.data.IsAttemptingToImport) {
+				// COPY workflow: Apply uniqueness algorithm - modifies workspace name and derives shortname
+				$scope.applyUniquenessAlgorithm();
+
+				// For PLD integration: set tracking number and fetch PLD data
+				if ($scope.model.IsPLDIntegrated) {
+					$scope.data.TrackingNumber = $scope.model.Copy_PLD_PANumber;
+					$scope.data.ProposalTitle = $scope.model.Copy_PLD_PATitle;
+					// Fetch PLD data (LOB, dates, RFP, description) - fire and forget
+					$scope.fetchPLDDataForCopy();
+				}
+			} else {
+				// CREATE NEW workflow: Also apply uniqueness algorithm
+				// Skip if PLD integrated - server already handles uniqueness via GetNextPLDWorkspaceShortNameFromTrackingNumber
+				// Only apply for non-PLD create new workflow
+				if (!$scope.model.IsPLDIntegrated && !$scope._uniquenessApplied && $scope.data.WorkspaceName) {
+					$scope._sourceWorkspaceName = $scope.data.WorkspaceName;
+					$scope.applyUniquenessAlgorithm();
+				}
+			}
+		}
+
+		// Standard flow for all steps
+		$scope.step = newStep;
 		$scope.model.showNextButton = true;
 		$scope.model.showBackButton = newStep !== 1;
-
 		$scope.setStepSpecificElements(newStep);
 	};
 
 	$scope.setStepSpecificElements = function (newStep) {
 		if ($scope.model.IsPLDIntegrated) {
 			$scope.data.netRevision = $scope.model.netRevision;
-			$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
-			$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
+			// Use different PLD variables for copy workflow vs create blank workflow
+			if ($scope.data.IsAttemptingToImport) {
+				// Copy workflow - use Copy_PLD_* variables (already set via getWorkspaceToCopyDetails or user selection)
+				$scope.data.TrackingNumber = $scope.model.Copy_PLD_PANumber;
+				$scope.data.ProposalTitle = $scope.model.Copy_PLD_PATitle;
+			} else {
+				// Create blank workflow - use PLD_* variables
+				$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
+				$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
+			}
 			$scope.data.CostVolumeLeadPricerDisplayName = $scope.model.CostVolumeLeadPricerDisplayName;
 		}
 
@@ -368,7 +668,11 @@
 			}
 			// Concatenate PLD_PANumber with the user-entered workspace name
 			$scope.data.WorkspaceName = $scope.model.PLD_PANumber + " " + $scope.data.OriginalWorkspaceName;
-			$scope.data.Shortname = $scope.data.nextRevision;
+			// Only set Shortname from nextRevision if nextRevision has a value
+			// For copy workflow, nextRevision may be empty - preserve existing Shortname
+			if ($scope.data.nextRevision) {
+				$scope.data.Shortname = $scope.data.nextRevision;
+			}
 		}
 
 		if ($scope.model.IsPLDIntegrated && newStep !== 5) {
@@ -389,14 +693,20 @@
 				$scope.data.ResourceDecimalPrecision = 2;
 			}
 
-			var getPLDProposalDetails = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetPLDProposalDetails);
+			// For COPY workflow: WorkspaceName/Shortname loaded by getWorkspaceToCopyDetails,
+			// PLD data (LOB, dates, RFP) fetched by fetchPLDDataForCopy() in goToStep()
+			// Uniqueness validated by existing live validation + backend validateWorkspace()
+			if ($scope.data.IsAttemptingToImport) {
+				// Nothing additional to do - data already loaded
+			} else {
+				// CREATE BLANK workflow - fetch PLD data and generate shortname
+				var getPLDProposalDetails = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetPLDProposalDetails);
 
-			$http({
-				method: 'GET',
-				url: getPLDProposalDetails,
-				params: { paNumber: $scope.data.TrackingNumber }
-			})
-				.then(function (res) {
+				$http({
+					method: 'GET',
+					url: getPLDProposalDetails,
+					params: { paNumber: $scope.data.TrackingNumber }
+				}).then(function (res) {
 					const data = res.data;
 
 					$scope.model.LineOfBusiness = data.LineOfBusiness || '';
@@ -416,14 +726,6 @@
 					$scope.model.Description = description;
 					$scope.data.Description = description;
 
-
-					// TODO: re-evaluate Pricer data pull after customer weighs in on need / bad data handling
-					// hold on bringing what PLD has for Pricer as it is not clean name data
-					//$scope.model.CostVolumeLeadPricerDisplayName = data.Pricing;
-					//$scope.data.CostVolumeLeadPricerDisplayName = data.Pricing;
-					//$scope.model.Pricer = data.Pricing;
-					//$scope.data.Pricer = data.Pricing;
-
 					$scope.model.ContractStartDate = parseDotNetDate(data.ProjectStartDate);
 					$scope.model.ContractEndDate = parseDotNetDate(data.ProjectEndDate);
 					$scope.data.ContractStartDate = $scope.model.ContractStartDate;
@@ -437,94 +739,102 @@
 
 					$scope.model.PLD_ContractStatus = data.ProposalStatus || '';
 					$scope.model.ContractStatus = $scope.model.PLD_ContractStatus;
-				})
+				});
 
-			var getNextPLDWorkspaceShortNameFromTrackingNumber = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetNextPLDWorkspaceShortNameFromTrackingNumber);
+				// Generate new shortname for create blank workflow
+				var getNextPLDWorkspaceShortNameFromTrackingNumber = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetNextPLDWorkspaceShortNameFromTrackingNumber);
 
-			$http({
-				method: 'GET',
-				url: getNextPLDWorkspaceShortNameFromTrackingNumber,
-				params: { paNumber: $scope.data.TrackingNumber }
-			})
-				.then(function (res) {
+				$http({
+					method: 'GET',
+					url: getNextPLDWorkspaceShortNameFromTrackingNumber,
+					params: { paNumber: $scope.data.TrackingNumber }
+				}).then(function (res) {
 					const data = res.data;
 
-					$scope.model.nextRevision = data.ShortName;
-					$scope.data.nextRevision = $scope.model.nextRevision;
 					$scope.model.nextRevision = data.ShortName;
 					$scope.data.nextRevision = $scope.model.nextRevision;
 
 					//Shortname (URL): Set to nextRevision (auto-generate, read-only for PLD)
 					if ($scope.data.nextRevision) {
-						$scope.data.ShortName = $scope.data.nextRevision;
+						$scope.data.Shortname = $scope.data.nextRevision;
 					}
-				})
-		};
-
-
-	$scope.step = newStep;
-	switch ($scope.step) {
-		case 1:
-			$scope.model.stepTitle = 'Workspace Type';
-			$scope.model.showOCINote = false;
-			$scope.model.showBackButton = false;
-			break;
-		case 2:
-			$scope.model.stepTitle = 'Search & Copy Existing Workspace';
-			$scope.model.showOCINote = false;
-			$scope.model.showNextButton = true;
-			break;
-		case 3:
-			$scope.model.stepTitle = 'Workspace Identification';
-			$scope.model.showOCINote = true;
-			$scope.identificationPageSetup = false;
-			break;
-		case 4:
-			$scope.model.stepTitle = 'Share & Allow Search Settings';
-			$scope.model.showOCINote = false;
-			$scope.model.showNextButton = true;
-			break;
-		case 5:
-			$scope.model.stepTitle = 'Verify';
-			$scope.model.showOCINote = true;
-			$scope.model.showNextButton = false;
-			break;
-	};
-
-	$scope.back = function () {
-		$scope.errors = [];
-		$('#urlValidationBox').html('');
-
-		// Sync Step 3 data BEFORE leaving
-		if ($scope.step === 3) {
-			$scope.saveUserEnteredValues();
+				});
+			}
 		}
 
+
+		$scope.step = newStep;
 		switch ($scope.step) {
+			case 1:
+				$scope.model.stepTitle = 'Workspace Type';
+				$scope.model.showOCINote = false;
+				$scope.model.showBackButton = false;
+				break;
 			case 2:
-				$scope.setStepSpecificElements(1);
+				$scope.model.stepTitle = 'Search & Copy Existing Workspace';
+				$scope.model.showOCINote = false;
+				$scope.model.showNextButton = true;
 				break;
 			case 3:
-				if ($scope.data.IsAttemptingToImport) {
-					$scope.setStepSpecificElements(2);
-				} else {
-					$scope.setStepSpecificElements(1);
-				}
+				$scope.model.stepTitle = 'Workspace Identification';
+				$scope.model.showOCINote = true;
+				$scope.identificationPageSetup = false;
 				break;
 			case 4:
-				$scope.setStepSpecificElements(3);
+				$scope.model.stepTitle = 'Share & Allow Search Settings';
+				$scope.model.showOCINote = false;
+				$scope.model.showNextButton = true;
 				break;
 			case 5:
-				if ($scope.data.IsAttemptingToImport && $scope.data.WSExactCopy) {
-					// skip Workspace Identification and Share/allow search settings
-					$scope.setStepSpecificElements(2);
-				} else {
-					$scope.setStepSpecificElements(4);
-				}
+				$scope.model.stepTitle = 'Verify';
+				$scope.model.showOCINote = true;
+				$scope.model.showNextButton = false;
 				break;
-		}
+		};
 
-	};
+		$scope.back = function () {
+			$scope.errors = [];
+			$('#urlValidationBox').html('');
+
+			// CRITICAL: Reset isWaitingForCallback on back navigation
+			// This ensures navigation works even if a dialog was dismissed without resetting it
+			$scope.isWaitingForCallback = false;
+
+			// Sync Step 3 data BEFORE leaving
+			if ($scope.step === 3) {
+				$scope.saveUserEnteredValues();
+			}
+
+			switch ($scope.step) {
+				case 2:
+					$scope.setStepSpecificElements(1);
+					break;
+				case 3:
+					if ($scope.data.IsAttemptingToImport) {
+						// Reset PLD search state when navigating back to Step 2
+						// This ensures typeahead search works properly after returning from Step 3
+						$scope.isCopyFromSelection = false;
+						$scope.filteredCopyPLDPANumbers = [];
+						$scope.setStepSpecificElements(2);
+					} else {
+						$scope.setStepSpecificElements(1);
+					}
+					break;
+				case 4:
+					// Use goToStep to ensure proper async handling for copy workflow
+					$scope.goToStep(3);
+					break;
+				case 5:
+					if ($scope.data.IsAttemptingToImport && $scope.data.WSExactCopy) {
+						// skip Workspace Identification and Share/allow search settings
+						$scope.setStepSpecificElements(2);
+					} else {
+						$scope.setStepSpecificElements(4);
+					}
+					break;
+			}
+
+		};
 
 		$scope.next = function () {
 			if (!$scope.nextButtonDisabled()) {
@@ -552,7 +862,7 @@
 
 							if ($scope.model.IsPLDIntegrated && !hasPA) {
 								Session.confirmDialog("PA Number", "A PA Number was not set, are you sure you want to continue?",
-									function () { $scope.$apply(function () { $scope.setStepSpecificElements(3); }) },
+									function () { $scope.$apply(function () { $scope.goToStep(3); }) },
 									null
 								);
 								return;
@@ -562,7 +872,7 @@
 							if ($scope.model.isPTMIntegrated && ($scope.model.isAdmin || $scope.model.ptmTrackingNumberNotRequired) && $scope.model.ptmTrackingNumber === '') {
 								// show notification to System Admin that they did not (optionally) select a PTM Tracking Number
 								Session.confirmDialog("PTM Tracking Number", "A PTM Tracking Number was not set, are you sure you want to continue?",
-									function () { $scope.$apply(function () { $scope.setStepSpecificElements(3); }) },
+									function () { $scope.$apply(function () { $scope.goToStep(3); }) },
 									null // user clicked cancel, do nothing
 								);
 							} else if ($scope.model.isPTMIntegrated) {
@@ -571,14 +881,14 @@
 								var trackingPromise = $scope.getNextTrackingNumberRevision();
 								trackingPromise.then(
 									function (answer) {
-										$scope.setStepSpecificElements(3);
+										$scope.goToStep(3);
 										$scope.isWaitingForCallback = false;
 									}, function (error) {
 										$scope.isWaitingForCallback = false;
 									});
 							} else {
-								// just go to the next step
-								$scope.setStepSpecificElements(3);
+								// just go to the next step - use goToStep to apply uniqueness algorithm
+								$scope.goToStep(3);
 							}
 						}
 						break;
@@ -637,7 +947,9 @@
 
 		copyPromise.then(
 			function (answer) {
-				$scope.setStepSpecificElements(nextStep);
+				// Use goToStep instead of setStepSpecificElements to ensure proper
+				// async handling for copy workflow (PLD data, uniqueness algorithm)
+				$scope.goToStep(nextStep);
 				$scope.isWaitingForCallback = false;
 			}, function (error) {
 				$scope.isWaitingForCallback = false;
@@ -682,6 +994,27 @@
 	};
 
 	$scope.step2Next = function () {
+		// PLD PA Number validation for Copy workflow - REUSES same confirmation dialog as Create blank workflow (Step 1)
+		if ($scope.model.IsPLDIntegrated) {
+			var copyPA = ($scope.model.Copy_PLD_PANumber || '').toString().trim();
+			var hasCopyPA = copyPA.length > 0;
+
+			if (!hasCopyPA) {
+				// REUSE: Same confirmation dialog text and pattern as Step 1 (line ~553 in original)
+				Session.confirmDialog("PA Number", "A PA Number was not set, are you sure you want to continue?",
+					function () { $scope.$apply(function () { $scope.continueStep2Next(); }); },
+					// CRITICAL: Reset isWaitingForCallback when user clicks "No" (cancel)
+					// Without this, the flag stays true and Next button remains disabled forever
+					function () { $scope.$apply(function () { $scope.isWaitingForCallback = false; }); }
+				);
+				return;
+			}
+		}
+		$scope.continueStep2Next();
+	};
+
+	// Extracted continuation of step2Next after PA validation
+	$scope.continueStep2Next = function () {
 		if ($scope.data.WSExactCopy) {
 			// skip Workspace Identification and Share/allow search settings steps, but still need to validate the data
 			$scope.isWaitingForCallback = true;
@@ -1112,11 +1445,12 @@
 		} else if ($scope.step === 1 && $scope.model.isPTMIntegrated && !$scope.model.isAdmin && $scope.data.IsAttemptingToImport === false && $scope.model.ptmTrackingNumber === '') {
 			// if we are on the first step, PTM is integrated, we are not system admin, chose blank workspace, and have not chosen a PTM Tracking number yet then disable the next button
 			return true;
-		} else if ($scope.step === 2 && ($scope.model.workspaceToCopy.WorkspaceName === '' || $scope.data.WSExactCopy === null || ($scope.model.isPTMIntegrated && $scope.model.ptmTrackingNumber === '' && !$scope.model.ptmTrackingNumberNotRequired))) {
+		} else if ($scope.step === 2 && ($scope.model.workspaceToCopy.WorkspaceName === '' || $scope.data.WSExactCopy === null || ($scope.model.isPTMIntegrated && $scope.model.ptmTrackingNumber === '' && !$scope.model.ptmTrackingNumberNotRequired) || ($scope.model.IsPLDIntegrated && ($scope.model.Copy_PLD_PANumber || '').trim() === '' && !$scope.model.isAdmin))) {
 			// if we are on the 2nd step and one of the following occurs, then disable the next button
 			// Exact Copy radio button not selected
 			// WorkspaceName not selected meaning no workspace to copy has been selected
 			// If PTM integrated, no PTM Tracking number selected yet
+			// If PLD integrated, no PLD PA Number selected yet (admin can skip)
 			return true;
 		} else if ($scope.step === 2 && $scope.model.showWorkspaceSearchBOELoader && $scope.data.WSExactCopy === false) {
 			// If we are on the second step and Non-Exact has been selected we still need to wait for the BOE list to be loaded
@@ -1268,7 +1602,10 @@
 			}
 
 			$scope.data.WorkspaceName = result.WorkspaceName;
-			$scope.data.Shortname = result.ShortName;
+			// Derive Shortname from WorkspaceName (truncated to 21 chars max)
+			// Shortname should equal WorkspaceName unless length constraint prevents it
+			// Uniqueness is validated by existing live validation + backend validateWorkspace()
+			$scope.data.Shortname = $scope.deriveShortname(result.WorkspaceName);
 			$scope.data.ResourceDecimalPrecision = result.ResourceDecimalPrecision;
 			$scope.model.originalDecimalPrecision = result.ResourceDecimalPrecision;
 			$scope.data.CostDecimalPrecision = result.CostDecimalPrecision;
@@ -1306,6 +1643,27 @@
 						Value: result.TrackingNumber
 					}
 					$scope.model.copyTrackingNumbers.unshift(originalTrackingNumber);
+				}
+
+				// TRANSITION LOGIC: For PLD integrated mode, pre-populate Copy PLD fields from source workspace
+				// This handles copying old workspaces (created before PLD integration) into the new PLD-integrated flow
+				if ($scope.model.IsPLDIntegrated) {
+					var sourceHasPA = (result.TrackingNumber || '').trim().length > 0;
+					if (sourceHasPA) {
+						// Pre-populate the Copy PLD PA Number from the source workspace's tracking number
+						// Use the same "PA - Title" format as the datalist options for consistency
+						var paTitle = result.ProposalTitle || '';
+						$scope.model.copyPldSearchTerm = paTitle ? (result.TrackingNumber + ' - ' + paTitle) : result.TrackingNumber;
+						$scope.model.Copy_PLD_PANumber = result.TrackingNumber;
+						$scope.model.Copy_PLD_PATitle = paTitle;
+					}
+				}
+			} else {
+				// Source workspace has no PA Number - clear copy PLD fields so user must select new PA
+				if ($scope.model.IsPLDIntegrated) {
+					$scope.model.copyPldSearchTerm = '';
+					$scope.model.Copy_PLD_PANumber = '';
+					$scope.model.Copy_PLD_PATitle = '';
 				}
 			}
 
@@ -1358,10 +1716,19 @@
 		$scope.model.WorkspaceToCopy = data.workspaceName;
 		$scope.data.WorkspaceToCopyID = data.workspaceID;
 
+		// Store the source workspace name and reset uniqueness flag
+		// Uniqueness algorithm will be applied on transition to Step 3
+		$scope._sourceWorkspaceName = data.workspaceName;
+		$scope._uniquenessApplied = false;
+
+		// Set initial WorkspaceName (will be modified by uniqueness algorithm before Step 3)
+		$scope.data.WorkspaceName = data.workspaceName;
+
 		if (!data.isProjectMap.isTrue()) {
 			$scope.getWorkspaceToCopyBOEList(data);
 		}
 
+		// Fetch additional workspace details (description, dates, LOB, etc.) - async
 		$scope.getWorkspaceToCopyDetails(data);
 
 		if (data.isProjectMap.isTrue()) {

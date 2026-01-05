@@ -16,7 +16,8 @@
 			<span> {{model.PLD_PANumber}} {{model.PLD_PATitle}}</span>
 		</div>
 		<div data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
-			<span>{{model.nextRevision}} </span><input class="half" id="WorkspaceName" name="WorkspaceName" data-ng-trim="false" data-ng-model="data.WorkspaceName" data-ng-keyup="workspaceNameKeyUp()" type="text" maxlength="88" />
+			<!-- Hide nextRevision span for copy workflow - copy workflow uses the copied workspace name directly -->
+			<span data-ng-hide="data.IsAttemptingToImport">{{model.nextRevision}} </span><input class="half" id="WorkspaceName" name="WorkspaceName" data-ng-trim="false" data-ng-model="data.WorkspaceName" data-ng-keyup="workspaceNameKeyUp()" type="text" maxlength="88" />
 		</div>
 	</div>
 </div>
@@ -46,7 +47,7 @@
 	</div>
 	<div style="display: inline-flex">
 		<span data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">{{ model.applicationUrl}}{{model.PLD_PANumber }}</span></span>
-		<span data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">{{ model.applicationUrl }}</span><input data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" name="ShortName" class="quarter" id="ShortName" data-ng-model="data.Shortname" type="text" maxlength="15" value="{{ model.nextRevision }}" />
+		<span data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">{{ model.applicationUrl }}</span><input data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" name="ShortName" class="quarter" id="ShortName" data-ng-model="data.WorkspaceName" type="text" maxlength="15" value="{{ data.WorkspaceName }}" />
 	</div>
 </div>
 <div class="form-row" data-ng-show="model.showProjectMap">
