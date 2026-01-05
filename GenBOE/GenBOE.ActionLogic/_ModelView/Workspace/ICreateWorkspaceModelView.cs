@@ -92,7 +92,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// Get/Set the LineOfBusinessID
 		/// </summary>
 		int LineOfBusinessID { get; set; }
-		
+
 		/// <summary>
 		/// Get/Set the RFPNumber
 		/// </summary>
@@ -209,5 +209,12 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// Gets or sets a value indicating if the LM Navigator link is enabled for the workspace
 		/// </summary>
 		bool EnableLmNavigator { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating if PLD data should be refreshed after copy.
+		/// This is set to true ONLY when user explicitly selects a new PA Number in the copy workflow.
+		/// When false, PLD refresh is skipped and copied workspace data is preserved.
+		/// </summary>
+		bool RefreshPLDOnCopy { get; set; }
 	}
 }

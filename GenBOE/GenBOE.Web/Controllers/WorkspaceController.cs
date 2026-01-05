@@ -4082,7 +4082,7 @@ namespace GenBOE.Web.Controllers
 
 			// Finalize Action
 			FinalizeAction(_log, WebConstants.ACTION_EXPORT_WORKSPACE_VERSION, sw);
-			
+
 			return toReturn;
 		}
 
@@ -4639,6 +4639,7 @@ namespace GenBOE.Web.Controllers
 		/// <returns></returns>
 		[MaxDbQuery(-1)]
 		[HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		public JsonResult SaveNewWorkspace([CreateWorkspaceBinder] ICreateWorkspaceModelView newWorkspace)
 		{
 			_ = newWorkspace ?? throw new ArgumentNullException(nameof(newWorkspace));
@@ -4693,7 +4694,7 @@ namespace GenBOE.Web.Controllers
 			#region Do the initial save
 
 			// Objects we could be saving
-			int newWorkspaceID;
+			int newWorkspaceID = 0;
 			UserDTO createdByUserDTO = this.UserLoader.GetUserForActiveUser();
 			WorkspaceDTO newWorkspaceDTO;
 
@@ -4906,7 +4907,7 @@ namespace GenBOE.Web.Controllers
 						this.workspaceLoader.InsertDefaultMutliValues(newWorkspaceID);
 					}
 
-					// invoke the state machine to perform actions for this create                    
+					// invoke the state machine to perform actions for this create
 					_WorkspaceStateMachine.PerformStateTransitionAction(newWs, WorkspaceState.None, WorkspaceState.Initialization);
 				}
 
@@ -4916,6 +4917,68 @@ namespace GenBOE.Web.Controllers
 			}
 
 			#endregion
+
+			// PLD Refresh AFTER transaction completes - MUST be outside TransactionScope because GetProposalDetails
+			// makes an external API call which would trigger DTC promotion (Snapshot isolation doesn't support promotion)
+			// This handles: (1) Copy with PA Number (inherited or explicitly selected), (2) Transition of old workspaces into PLD-integrated flow
+			// Only refresh PLD if TrackingNumber is provided and workspace was created successfully
+			if (newWorkspaceID > 0 && Utilities.ShowPLDIsIntegrated && !string.IsNullOrEmpty(newWorkspace.TrackingNumber))
+			{
+				PLDProposalDTO pldData = _pldDTODataLoader.GetProposalDetails(newWorkspace.TrackingNumber);
+				if (pldData != null)
+				{
+					// REUSE: Same field mapping as WorkspaceIdentificationMST.ascx RefreshPLDData and CreateWorkspace Step 3
+					// Re-fetch the workspace DTO to get current state after copy
+					WorkspaceDTO wsToUpdate = this.Factory.CreateFullWorkspace(newWorkspaceID);
+					wsToUpdate.TrackingNumber = newWorkspace.TrackingNumber;
+
+					// Only update ProposalTitle if PLD has data (don't overwrite copied value with empty)
+					if (!string.IsNullOrEmpty(pldData.Title))
+					{
+						wsToUpdate.ProposalTitle = pldData.Title;
+					}
+
+					// Only update description if PLD has data (don't overwrite copied value with empty)
+					if (!string.IsNullOrEmpty(pldData.Description))
+					{
+						string description = pldData.Description;
+						if (description.Length > 1000)
+						{
+							description = description.Substring(0, 1000);
+						}
+						wsToUpdate.Description = description;
+					}
+
+					// Update LOB if PLD provides a valid one (don't overwrite copied value with invalid)
+					if (pldData.LineOfBusinessId.HasValue && pldData.LineOfBusinessId.Value > 0)
+					{
+						wsToUpdate.LineOfBusiness = new PickListDto { Id = pldData.LineOfBusinessId.Value };
+					}
+
+					// Only update RFPNumber if PLD has data (don't overwrite copied value with empty)
+					if (!string.IsNullOrEmpty(pldData.RFPNumber))
+					{
+						wsToUpdate.RFPNumber = pldData.RFPNumber;
+					}
+
+					// Update dates only if PLD provides valid values (not null and not DateTime.MinValue)
+					// This preserves copied workspace dates when PLD has no data
+					if (pldData.ProjectStartDate.HasValue && pldData.ProjectStartDate.Value != DateTime.MinValue)
+					{
+						wsToUpdate.ContractStartDate = pldData.ProjectStartDate.Value;
+					}
+					if (pldData.ProjectEndDate.HasValue && pldData.ProjectEndDate.Value != DateTime.MinValue)
+					{
+						wsToUpdate.ContractEndDate = pldData.ProjectEndDate.Value;
+					}
+					if (pldData.ProposalSubmittalDate.HasValue && pldData.ProposalSubmittalDate.Value != DateTime.MinValue)
+					{
+						wsToUpdate.ProposalSubmittalDate = pldData.ProposalSubmittalDate.Value;
+					}
+
+					this.workspaceLoader.SaveWorkspaceSettings(createdByUserDTO.UserID, wsToUpdate);
+				}
+			}
 
 			if (decimalPrecisionChanged || costDecimalPrecisionChanged)
 			{
