@@ -2989,7 +2989,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="systemSettings">System settings to save</param>
         /// <returns>JsonResult of the save.</returns>
 		[HttpPost]
-        public virtual JsonResult SaveSystemSettings(ICollection<SystemSettingDTO> systemSettings)
+        public virtual async Task<JsonResult> SaveSystemSettings(ICollection<SystemSettingDTO> systemSettings)
         {
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_SYSTEM_SETTINGS, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
@@ -3022,22 +3022,19 @@ namespace GenBOE.Web.Controllers
                 }
 
 				// Update Skill Mix and UCOT Blacklists if settings are included
-				if (systemSettings.Any(x => x.Key == Constants.SKILL_MIX_BLACKLIST))
-				{
-					Utilities.UpdateSkillMixBlacklistSettings(
-						systemSettings.Any(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)) 
-						? systemSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)).Value
+				Utilities.UpdateSkillMixBlacklistSettings(
+					systemSettings.Any(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)) 
+						? systemSettings.First(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)).Value
 						: string.Empty);
-				}
+				
 
-				if (systemSettings.Any(x => x.Key == Constants.UCOT_BLACKLIST))
-				{
-					Utilities.UpdateUcotBlacklistSettings(
-						systemSettings.Any(x => x.Key.Equals(Constants.UCOT_BLACKLIST))
-						? systemSettings.FirstOrDefault(x => x.Key.Equals(Constants.UCOT_BLACKLIST)).Value
+				Utilities.UpdateUcotBlacklistSettings(
+					systemSettings.Any(x => x.Key.Equals(Constants.UCOT_BLACKLIST))
+						? systemSettings.First(x => x.Key.Equals(Constants.UCOT_BLACKLIST)).Value
 						: string.Empty);
-				}
-			}
+			
+				await this._ControllerLogic.RefreshReportsSystemSettings();
+            }
             else
             {
                 throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(ModelState));

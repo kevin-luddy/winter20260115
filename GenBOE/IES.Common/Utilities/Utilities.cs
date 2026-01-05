@@ -1223,6 +1223,10 @@ namespace IES.Common
 			{
 				skillMixBlacklistWorkspaces = blackListWorkspaces.Split(',').Select(x => x.Trim()).ToCollection();
 			}
+			else
+			{
+				skillMixBlacklistWorkspaces = new Collection<string>();
+			}
 		}
 
 		/// <summary>

@@ -8,7 +8,8 @@ namespace GenBOE.ActionLogic
 {
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using GenBOE.ActionLogic.ModelView.Admin;
+	using System.Threading.Tasks;
+	using GenBOE.ActionLogic.ModelView.Admin;
     using GenBOE.Dtos;
     using IES.Common;
     using IES.Common.Exceptions;
@@ -31,6 +32,12 @@ namespace GenBOE.ActionLogic
         /// </summary>
         /// <returns>Default Resources Modelview</returns>
         DefaultResourcesModelView DisplayDefaultResourcesLogic();
+
+		/// <summary>
+		/// Refresh the system settings for Reports
+		/// </summary>
+		/// <returns>async void</returns>
+		Task RefreshReportsSystemSettings();
 
         /// <summary>
         /// Gets the grid data for the Manage Zone Travel Origins Page
