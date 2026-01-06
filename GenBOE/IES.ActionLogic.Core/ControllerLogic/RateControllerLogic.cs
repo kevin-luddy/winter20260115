@@ -859,19 +859,61 @@ namespace IES.ActionLogic.Core.ControllerLogic
 
 			try
 			{
+				// Save is different for import because it is possible to Save a new Rate Code
 				foreach (RateDetailModelView importedRateDetailMV in importedRates)
 				{
-					// Save is different for import because it is possible to Save a new Rate Code
-					if (importedRateDetailMV.IsDeleted)
+					// Find and update existing RateCode.
+					RateDetailModelView existingRateDetailMV = existingRates.FirstOrDefault(x => x.RateCode == importedRateDetailMV.RateCode);
+					if (existingRateDetailMV != null)
 					{
-						importedRateDetailMV.Updateable = UpdateType.Deleted;
+						if (importedRateDetailMV.Values != null)
+						{
+							bool modified = false;
+
+							// Overwrite/Add RateCodeYears
+							foreach (RateYearModelView importedRateYearMV in importedRateDetailMV.Values.Where(x => x.Dirty))
+							{
+								RateYearModelView existingRateYearMV = existingRateDetailMV.Values.FirstOrDefault(x => x.Year == importedRateYearMV.Year);
+
+								if (existingRateYearMV != null)
+								{
+									// RateYear already exists - update.
+									if (existingRateYearMV.Value != importedRateYearMV.Value)
+									{
+										modified = true;
+										existingRateYearMV.Value = importedRateYearMV.Value;
+										existingRateYearMV.Dirty = true;
+										existingRateYearMV.Updateable = UpdateType.Upsert;
+										existingRateDetailMV.Updateable = UpdateType.Upsert;
+									}
+								}
+								else
+								{
+									modified = true;
+									importedRateYearMV.Dirty = true;
+									importedRateYearMV.Updateable = UpdateType.Upsert;
+									importedRateYearMV.RateCodeId = existingRateDetailMV.Id;
+									existingRateDetailMV.Updateable = UpdateType.Upsert;
+
+									// New RateYear in import - insert
+									existingRateDetailMV.Values.Add(importedRateYearMV);
+								}
+							}
+
+							// Only save Rates that have changes.
+							if (modified)
+							{
+								// Add to collection for bulk save.
+								importResults.Add(existingRateDetailMV);
+							}
+						}
 					}
 					else
 					{
+						// This is an Add
 						importedRateDetailMV.Updateable = UpdateType.Upsert;
+						importResults.Add(importedRateDetailMV);
 					}
-
-					importResults.Add(importedRateDetailMV);
 				}
 
 				// Set to 5x Normal timeout (nominally 5 minutes total).
