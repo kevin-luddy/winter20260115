@@ -1365,15 +1365,7 @@ namespace GenBOE.Web.Controllers
             Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SYSTEM_SETTINGS, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
 			// Get the current system settings
-			ICollection<SystemSettingDTO> systemSettings;
-			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-			{
-				systemSettings = this.systemSettingLoader.GetSkillMixSettings();
-			}
-			else
-			{
-				systemSettings = this.systemSettingLoader.GetSystemSettings().Where(x => !x.Key.Contains(Constants.SKILL_MIX_BLACKLIST)).ToList();
-			}
+			ICollection<SystemSettingDTO> systemSettings = _ControllerLogic.GetSystemSettings();
 
 			this.FinalizeAction(this._log, WebConstants.ACTION_SYSTEM_SETTINGS, sw);
 
@@ -2997,7 +2989,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="systemSettings">System settings to save</param>
         /// <returns>JsonResult of the save.</returns>
 		[HttpPost]
-        public virtual JsonResult SaveSystemSettings(ICollection<SystemSettingDTO> systemSettings)
+        public virtual async Task<JsonResult> SaveSystemSettings(ICollection<SystemSettingDTO> systemSettings)
         {
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_SYSTEM_SETTINGS, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
@@ -3029,14 +3021,19 @@ namespace GenBOE.Web.Controllers
                     scope.Complete();
                 }
 
-				// Skill Mix settings only (Space only) - update the utilities method
-				IEnumerable<string> systemSettingsForSkillMix = systemSettings.Select(x => x.Key);
-				if (systemSettingsForSkillMix.Contains(Constants.SKILL_MIX_BLACKLIST))
-				{
-					Utilities.UpdateSkillMixBlacklistSettings(
-						systemSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)) == null ? string.Empty :
-							systemSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)).Value);
-				}
+				// Update Skill Mix and UCOT Blacklists if settings are included
+				Utilities.UpdateSkillMixBlacklistSettings(
+					systemSettings.Any(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)) 
+						? systemSettings.First(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)).Value
+						: string.Empty);
+				
+
+				Utilities.UpdateUcotBlacklistSettings(
+					systemSettings.Any(x => x.Key.Equals(Constants.UCOT_BLACKLIST))
+						? systemSettings.First(x => x.Key.Equals(Constants.UCOT_BLACKLIST)).Value
+						: string.Empty);
+			
+				await this._ControllerLogic.RefreshReportsSystemSettings();
             }
             else
             {

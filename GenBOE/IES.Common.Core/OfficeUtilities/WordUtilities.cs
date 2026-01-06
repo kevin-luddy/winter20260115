@@ -473,17 +473,6 @@ namespace IES.Common.Core.OfficeUtilities
 					// remove any children of the SDT
 					element.RemoveAllChildren();
 
-					Node insertionPoint = element;
-
-					if (element.Level == MarkupLevel.Block)
-					{
-						element.AppendChild(new Paragraph(document));
-					}
-					else if (element.Level == MarkupLevel.Inline)
-					{
-						element.AppendChild(new Run(document));
-					}
-
 					// Aspose HACK inserting paragraphs inside of SDT that is buried inside other SDT(s) inside a Paragraph causes issues
 					//     instead, we will convert any paragraphs in the SDT to line breaks
 					if (!keepParagraphs)
@@ -491,8 +480,6 @@ namespace IES.Common.Core.OfficeUtilities
 						htmlFormattedText = ReplaceParagraphTagsWithLineBreaks(htmlFormattedText);
 					}
 
-					DocumentBuilder builder = new DocumentBuilder(document);
-					builder.MoveTo(insertionPoint);
 					HtmlInsertOptions options = HtmlInsertOptions.RemoveLastEmptyParagraph;
 
 					if (keepParagraphs && !removeSpacing)
@@ -501,20 +488,71 @@ namespace IES.Common.Core.OfficeUtilities
 						options = HtmlInsertOptions.None;
 					}
 
-					try
+					if (element.Level == MarkupLevel.Inline)
 					{
-						builder.InsertHtml(htmlFormattedText, options);
+						if (element.ParentNode is Paragraph paragraph)
+						{
+							SplitParagraphForSDT(document, paragraph, element, htmlFormattedText, options);
+						}
+						else if (element.ParentNode is StructuredDocumentTag tag && element.ParentNode.ParentNode is Paragraph para)
+						{
+							SplitSDTForSDT(document, para, tag, element, htmlFormattedText, options);
+						}
+						else
+						{
+							InsertHtmlIntoSDTBlock(document, element, htmlFormattedText, options);
+						}
 					}
-					catch (InvalidOperationException)
+					else
 					{
-						// Error inserting the paragraph, we need to remove them
-						options = HtmlInsertOptions.RemoveLastEmptyParagraph;
-						htmlFormattedText = ReplaceParagraphTagsWithLineBreaks(htmlFormattedText) + ControlChar.LineBreak;
-						
-						element.RemoveAllChildren();
-						builder.MoveToStructuredDocumentTag(element, 0);
-						builder.InsertHtml(htmlFormattedText, options);
+						InsertHtmlIntoSDTBlock(document, element, htmlFormattedText, options);
 					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Inserts HTML into a block-style SDT, backup code for inline SDT
+		/// </summary>
+		/// <param name="document">Main document part</param>
+		/// <param name="element">Element to set</param>
+		/// <param name="htmlFormattedText">Html</param>
+		/// <param name="htmlInsertOptions">html insert options</param>
+		private static void InsertHtmlIntoSDTBlock(Document document, StructuredDocumentTag element, string htmlFormattedText, HtmlInsertOptions htmlInsertOptions)
+		{
+			if (element.Level == MarkupLevel.Block)
+			{
+				element.AppendChild(new Paragraph(document));
+			}
+			else
+			{
+				// backup for inline, if there is a table then it will crash
+				element.AppendChild(new Run(document));
+			}
+
+			DocumentBuilder builder = new DocumentBuilder(document);
+			builder.MoveTo(element);
+
+			try
+			{
+				builder.InsertHtml(htmlFormattedText, htmlInsertOptions);
+			}
+			catch (InvalidOperationException)
+			{
+				// Error inserting the paragraph, we need to remove them
+				htmlInsertOptions = HtmlInsertOptions.RemoveLastEmptyParagraph;
+				htmlFormattedText = ReplaceParagraphTagsWithLineBreaks(htmlFormattedText) + ControlChar.LineBreak;
+
+				element.RemoveAllChildren();
+				builder.MoveToStructuredDocumentTag(element, 0);
+				try
+				{
+					// try to insert again
+					builder.InsertHtml(htmlFormattedText, htmlInsertOptions);
+				}
+				catch (Exception ex)
+				{
+					Serilog.Log.Error(ex, "Error setting html into SDT tag {0} with title {1} and markup level {2}", element.Tag ?? string.Empty, element.Title ?? string.Empty, element.Level.ToString());
 				}
 			}
 		}
@@ -762,6 +800,146 @@ namespace IES.Common.Core.OfficeUtilities
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Splits a parent SDT into two SDTs with a child SDT in between the two pieces
+		/// </summary>
+		/// <param name="document">Main document part</param>
+		/// <param name="parentParagraph">Parent Paragrph of the parent SDT</param>
+		/// <param name="parent">Parent SDT</param>
+		/// <param name="tag">Child SDT</param>
+		/// <param name="htmlFormattedText">Html</param>
+		/// <param name="htmlInsertOptions">html insert options</param>
+		private static void SplitSDTForSDT(Document document, Paragraph parentParagraph, StructuredDocumentTag parent, StructuredDocumentTag tag, string htmlFormattedText, HtmlInsertOptions htmlInsertOptions)
+		{
+			Node[] children = parent.GetChildNodes(NodeType.Any, false).ToArray();
+
+			// special case - this parent Tag only has one child - this tag
+			if (children.Length == 1)
+			{
+				// move the tag up and call SplitParagraphForSDT
+				tag.Remove();
+				tag = parentParagraph.InsertAfter(tag, parent);
+				parent.Remove();
+				SplitParagraphForSDT(document, parentParagraph, tag, htmlFormattedText, htmlInsertOptions);
+			}
+			else
+			{
+				// We need to split out the tag from it's parent (possibly creating a second inline SDT afterwards).  Then call SplitParagraphForSDT for the tag
+				try
+				{
+					bool foundSDT = false;
+					StructuredDocumentTag splitParent = null;
+					DocumentBuilder builder = new DocumentBuilder(document);
+					foreach (Node child in children) 
+					{
+						if (child == tag)
+						{
+							foundSDT = true;
+
+							// Move child tag up a level in the hierarchy behind Parent
+							// remove the old SDT
+							parent.RemoveChild(tag);
+							tag = parentParagraph.InsertAfter(tag, parent);
+
+							// Create a fake Inline Tag to insert other children into
+							splitParent = new StructuredDocumentTag(document, tag.SdtType, MarkupLevel.Inline);
+							splitParent = parentParagraph.InsertAfter(splitParent, tag);
+						}
+						else if (foundSDT)
+						{
+							// these are children after the child SDT that now need moved
+							Node removedChild = parent.RemoveChild(child);
+							splitParent.AppendChild(removedChild);
+						}
+					}
+
+					// Clean up empty original SDT if no children
+					if (parent != null && !parent.HasChildNodes)
+					{
+						parent.Remove();
+					}
+
+					// Clean up empty split SDT if no children
+					if (splitParent != null && !splitParent.HasChildNodes)
+					{
+						splitParent.Remove();
+					}
+
+					// Now we can split the Paragraph into two paragraphs sandwiching the Html formatted text for the tag
+					SplitParagraphForSDT(document, parentParagraph, tag, htmlFormattedText, htmlInsertOptions);
+				}
+				catch (Exception ex)
+				{
+					Serilog.Log.Error(ex, "Error moving child SDT outside of Parent SDT");
+				}
+			}
+		}
+
+		/// <summary>
+		/// Splits a Paragraph into two paragraphs sandwiching the SDT, then inserting HTML into the sandwiched Block-level SDT
+		/// </summary>
+		/// <param name="document">Main document part</param>
+		/// <param name="parent">Parent Paragrph of the SDT tag</param>
+		/// <param name="tag">Child SDT</param>
+		/// <param name="htmlFormattedText">Html</param>
+		/// <param name="htmlInsertOptions">html insert options</param>
+		private static void SplitParagraphForSDT(Document document, Paragraph parent, StructuredDocumentTag tag, string htmlFormattedText, HtmlInsertOptions htmlInsertOptions)
+		{
+			// Work with a copy of the collection because we're modifying it
+			Node[] children = parent.GetChildNodes(NodeType.Any, false).ToArray();
+
+			Paragraph currentParagraph = parent;
+			Node lastInsertedSibling = currentParagraph;
+			try
+			{
+				bool foundSDT = false;
+				Paragraph splitParagraph = null;
+				DocumentBuilder builder = new DocumentBuilder(document);
+				foreach (Node child in children) 
+				{
+					if (child == tag)
+					{
+						foundSDT = true;
+
+						// Create a fake Block Tag and insert html into it
+						StructuredDocumentTag blockTag = new StructuredDocumentTag(document, SdtType.RichText, MarkupLevel.Block);
+						blockTag = parent.ParentNode.InsertAfter(blockTag, parent);
+						builder.MoveTo(blockTag);
+						builder.InsertHtml(htmlFormattedText, htmlInsertOptions);
+
+						// remove the old SDT
+						tag.Remove();
+
+						// Create an ending Paragraph for any later children
+						splitParagraph = new Paragraph(document);
+						parent.ParentNode.InsertAfter(splitParagraph, blockTag);
+					}
+					else if (foundSDT)
+					{
+						// these are children after the SDT that need moved
+						Node removedChild = parent.RemoveChild(child);
+						splitParagraph.AppendChild(removedChild);
+					}
+				}
+
+				// Clean up empty original paragraph if no children
+				if (parent != null && !parent.HasChildNodes)
+				{
+					parent.Remove();
+				}
+
+				// Clean up empty split paragraph
+				if (splitParagraph != null && !splitParagraph.HasChildNodes)
+				{
+					splitParagraph.Remove();
+				}
+			}
+			catch (Exception ex)
+			{
+				Serilog.Log.Error(ex, "Error moving SDT outside of Paragraph");
+			}
+		}
 
 		/// <summary>
 		/// Replaces paragraph tags in html text with div tags

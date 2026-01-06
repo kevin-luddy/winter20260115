@@ -59,7 +59,7 @@ namespace APTSPropricerApi.Controllers
 
 			try
 			{
-				using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+				using (IProPricerConnection ppc = poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
 				{
 					response.Data = Utility.GetAllProposals(ppc, logger);
 					response.IsSuccessful = true;
@@ -102,18 +102,18 @@ namespace APTSPropricerApi.Controllers
 		/// Gets Pricing Data for a proposal
 		/// </summary>
 		/// <param name="instanceId">Connection instance Id</param>
-		/// <param name="proposalId">Proposal Id</param>
+		/// <param name="proposalIdOrNameVersion">Proposal Id</param>
 		/// <returns>Pricing data for a Proposal</returns>
 		[Route("PricingData/{instanceId}/{proposalIdOrNameVersion}")]
 		[Authorize]
 		[HttpGet]
-		public ProPricerResponse<PricingData> GetPricingData(int instanceId, string proposalId)
+		public ProPricerResponse<PricingData> GetPricingData(int instanceId, string proposalIdOrNameVersion)
 		{
 			ProPricerResponse<PricingData> response = new();
 			try
 			{
-				ProposalDto pDto = Utility.GetProposalDTO(poolManagerList, logger, instanceId, proposalId);
-				pDto.Tasks = Utility.GetTasksForProposal(poolManagerList, logger, instanceId, proposalId);
+				ProposalDto pDto = Utility.GetProposalDTO(poolManagerList, logger, instanceId, proposalIdOrNameVersion);
+				pDto.Tasks = Utility.GetTasksForProposal(poolManagerList, logger, instanceId, proposalIdOrNameVersion);
 
 				response.Data = new PricingData
 				{
@@ -136,18 +136,18 @@ namespace APTSPropricerApi.Controllers
 		/// Gets Pricing Data Totals (only) for a proposal
 		/// </summary>
 		/// <param name="instanceId">Connection instance Id</param>
-		/// <param name="proposalId">Proposal Id</param>
+		/// <param name="proposalIdOrNameVersion">Proposal Id</param>
 		/// <returns>Pricing data for a Proposal</returns>
 		[Route("PricingDataTotals/{instanceId}/{proposalIdOrNameVersion}")]
 		[Authorize]
 		[HttpGet]
-		public ProPricerResponse<PricingTotals> GetPricingDataTotals(int instanceId, string proposalId)
+		public ProPricerResponse<PricingTotals> GetPricingDataTotals(int instanceId, string proposalIdOrNameVersion)
 		{
 			ProPricerResponse<PricingTotals> response = new();
 			try
 			{
-				ProposalDto pDto = Utility.GetProposalDTO(poolManagerList, logger, instanceId, proposalId);
-				pDto.Tasks = Utility.GetTasksForProposal(poolManagerList, logger, instanceId, proposalId);
+				ProposalDto pDto = Utility.GetProposalDTO(poolManagerList, logger, instanceId, proposalIdOrNameVersion);
+				pDto.Tasks = Utility.GetTasksForProposal(poolManagerList, logger, instanceId, proposalIdOrNameVersion);
 
 				response.Data = GetTotals(pDto);
 

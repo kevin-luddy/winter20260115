@@ -652,10 +652,11 @@
     <Content Include="Content\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Resources\css\tinymce.css" />
     <Content Include="Resources\js\angular\boeConfidenceReportController.js" />
+    <Content Include="Resources\js\angular\createWorkspaceControllerRMS.js" />
+    <Content Include="Resources\js\angular\createWorkspaceControllerSpace.js" />
     <Content Include="Resources\js\angular\workspaceCalculateActualsController.js" />
     <Content Include="Resources\js\angular\rteTemplatesController.js" />
     <Content Include="Resources\js\angular\boeBulkSubmitController.js" />
-    <Content Include="Resources\js\angular\createWorkspaceController.js" />
     <Content Include="Resources\js\angular\dateShiftController.js" />
     <Content Include="Resources\js\angular\manageTaskController.js" />
     <Content Include="Resources\js\angular\manageCLINController.js" />

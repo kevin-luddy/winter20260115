@@ -11,7 +11,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 	using System.Linq;
 	using System.Threading.Tasks;
 	using System.Web;
-	using DocumentFormat.OpenXml.EMMA;
 	using GenBOE.Dtos;
 	using IES.Common;
 	using IES.Common.Exceptions;
@@ -156,6 +155,18 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			else
 			{
 				throw new GenValidationException("Error calling Reports Service", string.Join(Environment.NewLine, returnStream.Messages));
+			}
+		}
+
+		/// <summary>
+		/// Refresh System Settings in Reports API
+		/// </summary>
+		public async Task RefreshSystemSettings()
+		{
+			IESSingleResponse<bool> response = await this.Get<bool>("RefreshSystemSettings");
+			if (!response.IsSuccessful)
+			{
+				throw new GenValidationException("Error calling Reports Service to refresh System Settings");
 			}
 		}
 	}

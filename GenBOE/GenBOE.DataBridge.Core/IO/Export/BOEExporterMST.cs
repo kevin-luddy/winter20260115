@@ -260,9 +260,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				tableStyle.Borders.LineStyle = LineStyle.None;
 				tableStyle.LeftPadding = 58d / 20d; // 58 20ths of a point = 0.04"
 				tableStyle.RightPadding = 58d / 20d; //58 20ths of a point = 0.04"
-				tableStyle.ConditionalStyles[ConditionalStyleType.FirstColumn].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
-				tableStyle.ConditionalStyles[ConditionalStyleType.FirstRow].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
-				tableStyle.ConditionalStyles[ConditionalStyleType.OddRowBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
+				tableStyle.ConditionalStyles[ConditionalStyleType.FirstColumn].Shading.BackgroundPatternColor = ColorTranslator.FromHtml(GREY_BACKGROUND_COLOR);
+				tableStyle.ConditionalStyles[ConditionalStyleType.FirstRow].Shading.BackgroundPatternColor = ColorTranslator.FromHtml(GREY_BACKGROUND_COLOR);
+				tableStyle.ConditionalStyles[ConditionalStyleType.OddRowBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml(GREY_BACKGROUND_COLOR);
 			}
 
 			table.PreferredWidth = PreferredWidth.FromPercent(100);
