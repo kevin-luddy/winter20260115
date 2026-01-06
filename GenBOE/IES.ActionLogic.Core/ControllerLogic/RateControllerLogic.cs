@@ -866,7 +866,14 @@ namespace IES.ActionLogic.Core.ControllerLogic
 					RateDetailModelView existingRateDetailMV = existingRates.FirstOrDefault(x => x.RateCode == importedRateDetailMV.RateCode);
 					if (existingRateDetailMV != null)
 					{
-						if (importedRateDetailMV.Values != null)
+						if (importedRateDetailMV.IsDeleted)
+						{
+							existingRateDetailMV.Updateable = UpdateType.Deleted;
+
+							// Add to collection for bulk save.
+							importResults.Add(existingRateDetailMV);
+						}
+						else if (importedRateDetailMV.Values != null)
 						{
 							bool modified = false;
 
