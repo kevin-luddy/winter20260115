@@ -924,7 +924,7 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		/// <summary>
-		/// Get All Workspaces that contain a tracking number		/// 
+		/// Get All Workspaces that contain a tracking number
 		/// Typically used for PLD Status Sync, needs to grab all data needed to call UpsertWorkspace
 		/// </summary>
 		/// <returns>Workspaces containing a tracking number</returns>
