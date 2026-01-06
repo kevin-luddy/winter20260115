@@ -898,7 +898,7 @@ namespace IES.ActionLogic.ControllerLogic
 							}
 						}
 					}
-					else
+					else if (!importedRateDetailMV.IsDeleted)
 					{
 						// This is an Add
 						importedRateDetailMV.Updateable = UpdateType.Upsert;
