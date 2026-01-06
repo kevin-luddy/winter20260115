@@ -156,15 +156,33 @@
 			data: postData,
 			success: function (result) {
 				if (result) {
-					var wsName = result.PANumber + " " + result.Title.trim();
-					$('#WorkspaceName').val(wsName);
-					$('#WorkspaceName')[0].style.width = wsName.length + "ch";
-					$('#ProposalTitle').val(result.Title.trim());
-					$('#Description').val(result.Description);
-					$('input[name=LineOfBusinessTypeID], select[name=LineOfBusinessTypeID]').val(result.LineOfBusinessId);
-					$('#ProposalSubmittalDate').val(result.ProposalSubmittalDateString);
-					$('#RFPNumber').val(result.RFPNumber);
-					$('#PldLastUpdateDate').val(result.LastModifiedDateString);
+					if (result.Title.trim() != '') {
+						var wsName = result.PANumber + " " + result.Title.trim();
+						$('#WorkspaceName').val(wsName);
+						$('#WorkspaceName')[0].style.width = wsName.length + "ch";
+						$('#ProposalTitle').val(result.Title.trim());
+					}
+
+					if (result.Description != '') {
+						$('#Description').val(result.Description.substring(0, 1000));
+					}
+
+					if (result.LineOfBusinessId != null && result.LineOfBusinessId != '') {
+						$('input[name=LineOfBusinessTypeID], select[name=LineOfBusinessTypeID]').val(result.LineOfBusinessId);
+					}
+
+					if (result.ProposalSubmittalDateString != '') {
+						$('#ProposalSubmittalDate').val(result.ProposalSubmittalDateString);
+					}
+
+					if (result.RFPNumber != '') {
+						$('#RFPNumber').val(result.RFPNumber);
+					}
+
+					if (result.LastModifiedDateString != '') {
+						$('#PldLastUpdateDate').val(result.LastModifiedDateString);
+					}
+
 					// TODO in another story - Contract Start/End Date - once it's determined if a date adjust will be needed
 
 					WorkspaceIdentificationWidget.setDirty('WorkspaceIdentificationForm');

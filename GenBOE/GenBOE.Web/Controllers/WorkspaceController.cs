@@ -4640,6 +4640,7 @@ namespace GenBOE.Web.Controllers
 		[MaxDbQuery(-1)]
 		[HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
 		public JsonResult SaveNewWorkspace([CreateWorkspaceBinder] ICreateWorkspaceModelView newWorkspace)
 		{
 			_ = newWorkspace ?? throw new ArgumentNullException(nameof(newWorkspace));
