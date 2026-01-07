@@ -21,7 +21,7 @@ namespace GenBOE.PLDStatusSync
 
 		public static void Main(string[] args)
 		{
-			if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST && Utilities.ShowPLDIsIntegrated)
+			if (Utilities.ShowPLDIsIntegrated)
 			{
 				Console.WriteLine("Running PLD Status Sync for RMS");
 
@@ -29,6 +29,9 @@ namespace GenBOE.PLDStatusSync
 				workspaceLoader = new WorkspaceDTODataLoader();
 				LineOfBusinessDataLoader lobLoader = new LineOfBusinessDataLoader();
 				pldLoader = new PldDTODataLoader(lobLoader);
+
+				string awardedFinalized = PLDStatus.AwardedFinalized.GetDescription();
+				string canceled = PLDStatus.Canceled.GetDescription();
 
 				// Get all workspaces with PA number
 				ICollection<WorkspaceDTO> workspaces = workspaceLoader.GetAllWorkspacesWithTrackingNumbers();
@@ -44,13 +47,13 @@ namespace GenBOE.PLDStatusSync
 						// If PA exists and has Awarded/Finalized Status, move the Workspace to Complete if not already in that state
 						// If PA is Canceled, move the Workspace to Closed if not already in that state
 						Console.WriteLine($"PA found with status {pldPA.ProposalStatus}");
-						if (pldPA.ProposalStatus.Trim() == PLDStatus.AwardedFinalized.GetDescription() && workspace.WorkspaceState != WorkspaceState.Complete)
+						if (pldPA.ProposalStatus.Trim() == awardedFinalized && workspace.WorkspaceState != WorkspaceState.Complete)
 						{
 							Console.WriteLine($"Updating Workspace State from {workspace.WorkspaceState.GetDescription()} to Complete");
 							workspace.WorkspaceState = WorkspaceState.Complete;
 							workspaceLoader.SaveWorkspaceSettings(workspace.CreatedByUserID, workspace);
 						}
-						else if (pldPA.ProposalStatus.Trim() == PLDStatus.Canceled.GetDescription() && workspace.WorkspaceState != WorkspaceState.Closed)
+						else if (pldPA.ProposalStatus.Trim() == canceled && workspace.WorkspaceState != WorkspaceState.Closed)
 						{
 							Console.WriteLine($"Updating Workspace State from {workspace.WorkspaceState.GetDescription()} to Closed");
 							workspace.WorkspaceState = WorkspaceState.Closed;
