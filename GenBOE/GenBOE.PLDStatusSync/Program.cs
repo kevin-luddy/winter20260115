@@ -11,64 +11,75 @@ namespace GenBOE.PLDStatusSync
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using IES.Common;
-	using IES.Common.classes;
 	using IES.Common.Enums;
 
 	public class Program
 	{
 		private static IWorkspaceDTODataLoader workspaceLoader;
 		private static IPldDTODataLoader pldLoader;
+		private static readonly Logger logger = new Logger(typeof(Program));
 
 		public static void Main(string[] args)
 		{
 			if (Utilities.ShowPLDIsIntegrated)
 			{
-				Console.WriteLine("Running PLD Status Sync for RMS");
+				logger.Info("PLD Status Sync: Beginning sync");
+				int updatedWorkspaces = 0;
 
-				// Initialized loaders
-				workspaceLoader = new WorkspaceDTODataLoader();
-				LineOfBusinessDataLoader lobLoader = new LineOfBusinessDataLoader();
-				pldLoader = new PldDTODataLoader(lobLoader);
-
-				string awardedFinalized = PLDStatus.AwardedFinalized.GetDescription();
-				string canceled = PLDStatus.Canceled.GetDescription();
-
-				// Get all workspaces with PA number
-				ICollection<WorkspaceDTO> workspaces = workspaceLoader.GetAllWorkspacesWithTrackingNumbers();
-				foreach (WorkspaceDTO workspace in workspaces)
+				try
 				{
-					Console.WriteLine("-----------------------------");
-					Console.WriteLine($"Syncing status for {workspace.WorkspaceName} with PA Number {workspace.TrackingNumber}");
+					// Initialized loaders
+					workspaceLoader = new WorkspaceDTODataLoader();
+					LineOfBusinessDataLoader lobLoader = new LineOfBusinessDataLoader();
+					pldLoader = new PldDTODataLoader(lobLoader);
 
-					// Get PA for the number
-					PLDProposalDTO pldPA = pldLoader.GetProposalDetails(workspace.TrackingNumber);
-					if (pldPA != null)
+					string awardedFinalized = PLDStatus.AwardedFinalized.GetDescription();
+					string canceled = PLDStatus.Canceled.GetDescription();
+
+					// Get all workspaces with PA number
+					ICollection<WorkspaceDTO> workspaces = workspaceLoader.GetAllWorkspacesWithTrackingNumbers();
+					foreach (WorkspaceDTO workspace in workspaces)
 					{
-						// If PA exists and has Awarded/Finalized Status, move the Workspace to Complete if not already in that state
-						// If PA is Canceled, move the Workspace to Closed if not already in that state
-						Console.WriteLine($"PA found with status {pldPA.ProposalStatus}");
-						if (pldPA.ProposalStatus.Trim() == awardedFinalized && workspace.WorkspaceState != WorkspaceState.Complete)
+						try
 						{
-							Console.WriteLine($"Updating Workspace State from {workspace.WorkspaceState.GetDescription()} to Complete");
-							workspace.WorkspaceState = WorkspaceState.Complete;
-							workspaceLoader.SaveWorkspaceSettings(workspace.CreatedByUserID, workspace);
+							// Get PA for the number
+							PLDProposalDTO pldPA = pldLoader.GetProposalDetails(workspace.TrackingNumber);
+							if (pldPA != null)
+							{
+								// If PA exists and has Awarded/Finalized Status, move the Workspace to Complete if not already in that state
+								// If PA is Canceled, move the Workspace to Closed if not already in that state
+								if (pldPA.ProposalStatus.Trim() == awardedFinalized && workspace.WorkspaceState != WorkspaceState.Complete)
+								{
+									workspace.WorkspaceState = WorkspaceState.Complete;
+									workspaceLoader.SaveWorkspaceSettings(workspace.CreatedByUserID, workspace);
+									logger.Info($"PLD Status Sync: Updated Workspace State for {workspace.WorkspaceName} from {workspace.WorkspaceState.GetDescription()} to Complete");
+									updatedWorkspaces++;
+								}
+								else if (pldPA.ProposalStatus.Trim() == canceled && workspace.WorkspaceState != WorkspaceState.Closed)
+								{
+									workspace.WorkspaceState = WorkspaceState.Closed;
+									workspaceLoader.SaveWorkspaceSettings(workspace.CreatedByUserID, workspace);
+									logger.Info($"PLD Status Sync: Updated Workspace State for {workspace.WorkspaceName} from {workspace.WorkspaceState.GetDescription()} to Closed");
+									updatedWorkspaces++;
+								}
+							}
+							else
+							{
+								logger.Error($"PLD Status Sync: PA {workspace.TrackingNumber} not found for workspace {workspace.WorkspaceName}");
+							}
 						}
-						else if (pldPA.ProposalStatus.Trim() == canceled && workspace.WorkspaceState != WorkspaceState.Closed)
+						catch (Exception ex)
 						{
-							Console.WriteLine($"Updating Workspace State from {workspace.WorkspaceState.GetDescription()} to Closed");
-							workspace.WorkspaceState = WorkspaceState.Closed;
-							workspaceLoader.SaveWorkspaceSettings(workspace.CreatedByUserID, workspace);
+							logger.Error($"PLD Status Sync: Error syncing workspace {workspace.WorkspaceName}: {ex}");
 						}
-						else
-						{
-							Console.WriteLine($"Current Workspace State of {workspace.WorkspaceState.GetDescription()} will not be updated.");
-						}
-					}
-					else
-					{
-						Console.WriteLine("No PA found");
 					}
 				}
+				catch (Exception ex)
+				{
+					logger.Error($"PLD Status Sync: Error duing sync: {ex}");
+				}
+
+				logger.Info($"PLD Status Sync: Sync complete - {updatedWorkspaces} Workspace(s) updated");
 			}
 		}
 	}
