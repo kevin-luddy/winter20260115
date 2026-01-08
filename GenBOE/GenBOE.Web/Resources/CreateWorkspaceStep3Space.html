@@ -212,7 +212,7 @@
         RFP #
     </div>
     <div class="form-element">
-        <input class="full ignoreValidation" id="RFPNumber" maxlength="100" name="RFPNumber" type="text" data-ng-model="data.RFPNumber">
+        <span class="form-element static">{{data.RFPNumber}}</span>
     </div>
 </div>
 <div class="form-row">
@@ -242,11 +242,13 @@
         <div id="RFP-HelpDialog" class="help-dialog" style="width: 200px;">
             <div class="help-dialog-close"></div>
             <div class="help-dialog-text">
-                RFP # is driven by the Tracking Number selected.
+                Request For Proposal number.
             </div>
         </div>
     </div>
-    <div class="form-element static">{{data.RFPNumber}}</div>
+    <div class="form-element">
+        <input class="full ignoreValidation" id="RFPNumber" maxlength="100" name="RFPNumber" type="text" data-ng-model="data.RFPNumber">
+    </div>
 </div>
 <div class="form-row" data-ng-show="model.isPTMIntegrated">
     <div class="form-label">
