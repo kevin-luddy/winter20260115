@@ -47,7 +47,7 @@
 	</div>
 	<div style="display: inline-flex">
 		<span data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">{{ model.applicationUrl}}{{model.PLD_PANumber }}</span></span>
-		<span data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">{{ model.applicationUrl }}</span><input data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" name="ShortName" class="quarter" id="ShortName" data-ng-model="data.WorkspaceName" type="text" maxlength="15" value="{{ data.WorkspaceName }}" />
+		<span data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">{{ model.applicationUrl }}</span><input data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" name="ShortName" class="quarter" id="ShortName" data-ng-model="data.Shortname" type="text" maxlength="21" value="{{ data.Shortname }}" />
 	</div>
 </div>
 <div class="form-row" data-ng-show="model.showProjectMap">
