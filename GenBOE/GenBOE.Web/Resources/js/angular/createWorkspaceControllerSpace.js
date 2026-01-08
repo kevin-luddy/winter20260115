@@ -1065,6 +1065,10 @@
 			}
 
 			$scope.data.WorkspaceName = result.WorkspaceName;
+			// Save original workspace name for PTM integrated reconstruction (case 3, line 414)
+			// When PTM integrated, getNextTrackingNumberRevision overwrites WorkspaceName, and
+			// later code reconstructs it as: nextRevision + " " + RevisionWorkspaceName
+			$scope.data.RevisionWorkspaceName = result.WorkspaceName;
 			$scope.data.Shortname = result.ShortName;
 			$scope.data.ResourceDecimalPrecision = result.ResourceDecimalPrecision;
 			$scope.model.originalDecimalPrecision = result.ResourceDecimalPrecision;
