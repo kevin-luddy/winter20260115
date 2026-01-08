@@ -3596,7 +3596,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		public void RefreshSkillMix_Empty_Test_RMS()
 		{
 			BOELaborControllerLogic sut = CreateSystemMST();
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(null, null, null, null, null, true, false, DateTime.Now);
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(null, null, null, null, null, true, false, DateTime.Now, DateTime.Now);
 			Assert.IsNotNull(result);
 		}
 
@@ -3607,7 +3607,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		public void RefreshSkillMix_Empty_Test_SSC()
 		{
 			BOELaborControllerLogic sut = CreateSystemSSC();
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(null, null, null, null, null, true, false, DateTime.Now);
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(null, null, null, null, null, true, false, DateTime.Now, DateTime.Now);
 			Assert.IsNotNull(result);
 		}
 
@@ -3650,7 +3650,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, null, null, null, null, true, false, DateTime.Now);
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, null, null, null, null, true, false, DateTime.Now, DateTime.Now);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3714,7 +3714,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, null, null, null, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, null, null, null, null, true, false, Utilities.OneLmxStartDate.AddDays(-1), Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3801,7 +3801,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, null, null, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, null, null, null, true, false, Utilities.OneLmxStartDate.AddDays(-1), Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3891,7 +3891,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, null, null, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, null, null, null, true, false, Utilities.OneLmxStartDate.AddDays(-1), Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3987,7 +3987,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, null, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, null, null, true, false, Utilities.OneLmxStartDate.AddDays(-1), Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4078,7 +4078,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			{
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, null, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, null, null, true, false, Utilities.OneLmxStartDate.AddDays(-1), Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4177,7 +4177,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, null, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, null, null, true, false, Utilities.OneLmxStartDate.AddDays(-1), Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4272,7 +4272,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			{
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, null, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, null, null, true, false, Utilities.OneLmxStartDate.AddDays(-1), Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4400,7 +4400,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(-1), Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4535,7 +4535,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(-1), Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4687,7 +4687,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(-1), Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.AreEqual(4, result.SkillMixRows.Count);
@@ -4791,7 +4791,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(-1), Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.AreEqual(3, result.SkillMixRows.Count);
@@ -4930,7 +4930,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(-1), Utilities.OneLmxStartDate.AddDays(1));
 			List<SkillMixModelView> duplicates = result.SkillMixRows.Where(x => x.ResourceNew == RESOURCE_NAME1).ToList();
 
 			Assert.IsTrue(duplicates.Any());
@@ -5086,7 +5086,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(-1), Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -5289,7 +5289,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(-1), Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -5498,7 +5498,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(-1), Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -5723,7 +5723,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(-1), Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -5939,7 +5939,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(-1), Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -6151,7 +6151,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(-1), Utilities.OneLmxStartDate.AddDays(1));
 
 			// Assert none of the rows were set to 0 historical hours
 			Assert.IsFalse(result.CommonDisclosureRows.Any(x => x.HistoricalHours == 0.0m));

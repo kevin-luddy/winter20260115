@@ -612,7 +612,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 
 						RefreshSkillMixModelView refreshedData = SkillMixUtility.RefreshSkillMixTables(moqResourceHours, laborTypes, task.SkillMixTable, task.CommonDisclosureTable, task.SkillMixSummaryTable, isBRCEnabled,
-							!ws.EnableSAPConnection, task.EndDate);
+							!ws.EnableSAPConnection, task.StartDate, task.EndDate);
 
 						// Appends the mixed rationales for the exports.
 						SkillMixUtility.AppendMixedRationalesForExports(refreshedData.SkillMixSummaryRows);

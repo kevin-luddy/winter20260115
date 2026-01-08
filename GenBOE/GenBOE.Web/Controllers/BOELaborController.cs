@@ -1640,10 +1640,14 @@ namespace GenBOE.Web.Controllers
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
+		/// <param name="currentSkillMixSummaryData">current skill mix summary data (space)</param>
+		/// <param name="selectedMoqTypes">The selected MOQ Type(s)</param>
+		/// <param name="taskEndDate">Task End Date</param>
+		/// <param name="taskStartDate">Task Start Date</param>
 		/// <returns></returns>
 		public ActionResult RefreshSkillMixTables(string workspace, int boeId, ICollection<MoqTypeSelection> selectedMoqTypes,
 			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData,
-			bool isManual, DateTime? taskEndDate)
+			bool isManual, DateTime? taskStartDate, DateTime? taskEndDate)
 		{
 			// Initialize Action
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1659,7 +1663,7 @@ namespace GenBOE.Web.Controllers
 
 			// Call to Controller Logic
 			RefreshSkillMixModelView response = SkillMixUtility.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, currentSkillMixSummaryData,
-				isBRCEnabled, isManual, taskEndDate);
+				isBRCEnabled, isManual, taskStartDate, taskEndDate);
 
 			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
 

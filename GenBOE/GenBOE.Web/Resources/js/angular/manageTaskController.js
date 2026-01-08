@@ -167,6 +167,7 @@
 				currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData,
 				currentSkillMixSummaryData: $scope.model.SkillMixSummaryData,
 				isManual: $scope.isSkillMixManual(),
+				taskStartDate: $scope.model.TaskElementData.StartDate.toDate(),
 				taskEndDate: $scope.model.TaskElementData.EndDate.toDate()
 			};
 
@@ -1982,6 +1983,21 @@
 							item.IsBusinessResourceCodeValid = $scope.getAndSetIsBusinessResourceCodeValid(item, $scope.BusinessResourceCodeModels, false);
 						}
 					}
+
+					// extra checks in case there are Actuals that match the BRC
+					if (item.IsResourceValid && $scope.showSkillMix()) {
+						if ($scope.SelectedMoqTypes.some(x =>
+							x.TableData !== undefined &&
+							x.TableData.length > 0 &&
+							x.TableData.some(y =>
+							(y.ResourceHours !== undefined && (y.ResourceHours.length > 0 && y.RepositoryName === $scope.ManageTaskModel.SapWebiRepository &&
+								y.ResourceHours.some(z => z.BRCName == item.BusinessResourceCodeName))
+							)
+							)
+						)) {
+							item.IsResourceValid = false;
+						}
+					}
 				}
 				else {
 					// Resources for RMS are always required regardless of start/end date
@@ -2026,6 +2042,21 @@
 
 					if (callResource) {
 						item.IsResourceValid = $scope.getAndSetIsResourceValid(item, $scope.ResourceModels, false);
+					}
+				}
+
+				// extra checks in case there are Actuals that match the BRC
+				if ($scope.ManageTaskModel.IsSpace && item.IsBusinessResourceCodeValid && $scope.showSkillMix()) {
+					if ($scope.SelectedMoqTypes.some(x =>
+						x.TableData !== undefined &&
+						x.TableData.length > 0 &&
+						x.TableData.some(y =>
+						(y.ResourceHours !== undefined && (y.ResourceHours.length > 0 && y.RepositoryName === $scope.ManageTaskModel.SapWebiRepository &&
+							y.ResourceHours.some(z => z.ResourceName == item.ResourceName))
+						)
+						)
+					)) {
+						item.IsBusinessResourceCodeValid = false;
 					}
 				}
 			}
