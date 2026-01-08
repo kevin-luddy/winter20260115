@@ -197,6 +197,13 @@ namespace GenBOE.ActionLogic.Common
 				}
 			}
 
+			// Delta hours should be 0 when skill mix is enabled
+			decimal proposedLegacyAndBRC = taskElement.SkillMixSummaryTable.Sum(x => x.TotalProposedLegacyBrc);
+			if (proposedLegacyAndBRC != taskElement.TotalHours)
+			{
+				errorMessages.Add("Skill Mix Summary Table: The Total Proposed Legacy & BRC does not match the MOQ Equation total.");
+			}
+
 			foreach (string skillMixResourceID in skillMixSummaryRowsExceedChars.Select(x => x.ResourceID))
 			{
 				errorMessages.Add(string.Format("Skill Mix Summary Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceID, 255));
