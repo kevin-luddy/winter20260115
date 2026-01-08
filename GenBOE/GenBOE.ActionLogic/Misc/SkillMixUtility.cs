@@ -219,10 +219,6 @@
 		{
 			List<SkillMixSummaryModelView> newSummaryRows = new List<SkillMixSummaryModelView>();
 
-			bool before1LMX = false;
-			bool during1LMX = false;
-			bool after1LMX = false;
-
 			if (!taskStartDate.HasValue || !taskEndDate.HasValue || taskEndDate < taskStartDate || taskEndDate < Utilities.OneLmxStartDate)
 			{
 				// if the task dates are borked or the entire task is before the 1LMX, then we are just using ResourceID
