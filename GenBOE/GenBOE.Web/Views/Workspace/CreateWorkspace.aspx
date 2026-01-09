@@ -13,8 +13,8 @@
 
     <script type="text/javascript">
         angular.module('genboe').value('CreateWorkspaceModelView',
-        {
-            IsSSC: <%=(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems).ToString().ToLower()%>,
+            {
+                IsSSC: <%=(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems).ToString().ToLower()%>,
             LOBs: <%= JsonConvert.SerializeObject(Model.LineOfBusinessTypes)%>, // Array of PickListDto
             TrackingNumbers: <%= JsonConvert.SerializeObject(Model.TrackingNumbers)%>, // Array of SelectListItem
             ContractTypes: <%= JsonConvert.SerializeObject(Model.ContractTypes)%>, // Array of PickListDto
@@ -24,7 +24,7 @@
             Controller: '<%= WebConstants.CONTROLLER_WORKSPACE %>',
             ValidateIndentificationAction: '<%= WebConstants.ACTION_VALIDATE_CREATE_WORKSPACE_STEP_ONE%>',
             CreateWorkspaceAction: '<%= WebConstants.ACTION_SAVE_NEW_WORKSPACE%>',
-            ShowProjectMap: <%= SiteMasterUtilities.IsProjectMapEnabled.ToString().ToLower()%>,
+            ShowProjectMap: <%= (SiteMasterUtilities.IsProjectMapEnabled && SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.SpaceSystems).ToString().ToLower()%>,
             ShowEquivalentPersonsOption: <%= GenBOE.Objects.FullObjectHelper.ShowEquivalentPersonsOption.ToString().ToLower()%>,
             LabelLeadPricer: '<%= CommonConstants.LABEL_TEXT_LEAD_PRICER_SSC%>',
             ProjectMapPrecisionDefault: <%= Constants.PROJECT_MAP_DECIMAL_PRECISION_DEFAULT%>,
@@ -34,7 +34,7 @@
             GetWorkspaceToCopyBOEListAction: '<%:WebConstants.ACTION_GET_BOES_FOR_WORKSPACE_TO_COPY%>',
             GetWorkspaceToCopyDetailsAction: '<%:WebConstants.ACTION_GET_DETAILS_FOR_WORKSPACE_TO_COPY%>',
             UpdateCurrentWorkspaceIdentification: '<%:WebConstants.ACTION_UPDATE_CURRENT_WORKSPACE_IDENTIFICATION%>',
-            WorkSpaceNameURL: window.location.protocol + '//' + window.location.host + '/' + 'default/' + 
+            WorkSpaceNameURL: window.location.protocol + '//' + window.location.host + '/' + 'default/' +
                 '<%= WebConstants.CONTROLLER_WORKSPACE %>' + '/' + '<%:WebConstants.ACTION_IS_WORKSPACE_NAME_AVAILABLE %>',
             WorkSpaceShortNameURL: window.location.protocol + '//' + window.location.host + '/' + 'default/' +
                 '<%= WebConstants.CONTROLLER_WORKSPACE %>' + '/' + '<%:WebConstants.ACTION_IS_WORKSPACE_SHORT_NAME_AVAILABLE %>',
@@ -52,7 +52,8 @@
 			IsLmNavigatorEnabled: <%: Model.IsLmNavigatorEnabled.ToString().ToLower() %>,
             SearchPLDProposals: '<%= WebConstants.ACTION_SEARCH_PLD_PROPOSALS %>',
 			GetPLDProposalDetails: '<%= WebConstants.ACTION_GET_PLD_PROPOSAL_DETAILS %>',
-            GetNextPLDWorkspaceShortNameFromTrackingNumber: '<%= WebConstants.ACTION_GET_NEXT_PLD_WORKSPACE_SHORTNAME_FROM_TRACKING_NUMBER %>'
+            GetNextPLDWorkspaceShortNameFromTrackingNumber: '<%= WebConstants.ACTION_GET_NEXT_PLD_WORKSPACE_SHORTNAME_FROM_TRACKING_NUMBER %>',
+            GetNextUniqueWorkspaceName: '<%= WebConstants.ACTION_GET_NEXT_UNIQUE_WORKSPACE_NAME %>'
         });
         
 
@@ -76,9 +77,9 @@
                 $(this).parent().prev().click();
             });
 
-            
+
         });
-	</script>
+    </script>
 
     <div data-ng-app="genboe" data-ng-controller="createWorkspaceController" id="CreateWorkspaceContent">
         <div class="module create-workspace-form">

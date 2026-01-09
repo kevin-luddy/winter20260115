@@ -1983,7 +1983,109 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		}
 
 		/// <summary>
-		/// Save Workspace Status (Short/Simple method as the inner controller method and parent method of this do all the lifting 
+		/// Get the next unique workspace name by checking existing names and appending/incrementing suffix.
+		/// Uses the same _01, _02 pattern as NextPLDTrackingNumber for consistency.
+		/// </summary>
+		/// <param name="existingNames">Collection of existing workspace names that match the base pattern</param>
+		/// <param name="baseName">The base workspace name to make unique</param>
+		/// <returns>Dictionary with unique WorkspaceName and Shortname</returns>
+		public Dictionary<string, object> GetNextUniqueWorkspaceName(IEnumerable<string> existingNames, string baseName)
+		{
+			if (existingNames == null)
+			{
+				throw new ArgumentNullException(nameof(existingNames));
+			}
+
+			if (string.IsNullOrWhiteSpace(baseName))
+			{
+				throw new ArgumentException("Base name cannot be null or empty", nameof(baseName));
+			}
+
+			// DEFENSIVE: Trim baseName before processing to prevent leading/trailing spaces from becoming underscores
+			baseName = baseName.Trim();
+
+			int max = 0;
+			bool anyRelevant = false;
+			string prefix = baseName + "_";
+
+			foreach (string name in existingNames)
+			{
+				string wsName = (name ?? string.Empty).Trim();
+
+				// Exact match with base name
+				if (wsName.Equals(baseName, StringComparison.OrdinalIgnoreCase))
+				{
+					anyRelevant = true;
+					continue;
+				}
+
+				// Check for suffix pattern (baseName_NN)
+				if (wsName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+				{
+					string tail = wsName.Substring(prefix.Length);
+					if (int.TryParse(tail, out int n))
+					{
+						if (n > max)
+						{
+							max = n;
+						}
+						anyRelevant = true;
+					}
+				}
+			}
+
+			string uniqueName;
+			if (!anyRelevant)
+			{
+				// No conflicts, use base name as-is
+				uniqueName = baseName;
+			}
+			else
+			{
+				// Append incremented suffix with zero-padding
+				uniqueName = (max > 0) ?
+					$"{baseName}_{max + 1:00}" :
+					$"{baseName}_01";
+			}
+
+			// Generate shortname from unique workspace name
+			// DEFENSIVE: Trim before regex replacement to prevent leading/trailing spaces from becoming underscores
+			string shortName = uniqueName.Trim().Replace(" ", "_");
+			// Remove any other invalid characters (keep alphanumeric, dash, underscore)
+			shortName = System.Text.RegularExpressions.Regex.Replace(shortName, @"[^a-zA-Z0-9-_]", "_");
+
+			const int MAX_SHORTNAME_LENGTH = 21;
+			if (shortName.Length > MAX_SHORTNAME_LENGTH)
+			{
+				// Preserve suffix if present
+				if (shortName.Contains("_"))
+				{
+					int underscoreIndex = shortName.LastIndexOf("_");
+					string suffix = shortName.Substring(underscoreIndex);
+					string basePart = shortName.Substring(0, underscoreIndex);
+
+					int maxBaseLength = MAX_SHORTNAME_LENGTH - suffix.Length;
+					if (maxBaseLength > 0 && basePart.Length > maxBaseLength)
+					{
+						basePart = basePart.Substring(0, maxBaseLength);
+					}
+					shortName = basePart + suffix;
+				}
+				else
+				{
+					shortName = shortName.Substring(0, MAX_SHORTNAME_LENGTH);
+				}
+			}
+
+			return new Dictionary<string, object>
+			{
+				["WorkspaceName"] = uniqueName,
+				["ShortName"] = shortName
+			};
+		}
+
+		/// <summary>
+		/// Save Workspace Status (Short/Simple method as the inner controller method and parent method of this do all the lifting
 		/// </summary>
 		/// <param name="workspaceStatusMV">Workspace Status ModelView</param>
 		/// <param name="ws">Full Workspace</param>
