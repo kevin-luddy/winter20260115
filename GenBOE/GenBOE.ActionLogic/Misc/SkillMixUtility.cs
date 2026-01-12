@@ -27,7 +27,8 @@
 		/// <returns>Refreshed/Recalculated Skill Mix Model View</returns>
 		public static RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
 			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData,
-			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData, bool isBRCEnabled, bool isManual, DateTime? taskEndDate)
+			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData, 
+			bool isBRCEnabled, bool isManual, DateTime? taskStartDate, DateTime? taskEndDate)
 		{
 			// null checks 
 			if (resourceHours == null)
@@ -58,7 +59,7 @@
 
 			if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
 			{
-				refreshedModel = RefreshSpaceSkillMix(resourceHours, laborTypes, currentSkillMixSummaryData);
+				refreshedModel = RefreshSpaceSkillMix(resourceHours, laborTypes, currentSkillMixSummaryData, taskStartDate, taskEndDate);
 			}
 			else
 			{
@@ -212,18 +213,53 @@
 		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixSummaryData">The current skill mix summary data</param>
 		/// <returns>Refreshed/Recalculated Skill Mix Model View</returns>
-		private static RefreshSkillMixModelView RefreshSpaceSkillMix(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData)
+		private static RefreshSkillMixModelView RefreshSpaceSkillMix(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, 
+			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData,
+			DateTime? taskStartDate, DateTime? taskEndDate)
 		{
 			List<SkillMixSummaryModelView> newSummaryRows = new List<SkillMixSummaryModelView>();
 
-			// Add missing Labor Types
-			AddMissingSpaceResources(laborTypes, newSummaryRows);
+			if (!taskStartDate.HasValue || !taskEndDate.HasValue || taskEndDate < taskStartDate || taskEndDate < Utilities.OneLmxStartDate)
+			{
+				// if the task dates are borked or the entire task is before the 1LMX, then we are just grouping by ResourceID
 
-			// Add missing Historical Resources
-			AddMissingSpaceHistoricalResources(resourceHours, newSummaryRows);
+				// Add missing Labor Types
+				AddMissingSpaceResource(laborTypes, newSummaryRows);
 
-			// Copy over Rationale
-			AddRationale(currentSkillMixSummaryData, newSummaryRows);
+				// Add missing Historical Resources
+				AddMissingSpaceHistoricalResource(resourceHours, newSummaryRows);
+
+				// Copy over Rationale
+				AddRationaleResource(currentSkillMixSummaryData, newSummaryRows);
+			}
+			else if (taskStartDate < Utilities.OneLmxStartDate && taskEndDate >= Utilities.OneLmxStartDate)
+			{
+				// the task is on both sides of 1LMX, so we are grouping by both ResourceID and BRC (Tuple)
+				
+				// Add missing Labor Types
+				AddMissingSpaceResourceAndBRC(laborTypes, newSummaryRows);
+
+				// Add missing Historical Resources
+				AddMissingSpaceHistoricalResourceAndBRC(resourceHours, newSummaryRows);
+
+				// Copy over Rationale
+				AddRationaleResourceAndBRC(currentSkillMixSummaryData, newSummaryRows);
+			}
+			else
+			{
+				// the task is starting on or after 1LMX, only grouped by BRC
+
+				// Add missing Labor Types
+				AddMissingSpaceBRC(laborTypes, newSummaryRows);
+
+				// Add missing Historical Resources
+				AddMissingSpaceHistoricalBRC(resourceHours, newSummaryRows);
+
+				// Copy over Rationale
+				AddRationaleBRC(currentSkillMixSummaryData, newSummaryRows);
+			}
+			
+			
 
 			RefreshSkillMixModelView refreshSkillMixModel = new RefreshSkillMixModelView();
 			refreshSkillMixModel.SkillMixSummaryRows = newSummaryRows;
@@ -232,11 +268,11 @@
 		}
 
 		/// <summary>
-		/// Adds rationale from old rows to new rows
+		/// Adds rationale from old rows to new rows grouped by Resource/BRC tuple
 		/// </summary>
 		/// <param name="currentSkillMixSummaryData">The old summary rows</param>
 		/// <param name="newSummaryRows">The new summary rows</param>
-		private static void AddRationale(ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData, List<SkillMixSummaryModelView> newSummaryRows)
+		private static void AddRationaleResourceAndBRC(ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData, List<SkillMixSummaryModelView> newSummaryRows)
 		{
 			foreach (SkillMixSummaryModelView newRow in newSummaryRows)
 			{
@@ -250,11 +286,45 @@
 		}
 
 		/// <summary>
-		/// Add missing Labor Resources for Space
+		/// Adds rationale from old rows to new rows grouped by Resource
+		/// </summary>
+		/// <param name="currentSkillMixSummaryData">The old summary rows</param>
+		/// <param name="newSummaryRows">The new summary rows</param>
+		private static void AddRationaleResource(ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData, List<SkillMixSummaryModelView> newSummaryRows)
+		{
+			foreach (SkillMixSummaryModelView newRow in newSummaryRows)
+			{
+				SkillMixSummaryModelView oldRow = currentSkillMixSummaryData.FirstOrDefault(s => s.ResourceID.NullEmptyEquals(newRow.ResourceID));
+				if (oldRow != null)
+				{
+					newRow.Rationale = oldRow.Rationale;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds rationale from old rows to new rows grouped by BRC
+		/// </summary>
+		/// <param name="currentSkillMixSummaryData">The old summary rows</param>
+		/// <param name="newSummaryRows">The new summary rows</param>
+		private static void AddRationaleBRC(ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData, List<SkillMixSummaryModelView> newSummaryRows)
+		{
+			foreach (SkillMixSummaryModelView newRow in newSummaryRows)
+			{
+				SkillMixSummaryModelView oldRow = currentSkillMixSummaryData.FirstOrDefault(s => s.BusinessResourceID.NullEmptyEquals(newRow.BusinessResourceID));
+				if (oldRow != null)
+				{
+					newRow.Rationale = oldRow.Rationale;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Add missing Labor Resources for Space grouped by Resource/BRC tuple
 		/// </summary>
 		/// <param name="laborTypes">The labor type/spreads data</param>
 		/// <param name="currentSkillMixSummaryData">The current skill mix summary data</param>
-		private static void AddMissingSpaceResources(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData)
+		private static void AddMissingSpaceResourceAndBRC(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData)
 		{
 			// group the labor types together where Resource/BRC both match
 			Dictionary<Tuple<string, string>, ICollection<LaborTypeDataModelView>> groupedLaborTypes = new Dictionary<Tuple<string, string>, ICollection<LaborTypeDataModelView>>();
@@ -304,11 +374,119 @@
 		}
 
 		/// <summary>
-		/// Add missing Historical Resources for Space
+		/// Add missing Labor Resources for Space grouped by Resource
+		/// </summary>
+		/// <param name="laborTypes">The labor type/spreads data</param>
+		/// <param name="currentSkillMixSummaryData">The current skill mix summary data</param>
+		private static void AddMissingSpaceResource(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData)
+		{
+			// group the labor types together where Resource both match
+			Dictionary<string, ICollection<LaborTypeDataModelView>> groupedLaborTypes = new Dictionary<string, ICollection<LaborTypeDataModelView>>();
+			foreach (LaborTypeDataModelView labor in laborTypes)
+			{
+				if (string.IsNullOrEmpty(labor.ResourceName))
+				{
+					// skip this row, no resource set
+					continue;
+				}
+
+				string key = groupedLaborTypes.Keys.FirstOrDefault(g => g.NullEmptyEquals(labor.ResourceName));
+				if (key == null)
+				{
+					key = labor.ResourceName;
+					groupedLaborTypes.Add(key, new List<LaborTypeDataModelView>());
+				}
+
+				groupedLaborTypes[key].Add(labor);
+			}
+
+			// compare the labor type groups against the skill mix summary
+			foreach (KeyValuePair<string, ICollection<LaborTypeDataModelView>> kvp in groupedLaborTypes)
+			{
+				List<LaborSpreadDataModelView> allSpreads = kvp.Value.SelectMany(r => r.Spreads).ToList();
+				decimal totalHours = allSpreads.Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) < Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
+				decimal totalHoursBRCs = allSpreads.Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) >= Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
+				decimal totalUCOTHours = kvp.Value.SelectMany(r => r.UcotSpreads ?? new List<LaborSpreadDataModelView>()).Sum(x => x.LaborSpreadValue ?? 0m);
+
+				SkillMixSummaryModelView summary = currentSkillMixSummaryData.FirstOrDefault(s => s.ResourceID.NullEmptyEquals(kvp.Key));
+				if (summary == null)
+				{
+					summary = new SkillMixSummaryModelView()
+					{
+						ResourceID = kvp.Key,
+						BusinessResourceID = string.Empty
+					};
+					currentSkillMixSummaryData.Add(summary);
+				}
+
+				// update the historical hours from the Resource Hours calculated in SAP
+				summary.ProposedLegacyResource = totalHours;
+				summary.ProposedBrc = totalHoursBRCs;
+				summary.UCOTHours = totalUCOTHours;
+				summary.Included = true;
+			}
+		}
+
+		/// <summary>
+		/// Add missing Labor Resources for Space grouped by BRC
+		/// </summary>
+		/// <param name="laborTypes">The labor type/spreads data</param>
+		/// <param name="currentSkillMixSummaryData">The current skill mix summary data</param>
+		private static void AddMissingSpaceBRC(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData)
+		{
+			// group the labor types together where BRC both match
+			Dictionary<string, ICollection<LaborTypeDataModelView>> groupedLaborTypes = new Dictionary<string, ICollection<LaborTypeDataModelView>>();
+			foreach (LaborTypeDataModelView labor in laborTypes)
+			{
+				if (string.IsNullOrEmpty(labor.BusinessResourceCodeName))
+				{
+					// skip this row, no resource set
+					continue;
+				}
+
+				string key = groupedLaborTypes.Keys.FirstOrDefault(g => g.NullEmptyEquals(labor.BusinessResourceCodeName));
+				if (key == null)
+				{
+					key = labor.BusinessResourceCodeName;
+					groupedLaborTypes.Add(key, new List<LaborTypeDataModelView>());
+				}
+
+				groupedLaborTypes[key].Add(labor);
+			}
+
+			// compare the labor type groups against the skill mix summary
+			foreach (KeyValuePair<string, ICollection<LaborTypeDataModelView>> kvp in groupedLaborTypes)
+			{
+				List<LaborSpreadDataModelView> allSpreads = kvp.Value.SelectMany(r => r.Spreads).ToList();
+				decimal totalHours = allSpreads.Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) < Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
+				decimal totalHoursBRCs = allSpreads.Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) >= Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
+				decimal totalUCOTHours = kvp.Value.SelectMany(r => r.UcotSpreads ?? new List<LaborSpreadDataModelView>()).Sum(x => x.LaborSpreadValue ?? 0m);
+
+				SkillMixSummaryModelView summary = currentSkillMixSummaryData.FirstOrDefault(s => s.BusinessResourceID.NullEmptyEquals(kvp.Key));
+				if (summary == null)
+				{
+					summary = new SkillMixSummaryModelView()
+					{
+						ResourceID = string.Empty,
+						BusinessResourceID = kvp.Key
+					};
+					currentSkillMixSummaryData.Add(summary);
+				}
+
+				// update the historical hours from the Resource Hours calculated in SAP
+				summary.ProposedLegacyResource = totalHours;
+				summary.ProposedBrc = totalHoursBRCs;
+				summary.UCOTHours = totalUCOTHours;
+				summary.Included = true;
+			}
+		}
+
+		/// <summary>
+		/// Add missing Historical Resources for Space grouped by Resource/BRC tuple
 		/// </summary>
 		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixSummaryData">The current skill mix summary data</param>
-		private static void AddMissingSpaceHistoricalResources(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData)
+		private static void AddMissingSpaceHistoricalResourceAndBRC(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData)
 		{
 			// group the historical together where Resource/BRC both match
 			Dictionary<Tuple<string, string>, ICollection<MOQTypeSelectionTableDataResourceHoursDTO>> groupedHistorical = new Dictionary<Tuple<string, string>, ICollection<MOQTypeSelectionTableDataResourceHoursDTO>>();
@@ -347,6 +525,102 @@
 				}
 
 				// update the historical hours from the Resource Hours calculated in SAP
+				summary.HistoricalHours = totalHistoricalHours;
+			}
+		}
+
+		/// <summary>
+		/// Add missing Historical Resources for Space grouped by Resource
+		/// </summary>
+		/// <param name="resourceHours">MOQ Table Resource Hours</param>
+		/// <param name="currentSkillMixSummaryData">The current skill mix summary data</param>
+		private static void AddMissingSpaceHistoricalResource(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData)
+		{
+			// group the historical together where Resource match
+			Dictionary<string, ICollection<MOQTypeSelectionTableDataResourceHoursDTO>> groupedHistorical = new Dictionary<string, ICollection<MOQTypeSelectionTableDataResourceHoursDTO>>();
+			foreach (MOQTypeSelectionTableDataResourceHoursDTO historical in resourceHours)
+			{
+				if (string.IsNullOrEmpty(historical.ResourceName))
+				{
+					// skip this row, no resources set
+					continue;
+				}
+
+				string key = groupedHistorical.Keys.FirstOrDefault(g => g.NullEmptyEquals(historical.ResourceName));
+				if (key == null)
+				{
+					key = historical.ResourceName;
+					groupedHistorical.Add(key, new List<MOQTypeSelectionTableDataResourceHoursDTO>());
+				}
+
+				groupedHistorical[key].Add(historical);
+			}
+
+			// compare the historical groups against the skill mix summary
+			foreach (KeyValuePair<string, ICollection<MOQTypeSelectionTableDataResourceHoursDTO>> kvp in groupedHistorical)
+			{
+				decimal totalHistoricalHours = kvp.Value.Sum(r => r.TotalHours);
+
+				SkillMixSummaryModelView summary = currentSkillMixSummaryData.FirstOrDefault(s => s.ResourceID.NullEmptyEquals(kvp.Key));
+				if (summary == null)
+				{
+					summary = new SkillMixSummaryModelView()
+					{
+						ResourceID = kvp.Key,
+						BusinessResourceID = string.Empty
+					};
+					currentSkillMixSummaryData.Add(summary);
+				}
+
+				// update the historical hours from the Resource Hours calculated in SAP
+				summary.HistoricalHours = totalHistoricalHours;
+			}
+		}
+
+		/// <summary>
+		/// Add missing Historical Resources for Space grouped by BRC
+		/// </summary>
+		/// <param name="resourceHours">MOQ Table Resource Hours</param>
+		/// <param name="currentSkillMixSummaryData">The current skill mix summary data</param>
+		private static void AddMissingSpaceHistoricalBRC(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData)
+		{
+			// group the historical together where BRC match
+			Dictionary<string, ICollection<MOQTypeSelectionTableDataResourceHoursDTO>> groupedHistorical = new Dictionary<string, ICollection<MOQTypeSelectionTableDataResourceHoursDTO>>();
+			foreach (MOQTypeSelectionTableDataResourceHoursDTO historical in resourceHours)
+			{
+				if (string.IsNullOrEmpty(historical.BRCName))
+				{
+					// skip this row, no BRC set
+					continue;
+				}
+
+				string key = groupedHistorical.Keys.FirstOrDefault(g => g.NullEmptyEquals(historical.BRCName));
+				if (key == null)
+				{
+					key = historical.BRCName;
+					groupedHistorical.Add(key, new List<MOQTypeSelectionTableDataResourceHoursDTO>());
+				}
+
+				groupedHistorical[key].Add(historical);
+			}
+
+			// compare the historical groups against the skill mix summary
+			foreach (KeyValuePair<string, ICollection<MOQTypeSelectionTableDataResourceHoursDTO>> kvp in groupedHistorical)
+			{
+				decimal totalHistoricalHours = kvp.Value.Sum(r => r.TotalHours);
+
+				SkillMixSummaryModelView summary = currentSkillMixSummaryData.FirstOrDefault(s => s.BusinessResourceID.NullEmptyEquals(kvp.Key));
+				if (summary == null)
+				{
+					summary = new SkillMixSummaryModelView()
+					{
+						ResourceID = string.Empty,
+						BusinessResourceID = kvp.Key
+					};
+					currentSkillMixSummaryData.Add(summary);
+				}
+
+				// update the historical hours from the BRC Hours calculated in SAP
 				summary.HistoricalHours = totalHistoricalHours;
 			}
 		}

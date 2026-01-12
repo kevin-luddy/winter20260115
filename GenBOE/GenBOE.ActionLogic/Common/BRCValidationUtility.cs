@@ -6,14 +6,15 @@
 
 namespace GenBOE.ActionLogic.Common
 {
-	using GenBOE.DataBridge.DTO;
-	using GenBOE.Dtos;
-	using IES.Common;
-	using IES.Common.classes;
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using IES.Common;
+	using IES.Common.classes;
 
 	/// <summary>
 	/// Class utilized to validate Business Resource Code
@@ -88,12 +89,28 @@ namespace GenBOE.ActionLogic.Common
 		/// <summary>
 		/// Validates the Resource and Business Resource Code Required message based on Labor Type Start and End Date
 		/// </summary>
+		/// <param name="boeTask">The boe task element</param>
 		/// <param name="labor">Validation BOE Labor Type Model</param>
 		/// <param name="workspaceShortname">Workspace Shortname</param>
 		/// <param name="resourceIdToSegmentRegion">Dictionary keyed by resource id to segment region</param>
 		/// <returns>Validation string that labels required fields if any are missing, else empty string</returns>
-		public static string ValidateResourceAndBusinessResourceCodeRequired(ResourceTypeDto labor, IDictionary<int, string> resourceIdToSegmentRegion, string workspaceShortname)
+		public static string ValidateResourceAndBusinessResourceCodeRequired(BoeTaskElementDTO boeTask, ICollection<MoqTypeSelection> moqTypes, IReadOnlyCollection<ResourceDTO> resourcesUsedInWsBoes, ResourceTypeDto labor, IDictionary<int, string> resourceIdToSegmentRegion, string workspaceShortname)
 		{
+			if (boeTask == null)
+			{
+				throw new ArgumentNullException(nameof(boeTask));
+			}
+
+			if (moqTypes == null)
+			{
+				throw new ArgumentNullException(nameof(moqTypes));
+			}
+
+			if (resourcesUsedInWsBoes == null)
+			{
+				throw new ArgumentNullException(nameof(resourcesUsedInWsBoes));
+			}
+
 			string requiredMessage = string.Empty;
 
 			if (!Utilities.IsBRCEnabledForWorkspace(workspaceShortname) || (labor != null && IsResourceDisablingBrc(labor.ResourceID, resourceIdToSegmentRegion)))
@@ -109,33 +126,64 @@ namespace GenBOE.ActionLogic.Common
 
 				if (labor != null)
 				{
+					// Resource ID is always required for RMS
+					bool resourceRequired = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST;
+					bool brcRequired = false;
+
+					// First figure out what is required
 					if (labor.EndDateValue < oneLMXStartDate && !labor.ResourceID.HasValue)
 					{
-						requiredMessage = BoeDTO.RESOURCE_CODE_REQUIRED;
+						resourceRequired = true;
 					}
 					else if (labor.StartDateValue < oneLMXStartDate && labor.EndDateValue >= oneLMXStartDate)
 					{
-						if (!labor.ResourceID.HasValue)
-						{
-							requiredMessage = BoeDTO.RESOURCE_CODE_REQUIRED;
-						}
-						else if (!labor.ResourceID.HasValue && !labor.BusinessResourceCodeID.HasValue)
-						{
-							requiredMessage = BoeDTO.RESOURCE_AND_BUSINESS_RESOURCE_CODE_REQUIRED;
-						}
-						else if (!labor.BusinessResourceCodeID.HasValue)
-						{
-							requiredMessage = BoeDTO.BUSINESS_RESOURCE_CODE_REQUIRED;
-						}
+						resourceRequired = true;
+						brcRequired = true;
 					}
 					else if (labor.StartDateValue >= oneLMXStartDate && !labor.BusinessResourceCodeID.HasValue)
 					{
-						requiredMessage = BoeDTO.BUSINESS_RESOURCE_CODE_REQUIRED;
+						brcRequired = true;
 					}
-					else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && !labor.ResourceID.HasValue)
+
+					// Special Space requirements for Skill Mix Summary
+					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && boeTask.StartDate < oneLMXStartDate && boeTask.EndDate >= oneLMXStartDate)
 					{
-						// Resource ID is always required for RMS
+						// if Task PoP spans 2028 & 2029+
+						// If there is an estimate in the Resource Types window that is pre 2029 ONLY, a BRC is NOT required unless the resource is included in the actuals.
+						// If there is an estimate in the Resource Types window that is 2029 + ONLY, a Resource is NOT required unless the BRC is included in the actuals.
+						// If there is an estimate in the Resource Types window that is pre 2029 & 2029 +, both a Resource ID &BRC are required.
+						if (labor.EndDateValue < oneLMXStartDate && labor.ResourceID.HasValue)
+						{
+							ResourceDTO resource = resourcesUsedInWsBoes.FirstOrDefault(r => r.Id == labor.ResourceID);
+							if (resource != null && moqTypes.Any(m => m.TableData != null && m.TableData.Any(t => t.ResourceHours != null && t.ResourceHours.Any(r => r.ResourceName == resource.ResourceName))))
+							{
+								// labor pre-2029 has resource that matches actuals, brc is required
+								brcRequired = true;
+							}
+						}
+						else if (labor.StartDate >= oneLMXStartDate && labor.BusinessResourceCodeID.HasValue)
+						{
+							ResourceDTO brc = resourcesUsedInWsBoes.FirstOrDefault(r => r.Id == labor.BusinessResourceCodeID);
+							if (brc != null && moqTypes.Any(m => m.TableData != null && m.TableData.Any(t => t.ResourceHours != null && t.ResourceHours.Any(r => r.BRCName == brc.ResourceName))))
+							{
+								// labor pre-2029 has brc that matches actuals, resource is required
+								resourceRequired = true;
+							}
+						}
+					}
+
+					// Now test required versus the values to find error message
+					if (resourceRequired && brcRequired && !labor.ResourceID.HasValue && !labor.BusinessResourceCodeID.HasValue)
+					{
+						requiredMessage = BoeDTO.RESOURCE_AND_BUSINESS_RESOURCE_CODE_REQUIRED;
+					}
+					else if (resourceRequired && !labor.ResourceID.HasValue)
+					{
 						requiredMessage = BoeDTO.RESOURCE_CODE_REQUIRED;
+					}
+					else if (brcRequired && !labor.BusinessResourceCodeID.HasValue)
+					{
+						requiredMessage = BoeDTO.BUSINESS_RESOURCE_CODE_REQUIRED;
 					}
 				}
 			}

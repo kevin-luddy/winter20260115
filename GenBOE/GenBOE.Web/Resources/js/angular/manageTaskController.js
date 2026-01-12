@@ -167,6 +167,7 @@
 				currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData,
 				currentSkillMixSummaryData: $scope.model.SkillMixSummaryData,
 				isManual: $scope.isSkillMixManual(),
+				taskStartDate: $scope.model.TaskElementData.StartDate.toDate(),
 				taskEndDate: $scope.model.TaskElementData.EndDate.toDate()
 			};
 
@@ -1953,33 +1954,44 @@
 		var startDate = item.StartDate.toDate();
 		var endDate = item.EndDate.toDate();
 		var input = item.ResourceInput;
-
-		if (!$scope.IsBRCEnabled || $scope.TMResourceIds.includes(item.ResourceID)) {
-			if (!item.NewLaborType) {
+		if (!item.NewLaborType) {
+			if (!$scope.IsBRCEnabled || $scope.TMResourceIds.includes(item.ResourceID)) {
+				// if BRC is not enabled or TM ResourceIDs contains this resourceID, then only look at this Resource ID for validation
 				if (input === undefined || (typeof input === 'string' && (input.length === 0
 					|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
 					item.IsResourceValid = false;
 				}
 			}
-		}
-		else {
-			if (!item.NewLaborType) {
+			else {
 				if ($scope.ManageTaskModel.IsSpace) {
-					if (endDate < $scope.oneLmxCutOff) {
-						if (input === undefined || (typeof input === 'string' && (input.length === 0
-							|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-							item.IsResourceValid = false;
+
+					// Resource is required if start date is before 1LMX cutoff
+					var resourceRequired = startDate < $scope.oneLmxCutOff;
+
+					if (endDate >= $scope.oneLmxCutOff && callBusinessResourceCode) {
+						item.IsBusinessResourceCodeValid = $scope.getAndSetIsBusinessResourceCodeValid(item, $scope.BusinessResourceCodeModels, false);
+					}
+
+					// extra checks in case there are Actuals that match the BRC
+					if (item.IsBusinessResourceCodeValid && $scope.showSkillMix()) {
+						if ($scope.SelectedMoqTypes.some(x =>
+							x.TableData !== undefined &&
+							x.TableData.length > 0 &&
+							x.TableData.some(y =>
+							(y.ResourceHours !== undefined && (y.ResourceHours.length > 0 && y.RepositoryName === $scope.ManageTaskModel.SapWebiRepository &&
+								y.ResourceHours.some(z => z.BRCName == item.BusinessResourceCodeName))
+							)
+							)
+						)) {
+							resourceRequired = true;
 						}
 					}
 
-					if (startDate < $scope.oneLmxCutOff && endDate >= $scope.oneLmxCutOff) {
+					if (resourceRequired) {
+						// if resource is required, check to see if it has a valid value.  If not, then we will show red in UI
 						if (input === undefined || (typeof input === 'string' && (input.length === 0
 							|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
 							item.IsResourceValid = false;
-						}
-
-						if (callBusinessResourceCode) {
-							item.IsBusinessResourceCodeValid = $scope.getAndSetIsBusinessResourceCodeValid(item, $scope.BusinessResourceCodeModels, false);
 						}
 					}
 				}
@@ -2011,21 +2023,34 @@
 
 		if (!item.NewLaborType) {
 			if (!$scope.TMResourceIds.includes(item.ResourceID)) {
-				if (startDate >= $scope.oneLmxCutOff) {
-					if (input === undefined || (typeof input === 'string' && (input.length === 0
-						|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-						item.IsBusinessResourceCodeValid = false;
+
+				// BRC is required if end date is after or equal to 1LMX cutoff month
+				var brcRequired = endDate >= $scope.oneLmxCutOff;
+
+				if (callResource) {
+					item.IsResourceValid = $scope.getAndSetIsResourceValid(item, $scope.ResourceModels, false);
+				}
+
+				// extra checks in case there are Actuals that match the BRC
+				if ($scope.ManageTaskModel.IsSpace && item.IsResourceValid && $scope.showSkillMix()) {
+					if ($scope.SelectedMoqTypes.some(x =>
+						x.TableData !== undefined &&
+						x.TableData.length > 0 &&
+						x.TableData.some(y =>
+						(y.ResourceHours !== undefined && (y.ResourceHours.length > 0 && y.RepositoryName === $scope.ManageTaskModel.SapWebiRepository &&
+							y.ResourceHours.some(z => z.ResourceName == item.ResourceName))
+						)
+						)
+					)) {
+						brcRequired = true;
 					}
 				}
 
-				if (startDate < $scope.oneLmxCutOff && endDate >= $scope.oneLmxCutOff) {
+				if (brcRequired) {
+					// if brc is required, check to see if it has a valid value.  If not, then we will show red in UI
 					if (input === undefined || (typeof input === 'string' && (input.length === 0
 						|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
 						item.IsBusinessResourceCodeValid = false;
-					}
-
-					if (callResource) {
-						item.IsResourceValid = $scope.getAndSetIsResourceValid(item, $scope.ResourceModels, false);
 					}
 				}
 			}
