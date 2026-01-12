@@ -6,18 +6,19 @@
 
 namespace GenBOE.ActionLogic.Common
 {
+	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-	using System;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Web.Mvc;
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using GenBOE.Models;
 	using GenBOE.Objects;
 	using IES.Common;
-	using Microsoft.Practices.ObjectBuilder2;
 	using IES.Common.classes;
-	using GenBOE.Dtos;
+	using Microsoft.Practices.ObjectBuilder2;
 
 	/// <summary>
 	/// Utility Class to hold Action Logic Methods
@@ -74,7 +75,7 @@ namespace GenBOE.ActionLogic.Common
 				errorMessages.Add($"{skillMixTableName}: {BoeSkillMixColumnName} is missing for {skillMixResourceOld}.");
 			}
 
-			if (!totalSKillMixRowsBOESkillMix.EqualsEpsilon(100) && !totalSKillMixRowsBOESkillMix.EqualsEpsilon(0))
+			if (!totalSKillMixRowsBOESkillMix.EqualsEpsilon(100, 2m) && !totalSKillMixRowsBOESkillMix.EqualsEpsilon(0))
 			{
 				errorMessages.Add($"{skillMixTableName}: {BoeSkillMixColumnName} total must be either 0% or 100%");
 			}
@@ -92,9 +93,12 @@ namespace GenBOE.ActionLogic.Common
 			if (onButtonPress)
 			{
 				IList<SkillMixModelView> skillMixRowsMissingRationale = skillMixModels.Where(x => string.IsNullOrEmpty(x.Rationale)).ToList();
-				foreach (string skillMixResourceOld in skillMixRowsMissingRationale.Select(x => x.ResourceOld))
+				foreach (SkillMixModelView missingRationale in skillMixRowsMissingRationale)
 				{
-					errorMessages.Add($"{skillMixTableName}: The Rationale field for {skillMixResourceOld} is required.");
+					if (!(string.IsNullOrEmpty(missingRationale.ResourceOld) && string.IsNullOrEmpty(missingRationale.ResourceNew)))
+					{
+						errorMessages.Add($"{skillMixTableName}: The Rationale field for {missingRationale.ResourceOld} is required.");
+					}
 				}
 			}
 
@@ -136,7 +140,7 @@ namespace GenBOE.ActionLogic.Common
 				errorMessages.Add("LM Enterprise Skill Mix Table: At least one Resource has to be included");
 			}
 
-			if (!totalCommonDisclosureRowsBOESkillMix.EqualsEpsilon(100) && !totalCommonDisclosureRowsBOESkillMix.EqualsEpsilon(0))
+			if (!totalCommonDisclosureRowsBOESkillMix.EqualsEpsilon(100, 2m) && !totalCommonDisclosureRowsBOESkillMix.EqualsEpsilon(0))
 			{
 				errorMessages.Add("LM Enterprise Skill Mix Table: BOE Skill Mix total must be either 0% or 100%");
 			}
@@ -146,9 +150,12 @@ namespace GenBOE.ActionLogic.Common
 			if (onButtonPress)
 			{
 				IList<CommonDisclosureModelView> commonDisclosureRowsMissingRationale = commonDisclosures.Where(x => string.IsNullOrEmpty(x.Rationale)).ToList();
-				foreach (string skillMixResourceID in commonDisclosureRowsMissingRationale.Select(x => x.ResourceID))
+				foreach (CommonDisclosureModelView missingRationale in commonDisclosureRowsMissingRationale)
 				{
-					errorMessages.Add($"LM Enterprise Skill Mix Table: The Rationale field for {skillMixResourceID} is required.");
+					if (!(string.IsNullOrEmpty(missingRationale.ResourceID) && string.IsNullOrEmpty(missingRationale.BusinessResourceID)))
+					{
+						errorMessages.Add($"LM Enterprise Skill Mix Table: The Rationale field for {missingRationale.ResourceID} is required.");
+					}
 				}
 			}
 
@@ -207,7 +214,7 @@ namespace GenBOE.ActionLogic.Common
 				errorMessages.Add("Skill Mix Summary Table: At least one Resource has to be included");
 			}
 
-			if (!totalSkillMixSummaryRowsBOESkillMix.EqualsEpsilon(100) && !totalSkillMixSummaryRowsBOESkillMix.EqualsEpsilon(0))
+			if (!totalSkillMixSummaryRowsBOESkillMix.EqualsEpsilon(100, 2m) && !totalSkillMixSummaryRowsBOESkillMix.EqualsEpsilon(0))
 			{
 				errorMessages.Add("Skill Mix Summary Table: BOE Skill Mix total must be either 0% or 100%");
 			}
