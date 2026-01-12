@@ -263,7 +263,14 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 					{
-						errorMessages.AddRange(ActionLogicUtility.ValidateSkillMixSummaryTable(task, ws.EnableSAPConnection, task.taskElementLabors.Any()));
+						// Sets the MOQ Equation Total
+						decimal moqEquationTotal = 0m;
+						if (!string.IsNullOrEmpty(MOQEquationCalc))
+						{
+							moqEquationTotal = decimal.Parse(MOQEquationCalc);
+						}
+
+						errorMessages.AddRange(ActionLogicUtility.ValidateSkillMixSummaryTable(task, ws.EnableSAPConnection, task.taskElementLabors.Any(), moqEquationTotal));
 					}
 
 					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)

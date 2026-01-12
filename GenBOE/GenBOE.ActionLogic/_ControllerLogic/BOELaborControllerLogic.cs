@@ -1010,7 +1010,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 					if (taskElement.SkillMixSummaryTable != null && taskElement.SkillMixSummaryTable.Any())
 					{
-						validationErrors.AddRange(ActionLogicUtility.ValidateSkillMixSummaryTable(taskElement, ws.EnableSAPConnection, false).Select(x => new ValidationMessage(x)));
+						decimal? moqEquationTotal = ValidateMoqEquationAndValues(ws, boe, modelView, validationErrors);
+						validationErrors.AddRange(ActionLogicUtility.ValidateSkillMixSummaryTable(taskElement, ws.EnableSAPConnection, false, moqEquationTotal).Select(x => new ValidationMessage(x)));
 					}
 				}
 				else
@@ -1037,6 +1038,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 					if (taskElement.SkillMixTable != null && taskElement.SkillMixTable.Any())
 					{
+
 						validationErrors.AddRange(ActionLogicUtility.ValidateSkillMixTable(taskElement.SkillMixTable, false).Select(x => new ValidationMessage(x)));
 					}
 
