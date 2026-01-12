@@ -309,6 +309,13 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="userId">The user identifier.</param>
 		void UpdateLastAccessed(int workspaceId, int userId);
 
+		/// <summary>
+		/// Get All Workspaces that contain a tracking number
+		/// Typically used for PLD Status Sync, needs to grab all data needed to call UpsertWorkspace
+		/// </summary>
+		/// <returns>Workspaces containing a tracking number</returns>
+		ICollection<WorkspaceDTO> GetAllWorkspacesWithTrackingNumbers();
+
 		#endregion
 	}
 }

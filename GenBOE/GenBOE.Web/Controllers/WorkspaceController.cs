@@ -808,7 +808,9 @@ namespace GenBOE.Web.Controllers
 		{
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_NEXT_UNIQUE_WORKSPACE_NAME, SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
 
-			ICollection<string> existingNames = this.workspaceLoader.GetWorkspaceNamesMatchingBase(baseName);
+			ICollection<string> existingNames = this.workspaceLoader.
+				
+				(baseName);
 
 			Dictionary<string, object> payload = _ControllerLogic.GetNextUniqueWorkspaceName(existingNames, baseName);
 
