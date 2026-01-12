@@ -38,6 +38,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System.Transactions;
 	using System.Web.Configuration;
 	using static IES.Common.Constants;
+	using System.Text.RegularExpressions;
 
 	public abstract class WorkspaceControllerLogic : IWorkspaceControllerLogic
 	{
@@ -2016,11 +2017,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				if (wsName.Equals(baseName, StringComparison.OrdinalIgnoreCase))
 				{
 					anyRelevant = true;
-					continue;
 				}
 
 				// Check for suffix pattern (baseName_NN)
-				if (wsName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+				else if (wsName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
 				{
 					string tail = wsName.Substring(prefix.Length);
 					if (int.TryParse(tail, out int n))
@@ -2052,7 +2052,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			// DEFENSIVE: Trim before regex replacement to prevent leading/trailing spaces from becoming underscores
 			string shortName = uniqueName.Trim().Replace(" ", "_");
 			// Remove any other invalid characters (keep alphanumeric, dash, underscore)
-			shortName = System.Text.RegularExpressions.Regex.Replace(shortName, @"[^a-zA-Z0-9-_]", "_");
+			shortName = Regex.Replace(shortName, @"[^a-zA-Z0-9-_]", "_");
 
 			const int MAX_SHORTNAME_LENGTH = 21;
 			if (shortName.Length > MAX_SHORTNAME_LENGTH)
