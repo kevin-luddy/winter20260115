@@ -118,11 +118,20 @@ namespace GenBOE.DataBridge.DTO
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
-                    // Query for exact match or names starting with baseName_ (for suffix pattern)
-                    toReturn = (from w in gbe.Workspaces
-								where w.WorkspaceName.ToLower() == baseName.ToLower()
-                                   || w.WorkspaceName.ToLower().StartsWith(baseName.ToLower() + "_")
-								select w.WorkspaceName).ToCollection();
+					if (String.IsNullOrEmpty(baseName))
+					{
+						toReturn = new Collection<string>();
+						toReturn.Add(baseName);
+					}
+					else
+					{
+						string baseNameLower = baseName.ToLower();
+						// Query for exact match or names starting with baseName_ (for suffix pattern)
+						toReturn = (from w in gbe.Workspaces
+									where w.WorkspaceName.ToLower() == baseNameLower
+									   || w.WorkspaceName.ToLower().StartsWith(baseNameLower + "_")
+									select w.WorkspaceName).ToCollection();
+					}
 				}
 			}
 
