@@ -104,6 +104,42 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		/// <summary>
+		/// This method retrieves workspace names that match a base name pattern for uniqueness checking.
+		/// Efficient query that only returns name fields needed for uniqueness algorithm.
+		/// </summary>
+		/// <param name="baseName">The base workspace name to check for conflicts</param>
+		/// <returns>Collection of workspace names matching the pattern</returns>
+		[DbQuery]
+		public virtual ICollection<string> GetWorkspaceNamesMatchingBase(string baseName)
+		{
+			Collection<string> toReturn;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					if (String.IsNullOrEmpty(baseName))
+					{
+						toReturn = new Collection<string>();
+						toReturn.Add(baseName);
+					}
+					else
+					{
+						string baseNameLower = baseName.ToLower();
+						// Query for exact match or names starting with baseName_ (for suffix pattern)
+						toReturn = (from w in gbe.Workspaces
+									where w.WorkspaceName.ToLower() == baseNameLower
+									   || w.WorkspaceName.ToLower().StartsWith(baseNameLower + "_")
+									select w.WorkspaceName).ToCollection();
+					}
+				}
+			}
+
+			return toReturn;
+		}
+
+		
+		/// <summary>
 		/// This method retrieves PARTIAL workspace data - everything that is needed for homepage, but nothing more
 		/// </summary>
 		/// <param name="userId">The user id.</param>
