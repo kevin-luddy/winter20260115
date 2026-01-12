@@ -221,7 +221,7 @@
 
 			if (!taskStartDate.HasValue || !taskEndDate.HasValue || taskEndDate < taskStartDate || taskEndDate < Utilities.OneLmxStartDate)
 			{
-				// if the task dates are borked or the entire task is before the 1LMX, then we are just using ResourceID
+				// if the task dates are borked or the entire task is before the 1LMX, then we are just grouping by ResourceID
 
 				// Add missing Labor Types
 				AddMissingSpaceResource(laborTypes, newSummaryRows);
@@ -234,7 +234,7 @@
 			}
 			else if (taskStartDate < Utilities.OneLmxStartDate && taskEndDate >= Utilities.OneLmxStartDate)
 			{
-				// the task is on both sides of 1LMX, so we are using both ResourceID and BRC
+				// the task is on both sides of 1LMX, so we are grouping by both ResourceID and BRC (Tuple)
 				
 				// Add missing Labor Types
 				AddMissingSpaceResourceAndBRC(laborTypes, newSummaryRows);
@@ -247,7 +247,7 @@
 			}
 			else
 			{
-				// the task is starting on or after 1LMX, only using BRC
+				// the task is starting on or after 1LMX, only grouped by BRC
 
 				// Add missing Labor Types
 				AddMissingSpaceBRC(laborTypes, newSummaryRows);
@@ -268,7 +268,7 @@
 		}
 
 		/// <summary>
-		/// Adds rationale from old rows to new rows
+		/// Adds rationale from old rows to new rows grouped by Resource/BRC tuple
 		/// </summary>
 		/// <param name="currentSkillMixSummaryData">The old summary rows</param>
 		/// <param name="newSummaryRows">The new summary rows</param>
@@ -286,7 +286,7 @@
 		}
 
 		/// <summary>
-		/// Adds rationale from old rows to new rows
+		/// Adds rationale from old rows to new rows grouped by Resource
 		/// </summary>
 		/// <param name="currentSkillMixSummaryData">The old summary rows</param>
 		/// <param name="newSummaryRows">The new summary rows</param>
@@ -303,7 +303,7 @@
 		}
 
 		/// <summary>
-		/// Adds rationale from old rows to new rows
+		/// Adds rationale from old rows to new rows grouped by BRC
 		/// </summary>
 		/// <param name="currentSkillMixSummaryData">The old summary rows</param>
 		/// <param name="newSummaryRows">The new summary rows</param>
@@ -320,7 +320,7 @@
 		}
 
 		/// <summary>
-		/// Add missing Labor Resources for Space
+		/// Add missing Labor Resources for Space grouped by Resource/BRC tuple
 		/// </summary>
 		/// <param name="laborTypes">The labor type/spreads data</param>
 		/// <param name="currentSkillMixSummaryData">The current skill mix summary data</param>
@@ -374,7 +374,7 @@
 		}
 
 		/// <summary>
-		/// Add missing Labor Resources for Space
+		/// Add missing Labor Resources for Space grouped by Resource
 		/// </summary>
 		/// <param name="laborTypes">The labor type/spreads data</param>
 		/// <param name="currentSkillMixSummaryData">The current skill mix summary data</param>
@@ -428,7 +428,7 @@
 		}
 
 		/// <summary>
-		/// Add missing Labor Resources for Space
+		/// Add missing Labor Resources for Space grouped by BRC
 		/// </summary>
 		/// <param name="laborTypes">The labor type/spreads data</param>
 		/// <param name="currentSkillMixSummaryData">The current skill mix summary data</param>
@@ -482,7 +482,7 @@
 		}
 
 		/// <summary>
-		/// Add missing Historical Resources for Space
+		/// Add missing Historical Resources for Space grouped by Resource/BRC tuple
 		/// </summary>
 		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixSummaryData">The current skill mix summary data</param>
@@ -530,7 +530,7 @@
 		}
 
 		/// <summary>
-		/// Add missing Historical Resources for Space
+		/// Add missing Historical Resources for Space grouped by Resource
 		/// </summary>
 		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixSummaryData">The current skill mix summary data</param>
@@ -578,7 +578,7 @@
 		}
 
 		/// <summary>
-		/// Add missing Historical Resources for Space
+		/// Add missing Historical Resources for Space grouped by BRC
 		/// </summary>
 		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixSummaryData">The current skill mix summary data</param>
