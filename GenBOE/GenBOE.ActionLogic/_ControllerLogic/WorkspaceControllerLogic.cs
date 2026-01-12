@@ -1943,13 +1943,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					$"{paNumber}_01";
 			}
 
-			// Maximum allowed shortname length based on validation constraints
-			// Using 21 as the safe limit to match StringLength validation attribute
-			const int MAX_SHORTNAME_LENGTH = 21;
-
 			// Truncate shortname if it exceeds maximum length
 			// for revisions (with underscore suffix), ensure we leave room for the suffix
-			if (nextShortName.Length > MAX_SHORTNAME_LENGTH)
+			if (nextShortName.Length > IESWebConstants.MAX_SHORTNAME_LENGTH)
 			{
 				if (nextShortName.Contains("_"))
 				{
@@ -1959,7 +1955,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					string basePart = nextShortName.Substring(0, underscoreIndex);
 
 					// Truncate the base part to fit within max length width suffix
-					int maxBaseLength = MAX_SHORTNAME_LENGTH - suffix.Length;
+					int maxBaseLength = IESWebConstants.MAX_SHORTNAME_LENGTH - suffix.Length;
 					if (basePart.Length > maxBaseLength)
 					{
 						basePart = basePart.Substring(0, maxBaseLength);
@@ -1970,7 +1966,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				else
 				{
 					// No revision suffix - just truncate
-					nextShortName = nextShortName.Substring(0, MAX_SHORTNAME_LENGTH);
+					nextShortName = nextShortName.Substring(0, IESWebConstants.MAX_SHORTNAME_LENGTH);
 				}
 			}
 
@@ -2054,8 +2050,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			// Remove any other invalid characters (keep alphanumeric, dash, underscore)
 			shortName = Regex.Replace(shortName, @"[^a-zA-Z0-9-_]", "_");
 
-			const int MAX_SHORTNAME_LENGTH = 21;
-			if (shortName.Length > MAX_SHORTNAME_LENGTH)
+			if (shortName.Length > IESWebConstants.MAX_SHORTNAME_LENGTH)
 			{
 				// Preserve suffix if present
 				if (shortName.Contains("_"))
@@ -2064,7 +2059,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					string suffix = shortName.Substring(underscoreIndex);
 					string basePart = shortName.Substring(0, underscoreIndex);
 
-					int maxBaseLength = MAX_SHORTNAME_LENGTH - suffix.Length;
+					int maxBaseLength = IESWebConstants.MAX_SHORTNAME_LENGTH - suffix.Length;
 					if (maxBaseLength > 0 && basePart.Length > maxBaseLength)
 					{
 						basePart = basePart.Substring(0, maxBaseLength);
@@ -2073,7 +2068,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 				else
 				{
-					shortName = shortName.Substring(0, MAX_SHORTNAME_LENGTH);
+					shortName = shortName.Substring(0, IESWebConstants.MAX_SHORTNAME_LENGTH);
 				}
 			}
 
