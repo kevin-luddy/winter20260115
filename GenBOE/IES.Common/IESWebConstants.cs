@@ -533,6 +533,16 @@ namespace IES.Common
         /// The view name for the File Attachments index.
         /// </summary>
         public readonly static string VIEW_FILE_ATTACHMENTS = "Index";
-        #endregion File Attachments
-    }
+		#endregion File Attachments
+
+		#region PLD
+
+		/// <summary>
+		// Maximum allowed shortname length based on validation constraints
+		// Using 21 as the safe limit to match StringLength validation attribute
+		/// </summary>
+		public const int MAX_SHORTNAME_LENGTH = 21;
+
+		#endregion
+	}
 }

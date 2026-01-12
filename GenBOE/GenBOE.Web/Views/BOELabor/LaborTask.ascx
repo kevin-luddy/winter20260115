@@ -1138,7 +1138,7 @@
                                             <label style="margin: 0; white-space: normal; word-break: break-word; width: 100%;">
                                                 {{row.MixedCannedRationaleResponse}}
                                             </label>
-                                            <textarea data-ng-model="row.Rationale"
+                                            <textarea data-ng-model="row.Rationale" data-ng-blur="rationaleUpdated()"
                                                 placeholder="{{row.RationalePlaceholderText}}"
                                                 rows="1"
                                                 style="max-width: 100%; height: 14px; max-height: 45px; margin: 0; border-radius: 2px; resize: vertical; width: 100%; color:#000;">
@@ -1149,7 +1149,7 @@
                                         <div ng-show="!row.IsRationaleReadOnly && !row.UsesMixedCannedResponseAndUserInput"
                                             style="width: 100%;">
                                             <textarea
-                                                data-ng-model="row.Rationale"
+                                                data-ng-model="row.Rationale" data-ng-blur="rationaleUpdated()"
                                                 placeholder="{{row.RationalePlaceholderText}}"
                                                 style="width: 100%; height: 14px; max-height: 45px; overflow-y: auto; resize: vertical;"
                                                 maxlength="255"></textarea>

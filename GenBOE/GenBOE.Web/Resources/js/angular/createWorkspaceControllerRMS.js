@@ -153,6 +153,8 @@
 		$scope.data.ProposalTitle = $scope.model.Copy_PLD_PATitle;
 		// CRITICAL: Set flag to true - user explicitly selected a new PA Number, so we SHOULD refresh PLD
 		$scope.data.RefreshPLDOnCopy = true;
+		// DEFENSIVE: Reset uniqueness flag when PA Number changes so name is rechecked
+		$scope._uniquenessApplied = false;
 	};
 
 	$scope.handleCopyDropdownSelection = function () {
@@ -482,12 +484,17 @@
 	// IMPORTANT: Preserves uniqueness suffix (_01, _02, etc.) by truncating base name, not suffix
 	$scope.deriveShortname = function (workspaceName) {
 		if (!workspaceName) return '';
-		// Replace invalid characters (keep alphanumeric, dash, underscore, space)
-		var cleaned = workspaceName.replace(/[^a-zA-Z0-9-_ ]/g, '_');
+
+		// DEFENSIVE: Trim BEFORE regex replacement to prevent leading/trailing spaces from becoming underscores
+		var trimmed = workspaceName.trim();
+		if (!trimmed) return '';
+
+		// Replace invalid characters including spaces (keep alphanumeric, dash, underscore only)
+		var cleaned = trimmed.replace(/[^a-zA-Z0-9-_]/g, '_');
 
 		// If already within limit, return as-is
 		if (cleaned.length <= 21) {
-			return cleaned.trim();
+			return cleaned;
 		}
 
 		// Check for uniqueness suffix pattern (_01, _02, _10, etc.)
@@ -499,12 +506,12 @@
 			// Truncate base to fit within 21 chars with suffix
 			var maxBaseLength = 21 - suffix.length;
 			if (maxBaseLength > 0) {
-				return base.substring(0, maxBaseLength).trim() + suffix;
+				return base.substring(0, maxBaseLength) + suffix;
 			}
 		}
 
 		// No suffix or suffix too long, just truncate
-		return cleaned.substring(0, 21).trim();
+		return cleaned.substring(0, 21);
 	};
 
 	// Flag to track if uniqueness algorithm has been applied to workspace name
@@ -531,6 +538,12 @@
 			return; // No workspace name to modify
 		}
 
+		// DEFENSIVE: Trim baseName to prevent leading/trailing spaces from becoming underscores
+		baseName = baseName.trim();
+		if (!baseName) {
+			return; // Empty after trim
+		}
+
 		// Apply uniqueness: append "_01" suffix (zero-padded)
 		// If the name already ends with "_NN", increment the number
 		var uniqueName;
@@ -555,6 +568,68 @@
 
 		// Mark as applied
 		$scope._uniquenessApplied = true;
+	};
+
+	// Server-side uniqueness check: Calls backend to get guaranteed unique workspace name
+	// This queries the database for existing names and returns the next available unique name
+	// Returns a promise that resolves when the unique name is set
+	$scope.fetchUniqueWorkspaceName = function () {
+		var deferred = $q.defer();
+
+		// DEFENSIVE: Skip check only if already applied - caller should reset flag if re-check needed
+		if ($scope._uniquenessApplied) {
+			deferred.resolve(); // Already applied
+			return deferred.promise;
+		}
+
+		// DEFENSIVE: Prefer current WorkspaceName over stale _sourceWorkspaceName
+		// This handles the case where copyExactDetails updated WorkspaceName after _sourceWorkspaceName was set
+		var baseName = $scope.data.WorkspaceName || $scope._sourceWorkspaceName || '';
+		if (!baseName) {
+			deferred.resolve(); // No workspace name to modify
+			return deferred.promise;
+		}
+
+		// DEFENSIVE: Trim baseName before sending to server to prevent leading/trailing spaces from becoming underscores
+		baseName = baseName.trim();
+		if (!baseName) {
+			deferred.resolve(); // Empty after trim
+			return deferred.promise;
+		}
+
+		var getNextUniqueUrl = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetNextUniqueWorkspaceName);
+
+		$http({
+			method: 'GET',
+			url: getNextUniqueUrl,
+			params: { baseName: baseName }
+		}).then(function (response) {
+			var data = response.data;
+
+			// DEFENSIVE: Validate response contains required fields before applying
+			if (data && data.WorkspaceName && data.ShortName) {
+				// Set the unique workspace name from server response
+				$scope.data.WorkspaceName = data.WorkspaceName;
+				$scope.data.Shortname = data.ShortName;
+
+				// Update source name to match for consistency
+				$scope._sourceWorkspaceName = data.WorkspaceName;
+
+				// Mark as applied only on success
+				$scope._uniquenessApplied = true;
+			} else {
+				// Invalid response - fall back to local algorithm
+				$scope.applyUniquenessAlgorithm();
+			}
+
+			deferred.resolve();
+		}).catch(function (error) {
+			// On error, fall back to local algorithm
+			$scope.applyUniquenessAlgorithm();
+			deferred.resolve();
+		});
+
+		return deferred.promise;
 	};
 
 	// Helper function to fetch PLD data for copy workflow
@@ -638,6 +713,9 @@
 			}
 		}
 
+		// Note: For Step 5 copy workflow with PLD integration, uniqueness is handled
+		// in copyPromiseCallBack via fetchUniqueWorkspaceName() server call before goToStep
+
 		// Standard flow for all steps
 		$scope.step = newStep;
 		$scope.model.showNextButton = true;
@@ -671,7 +749,7 @@
 			// Only set Shortname from nextRevision if nextRevision has a value
 			// For copy workflow, nextRevision may be empty - preserve existing Shortname
 			if ($scope.data.nextRevision) {
-				$scope.data.Shortname = $scope.data.nextRevision;
+				$scope.data.Shortname = $scope.deriveShortname($scope.data.nextRevision);
 			}
 		}
 
@@ -756,7 +834,7 @@
 
 					//Shortname (URL): Set to nextRevision (auto-generate, read-only for PLD)
 					if ($scope.data.nextRevision) {
-						$scope.data.Shortname = $scope.data.nextRevision;
+						$scope.data.Shortname = $scope.deriveShortname($scope.data.nextRevision);
 					}
 				});
 			}
@@ -825,6 +903,10 @@
 					$scope.goToStep(3);
 					break;
 				case 5:
+					// DEFENSIVE: Reset uniqueness flag when going back from Step 5
+					// This ensures uniqueness is rechecked when user navigates forward again
+					$scope._uniquenessApplied = false;
+
 					if ($scope.data.IsAttemptingToImport && $scope.data.WSExactCopy) {
 						// skip Workspace Identification and Share/allow search settings
 						$scope.setStepSpecificElements(2);
@@ -947,10 +1029,27 @@
 
 		copyPromise.then(
 			function (answer) {
-				// Use goToStep instead of setStepSpecificElements to ensure proper
-				// async handling for copy workflow (PLD data, uniqueness algorithm)
-				$scope.goToStep(nextStep);
-				$scope.isWaitingForCallback = false;
+				// For Step 5 with PLD integration, fetch unique workspace name from server
+				// This guarantees uniqueness by checking the database
+				if (nextStep === 5 && $scope.model.IsPLDIntegrated) {
+					// DEFENSIVE: After copyExactDetails sets WorkspaceName from server response,
+					// update _sourceWorkspaceName to match and reset the uniqueness flag.
+					// This ensures fetchUniqueWorkspaceName uses the correct base name.
+					if ($scope.data.WorkspaceName) {
+						$scope._sourceWorkspaceName = $scope.data.WorkspaceName;
+					}
+					$scope._uniquenessApplied = false;
+
+					$scope.fetchUniqueWorkspaceName().then(function () {
+						$scope.goToStep(nextStep);
+						$scope.isWaitingForCallback = false;
+					});
+				} else {
+					// Use goToStep instead of setStepSpecificElements to ensure proper
+					// async handling for copy workflow (PLD data, uniqueness algorithm)
+					$scope.goToStep(nextStep);
+					$scope.isWaitingForCallback = false;
+				}
 			}, function (error) {
 				$scope.isWaitingForCallback = false;
 			});
@@ -1103,14 +1202,9 @@
 	};
 
 	$scope.workspaceNameKeyUp = function () {
-		var workspaceNameText = $scope.data.WorkspaceName.toLowerCase();
-		var workspaceNameCharArray = workspaceNameText.split("");
-		var whiteList = "abcdefghijklmnopqrstuvwxyz0123456789-";
-		for (index in workspaceNameCharArray) {
-			if (whiteList.indexOf(workspaceNameCharArray[index]) < 0) {
-				workspaceNameCharArray[index] = "_";
-			}
-		}
+		// Derive shortname from workspace name using aligned validation regex
+		$scope.data.Shortname = $scope.deriveShortname($scope.data.WorkspaceName);
+
 		// create month pickers for contract dates
 		$timeout($scope.initContractMonthPickers);
 
@@ -1121,11 +1215,6 @@
 				SetupMonthPicker('#ContractEndDate');
 			}
 		}
-		var URLText = workspaceNameCharArray.join("");
-		if (URLText.length > 15) {
-			URLText = URLText.substr(0, 15);
-		}
-		$scope.data.Shortname = URLText;
 	};
 
 	$scope.rteSizeKeyUp = function () {
@@ -1302,7 +1391,7 @@
 				if (!$scope.model.isPTMIntegrated || ($scope.model.ptmTrackingNumberNotRequired && $scope.model.ptmTrackingNumber === '')) {
 					// only copy if not PTM Integrated or original does not have a tracking number
 					$scope.data.WorkspaceName = response.data.Name;
-					$scope.data.Shortname = response.data.ShortName;
+					$scope.data.Shortname = $scope.deriveShortname(response.data.ShortName);
 					$scope.data.LineOfBusinessID = response.data.LOBId;
 					$scope.data.ProposalClass = response.data.ProposalClass;
 					$scope.data.SelectedContractTypes = response.data.ContractTypes;
@@ -1497,7 +1586,7 @@
 		}).then(function successCallback(response) {
 			$scope.model.nextRevision = response.data.TrackingNumberRevision;
 			$scope.data.WorkspaceName = response.data.TrackingNumberRevision;
-			$scope.data.Shortname = response.data.TrackingNumberRevision;
+			$scope.data.Shortname = $scope.deriveShortname(response.data.TrackingNumberRevision);
 			$scope.data.RFPNumber = response.data.RFPNumber;
 			$scope.data.ProposalTitle = response.data.Title;
 			$scope.data.ProposalClass = response.data.ProposalClassId;

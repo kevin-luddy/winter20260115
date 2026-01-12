@@ -84,7 +84,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		Dictionary<string, object> NextPLDTrackingNumber(IEnumerable<WorkspaceDTO> workspaces, string paNumber);
 
 		/// <summary>
-		/// Save Workspace Status (Short/Simple method as the inner controller method and parent method of this do all the lifting 
+		/// Get the next unique workspace name by checking existing names and appending/incrementing suffix
+		/// </summary>
+		/// <param name="existingNames">Collection of existing workspace names that match the base pattern</param>
+		/// <param name="baseName">The base workspace name to make unique</param>
+		/// <returns>Dictionary with unique WorkspaceName and Shortname</returns>
+		Dictionary<string, object> GetNextUniqueWorkspaceName(IEnumerable<string> existingNames, string baseName);
+
+		/// <summary>
+		/// Save Workspace Status (Short/Simple method as the inner controller method and parent method of this do all the lifting
 		/// </summary>
 		/// <param name="workspaceStatusMV">Workspace Status ModelView</param>
 		/// <param name="ws">Full Workspace</param>

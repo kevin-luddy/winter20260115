@@ -797,6 +797,26 @@ namespace GenBOE.Web.Controllers
 			return Json(payload, JsonRequestBehavior.AllowGet);
 		}
 
+		/// <summary>
+		/// Get the next unique workspace name by checking existing names in the database.
+		/// Efficient endpoint that only queries for matching names and returns the next unique name.
+		/// </summary>
+		/// <param name="baseName">The base workspace name to make unique</param>
+		/// <returns>JSON with unique WorkspaceName and ShortName</returns>
+		[HttpGet]
+		public JsonResult GetNextUniqueWorkspaceName(string baseName)
+		{
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_NEXT_UNIQUE_WORKSPACE_NAME, SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
+
+			ICollection<string> existingNames = this.workspaceLoader.GetWorkspaceNamesMatchingBase(baseName);
+
+			Dictionary<string, object> payload = _ControllerLogic.GetNextUniqueWorkspaceName(existingNames, baseName);
+
+			FinalizeAction(_log, WebConstants.ACTION_GET_NEXT_UNIQUE_WORKSPACE_NAME, sw);
+
+			return Json(payload, JsonRequestBehavior.AllowGet);
+		}
+
 		#endregion Views
 
 		#region Partial Views

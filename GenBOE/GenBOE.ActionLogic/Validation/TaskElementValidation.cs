@@ -14,15 +14,17 @@ namespace GenBOE.ActionLogic.Validation
     using System.Threading.Tasks;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
-    using GenBOE.DataBridge.DTO;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common;
     using IES.Common.Exceptions;
+	using Microsoft.Build.Framework;
 
-    /// <summary>
-    /// Handles Task Element validation
-    /// </summary>
+	/// <summary>
+	/// Handles Task Element validation
+	/// </summary>
     public class TaskElementValidation
     {
         #region Error Message Constants
@@ -352,6 +354,9 @@ namespace GenBOE.ActionLogic.Validation
         private static bool ValidateResourceTypesForIndividualTask(FullWorkspace ws, BoeTaskElementDTO taskElement, ref ConcurrentBag<LaborValidationClass> dateErrors,
             ref ConcurrentBag<LaborValidationClass> valueErrors, IDictionary<int, string> resourceIdToSegmentRegion, bool returnOnFirstInvalid = false)
         {
+			// Set the task's MOQTotalRelevantHours
+			ICollection<MoqTypeSelection> moqTypes = ws.MoqTypeSelections.Where(m => m.TaskId == taskElement.Id).ToList();
+
 			foreach (ResourceTypeDto resourceType in taskElement.taskElementLabors)
             {
                 string resourceTypeString = resourceType.SpreadType == SpreadType.Cost ? "cost" : FullObjectHelper.HoursLabel(ws);
@@ -376,7 +381,7 @@ namespace GenBOE.ActionLogic.Validation
                 }
 
 				// Validate the Resource Type, method will return empty string if no errors;
-				string brcValidationErrorMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(resourceType, resourceIdToSegmentRegion, ws.Shortname);
+				string brcValidationErrorMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(taskElement, moqTypes, ws.ResourcesUsedInWsBoes, resourceType, resourceIdToSegmentRegion, ws.Shortname);
 				if (!string.IsNullOrEmpty(brcValidationErrorMessage))
 				{
 					if (returnOnFirstInvalid) { return false; }
