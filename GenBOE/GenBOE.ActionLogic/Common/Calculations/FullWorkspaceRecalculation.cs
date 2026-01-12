@@ -14,7 +14,8 @@ namespace GenBOE.ActionLogic.Common.Calculations
     using System.Threading.Tasks;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
-    using GenBOE.DataBridge.DTO;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common;
@@ -831,22 +832,25 @@ namespace GenBOE.ActionLogic.Common.Calculations
 
 			IDictionary<int, string> resourceIdToSegmentRegion = ws.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
 
-			Collection<BoeTaskElementDTO> problematicResourceElements = this.GetAllTaskElementsWithMissingResource(ws.TaskElements.ToList(), resourceIdToSegmentRegion, ws.Shortname);
+			Collection<BoeTaskElementDTO> problematicResourceElements = this.GetAllTaskElementsWithMissingResource(ws.TaskElements.ToList(), resourceIdToSegmentRegion, ws);
 
 			return problematicResourceElements;
 		}
 
-		private Collection<BoeTaskElementDTO> GetAllTaskElementsWithMissingResource(ICollection<BoeTaskElementDTO> taskElements, IDictionary<int, string> resourceIdToSegmentRegion, string workspaceShortname)
+		private Collection<BoeTaskElementDTO> GetAllTaskElementsWithMissingResource(ICollection<BoeTaskElementDTO> taskElements, IDictionary<int, string> resourceIdToSegmentRegion, FullWorkspace workspace)
 		{
 			Collection<BoeTaskElementDTO> problematicTaskElements = new Collection<BoeTaskElementDTO>();
 
 			foreach (BoeTaskElementDTO task in taskElements)
 			{
+				// Set the task's MOQTotalRelevantHours
+				ICollection<MoqTypeSelection> moqTypes = workspace.MoqTypeSelections.Where(m => m.TaskId == task.Id).ToList();
+
 				foreach (ResourceTypeDto item in task.taskElementLabors)
 				{
 					bool breakLoop = false;
 
-					if (!string.IsNullOrEmpty(BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(item, resourceIdToSegmentRegion, workspaceShortname)))
+					if (!string.IsNullOrEmpty(BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(task, moqTypes, workspace.ResourcesUsedInWsBoes, item, resourceIdToSegmentRegion, workspace.Shortname)))
 					{
 						problematicTaskElements.Add(task);
 						breakLoop = true;

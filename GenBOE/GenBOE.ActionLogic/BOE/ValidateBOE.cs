@@ -13,6 +13,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Runtime.Remoting.Messaging;
+	using System.Threading.Tasks;
 	using Common;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.IO.Import;
@@ -1062,6 +1063,9 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			IDictionary<int, string> resourceIdToSegmentRegion = workspace.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
 
+			// Set the task's MOQTotalRelevantHours
+			ICollection<MoqTypeSelection> moqTypes = workspace.MoqTypeSelections.Where(m => m.TaskId == boeTask.Id).ToList();
+
 			foreach (ResourceTypeDto labor in boeTask.taskElementLabors)
 			{
 				bool invalidCostSpreadPrecision = false;
@@ -1076,7 +1080,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				}
 
 				// need to verify a Resource or Business Resource Code exists
-				string requiredMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(labor, resourceIdToSegmentRegion, workspace.Shortname);
+				string requiredMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(boeTask, moqTypes, workspace.ResourcesUsedInWsBoes, labor, resourceIdToSegmentRegion, workspace.Shortname);
 				if (!string.IsNullOrEmpty(requiredMessage))
 				{
 					LaborTypeMessages.Add(requiredMessage);
