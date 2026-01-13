@@ -10,7 +10,8 @@ namespace GenBOE.DataBridge.DTO
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Data.SqlClient;
-	using System.Linq;
+    using System.Diagnostics.Eventing.Reader;
+    using System.Linq;
 	using GenBOE.Dtos;
 	using GenBOE.Models;
 	using GenTRAC.Models;
@@ -121,7 +122,6 @@ namespace GenBOE.DataBridge.DTO
 					if (String.IsNullOrEmpty(baseName))
 					{
 						toReturn = new Collection<string>();
-						toReturn.Add(baseName);
 					}
 					else
 					{
@@ -138,7 +138,40 @@ namespace GenBOE.DataBridge.DTO
 			return toReturn;
 		}
 
-		
+		/// <summary>
+		/// This method retrieves workspace shortnames (URLs) that match a base shortname pattern for uniqueness checking.
+		/// Efficient query that only returns shortname fields needed for uniqueness algorithm.
+		/// </summary>
+		/// <param name="baseShortname">The base shortname to check for conflicts</param>
+		/// <returns>Collection of workspace shortnames matching the pattern</returns>
+		[DbQuery]
+		public virtual ICollection<string> GetWorkspaceShortnamesMatchingBase(string baseShortname)
+		{
+			Collection<string> toReturn;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					if (String.IsNullOrEmpty(baseShortname))
+					{
+						toReturn = new Collection<string>();
+					}
+					else
+					{
+						string baseShortnameLower = baseShortname.ToLower();
+						// Query for exact match or shortnames starting with baseShortname_ (for suffix pattern)
+						toReturn = (from w in gbe.Workspaces
+									where w.WorkspaceShortName.ToLower() == baseShortnameLower
+									   || w.WorkspaceShortName.ToLower().StartsWith(baseShortnameLower + "_")
+									select w.WorkspaceShortName).ToCollection();
+					}
+				}
+			}
+
+			return toReturn;
+		}
+
 		/// <summary>
 		/// This method retrieves PARTIAL workspace data - everything that is needed for homepage, but nothing more
 		/// </summary>
@@ -959,94 +992,6 @@ namespace GenBOE.DataBridge.DTO
 			return result;
 		}
 
-		/// <summary>
-		/// Get All Workspaces that contain a tracking number
-		/// Typically used for PLD Status Sync, needs to grab all data needed to call UpsertWorkspace
-		/// </summary>
-		/// <returns>Workspaces containing a tracking number</returns>
-		[DbQuery]
-		public ICollection<WorkspaceDTO> GetAllWorkspacesWithTrackingNumbers()
-		{
-			ICollection<WorkspaceDTO> toReturn = null;
-
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
-			{
-				using (GenBoeEntities gbe = new GenBoeEntities())
-				{
-					toReturn = (from w in gbe.Workspaces.Where(w => !string.IsNullOrEmpty(w.TrackingNumber))
-								select new WorkspaceDTO
-								{
-									Id = w.WorkspaceID,
-									CostVolumeLeadPricerUserID = w.CostVolumeLeadPricerUserID,
-									ProposalSubmittalDate = w.ProposalSubmitDate,
-									WorkspaceName = w.WorkspaceName,
-									Shortname = w.WorkspaceShortName,
-									TrackingNumber = w.TrackingNumber,
-									UpdateDate = w.UpdateDT,
-									ContainsOCI = w.ContainsOCI,
-									AllowSearch = w.AllowSearch,
-									BOEExportSortByID = w.BOEExportSortByID,
-									Description = w.WorkspaceDescription,
-									ContractStartDate = w.ContractStartDate,
-									ContractEndDate = w.ContractEndDate,
-									RFPNumber = w.RFPNumber,
-									TemplateID = w.TemplateID,
-									CreatedByUserID = w.CreatedByETIUserID,
-									ResourceListID = w.ResourceListID ?? 0,
-									PerfOrgListID = w.PerformingOrganizationListID ?? 0,
-									ContainsTemplate = w.ContainsTemplate,
-									NumberOfTimesExportedToProPricer = w.NumProPricerExport,
-									StatusComment = w.StatusComment,
-									ProposalTitle = w.ProposalTitle,
-									ResourceDecimalPrecision = w.ResourcePrecision,
-									DateRecalculationStarted = w.RecalculationStartedDate,
-									CostDecimalPrecision = ((int?)w.CostPrecision) ?? 2,
-									ProposalStatus = (ProposalStatusType)w.ProposalStatusID,
-									WorkspaceState = (WorkspaceState)w.WorkspaceStateID,
-									Segment = (SegmentType)(w.SegmentID ?? 0),
-									ProposalClass = new PickListDto
-									{
-										Id = w.ProposalClassLU == null ? -1 : w.ProposalClassLU.ProposalClassID,
-										Text = w.ProposalClassLU == null ? string.Empty : w.ProposalClassLU.ProposalClass
-									},
-									LineOfBusiness = new PickListDto
-									{
-										Id = w.LineOfBusiness == null ? -1 : w.LineOfBusiness.LineOfBusinessID,
-										Text = w.LineOfBusiness == null ? string.Empty : w.LineOfBusiness.LineOfBusinessName
-									},
-									SelectedContractTypeIEnum = w.WorkspaceContractTypeXREFs.Select(wCt => wCt.ContractTypeID),
-									IsUsingEquivalentPerson = w.IsUsingEquivalentPerson,
-									IsUsingTM = w.IsUsingTM,
-									ProjectMapType = (ProjectMapType)w.ProjectMapTypeID,
-									AllowGridEdit = w.AllowGridEdit,
-									CustomFieldSorting = (CustomFieldSorting)(w.CustomSorting),
-									ResourceSorting = (CustomFieldSorting)(w.ResourceSorting),
-									PerfOrgSorting = (CustomFieldSorting)(w.PerfOrgSorting),
-									LastProPricerInstance = w.LastProPricerInstance,
-									LastProPricerProposal = w.LastProPricerProposal,
-									RteSizeLimit = w.RteSizeLimit,
-									RevisedSubmittalDate = w.RevisedSubmittalDate,
-									UsingTemplateBOE = w.TemplateBoe,
-									EnableSAPConnection = w.EnableSAPConnection,
-									CurrentPTMWorkspace = w.CurrentPTMWorkspace,
-									CreationDate = w.WorkspaceCreationDate,
-									UCOTFactor = w.UCOTFactor,
-									EnableAssignTaskAuthor = w.EnableAssignTaskAuthor,
-									EnableLmNavigator = w.EnableLmNavigator
-								}).ToList();
-
-					foreach (WorkspaceDTO ws in toReturn)
-					{
-						ws.ContractStartDate = ws.ContractStartDate.Normalize();
-						ws.ContractEndDate = ws.ContractEndDate.Normalize();
-						ws.SelectedContractTypes = ws.SelectedContractTypeIEnum.ToCollection();
-					}
-				}
-			}
-
-			return toReturn;
-		}
-
 		#endregion
 
 		#region Restores and Copies
@@ -1264,6 +1209,94 @@ namespace GenBOE.DataBridge.DTO
 			}
 
 			return containsOci;
+		}
+
+		/// <summary>
+		/// Get All Workspaces that contain a tracking number
+		/// Typically used for PLD Status Sync, needs to grab all data needed to call UpsertWorkspace
+		/// </summary>
+		/// <returns>Workspaces containing a tracking number</returns>
+		[DbQuery]
+		public ICollection<WorkspaceDTO> GetAllWorkspacesWithTrackingNumbers()
+		{
+			ICollection<WorkspaceDTO> toReturn = null;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					toReturn = (from w in gbe.Workspaces.Where(w => !string.IsNullOrEmpty(w.TrackingNumber))
+								select new WorkspaceDTO
+								{
+									Id = w.WorkspaceID,
+									CostVolumeLeadPricerUserID = w.CostVolumeLeadPricerUserID,
+									ProposalSubmittalDate = w.ProposalSubmitDate,
+									WorkspaceName = w.WorkspaceName,
+									Shortname = w.WorkspaceShortName,
+									TrackingNumber = w.TrackingNumber,
+									UpdateDate = w.UpdateDT,
+									ContainsOCI = w.ContainsOCI,
+									AllowSearch = w.AllowSearch,
+									BOEExportSortByID = w.BOEExportSortByID,
+									Description = w.WorkspaceDescription,
+									ContractStartDate = w.ContractStartDate,
+									ContractEndDate = w.ContractEndDate,
+									RFPNumber = w.RFPNumber,
+									TemplateID = w.TemplateID,
+									CreatedByUserID = w.CreatedByETIUserID,
+									ResourceListID = w.ResourceListID ?? 0,
+									PerfOrgListID = w.PerformingOrganizationListID ?? 0,
+									ContainsTemplate = w.ContainsTemplate,
+									NumberOfTimesExportedToProPricer = w.NumProPricerExport,
+									StatusComment = w.StatusComment,
+									ProposalTitle = w.ProposalTitle,
+									ResourceDecimalPrecision = w.ResourcePrecision,
+									DateRecalculationStarted = w.RecalculationStartedDate,
+									CostDecimalPrecision = ((int?)w.CostPrecision) ?? 2,
+									ProposalStatus = (ProposalStatusType)w.ProposalStatusID,
+									WorkspaceState = (WorkspaceState)w.WorkspaceStateID,
+									Segment = (SegmentType)(w.SegmentID ?? 0),
+									ProposalClass = new PickListDto
+									{
+										Id = w.ProposalClassLU == null ? -1 : w.ProposalClassLU.ProposalClassID,
+										Text = w.ProposalClassLU == null ? string.Empty : w.ProposalClassLU.ProposalClass
+									},
+									LineOfBusiness = new PickListDto
+									{
+										Id = w.LineOfBusiness == null ? -1 : w.LineOfBusiness.LineOfBusinessID,
+										Text = w.LineOfBusiness == null ? string.Empty : w.LineOfBusiness.LineOfBusinessName
+									},
+									SelectedContractTypeIEnum = w.WorkspaceContractTypeXREFs.Select(wCt => wCt.ContractTypeID),
+									IsUsingEquivalentPerson = w.IsUsingEquivalentPerson,
+									IsUsingTM = w.IsUsingTM,
+									ProjectMapType = (ProjectMapType)w.ProjectMapTypeID,
+									AllowGridEdit = w.AllowGridEdit,
+									CustomFieldSorting = (CustomFieldSorting)(w.CustomSorting),
+									ResourceSorting = (CustomFieldSorting)(w.ResourceSorting),
+									PerfOrgSorting = (CustomFieldSorting)(w.PerfOrgSorting),
+									LastProPricerInstance = w.LastProPricerInstance,
+									LastProPricerProposal = w.LastProPricerProposal,
+									RteSizeLimit = w.RteSizeLimit,
+									RevisedSubmittalDate = w.RevisedSubmittalDate,
+									UsingTemplateBOE = w.TemplateBoe,
+									EnableSAPConnection = w.EnableSAPConnection,
+									CurrentPTMWorkspace = w.CurrentPTMWorkspace,
+									CreationDate = w.WorkspaceCreationDate,
+									UCOTFactor = w.UCOTFactor,
+									EnableAssignTaskAuthor = w.EnableAssignTaskAuthor,
+									EnableLmNavigator = w.EnableLmNavigator
+								}).ToList();
+
+					foreach (WorkspaceDTO ws in toReturn)
+					{
+						ws.ContractStartDate = ws.ContractStartDate.Normalize();
+						ws.ContractEndDate = ws.ContractEndDate.Normalize();
+						ws.SelectedContractTypes = ws.SelectedContractTypeIEnum.ToCollection();
+					}
+				}
+			}
+
+			return toReturn;
 		}
 
 		#endregion

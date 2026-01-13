@@ -37,6 +37,14 @@ namespace GenBOE.DataBridge.DTO
 		ICollection<string> GetWorkspaceNamesMatchingBase(string baseName);
 
 		/// <summary>
+		/// This method retrieves workspace shortnames (URLs) that match a base shortname pattern for uniqueness checking.
+		/// Efficient query that only returns shortname fields needed for uniqueness algorithm.
+		/// </summary>
+		/// <param name="baseShortname">The base shortname to check for conflicts</param>
+		/// <returns>Collection of workspace shortnames matching the pattern</returns>
+		ICollection<string> GetWorkspaceShortnamesMatchingBase(string baseShortname);
+
+		/// <summary>
 		/// Get All Workspaces
 		/// </summary>
 		/// <param name="userId">The user Id.</param>
@@ -315,6 +323,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <returns>Workspaces containing a tracking number</returns>
 		ICollection<WorkspaceDTO> GetAllWorkspacesWithTrackingNumbers();
+
 
 		#endregion
 	}

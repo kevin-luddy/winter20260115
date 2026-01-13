@@ -360,8 +360,20 @@
 			isAssignTaskAuthorEnabled: CreateWorkspaceModelView.IsAssignTaskAuthorEnabled,
 			EnableLmNavigator: CreateWorkspaceModelView.IsLmNavigatorEnabled ? true : false,
 			isLmNavigatorEnabled: CreateWorkspaceModelView.IsLmNavigatorEnabled,
-			RefreshPLDOnCopy: false  // Only set to true when user explicitly selects a new PA Number in copy workflow
+			RefreshPLDOnCopy: false,  // Only set to true when user explicitly selects a new PA Number in copy workflow
+			nextRevision: '',  // Reset nextRevision to prevent stale values from create blank workflow affecting copy workflow
+			originalBaseName: ''  // Reset original base name for uniqueness tracking
 		};
+	};
+
+	// Also reset tracking variables when data is reset
+	$scope.resetTrackingVariables = function () {
+		$scope._uniquenessApplied = false;
+		$scope._sourceWorkspaceName = '';
+		$scope._originalBaseName = '';
+		$scope._lastSystemWorkspaceName = '';
+		$scope._lastSystemShortname = '';
+		$scope._paPrependedForUniqueness = false;
 	};
 
 	// NOTE:  All scope variables that are used inside ng-model must be objects and not primitives so that they can be used inside of ng-switch
@@ -518,22 +530,82 @@
 	$scope._uniquenessApplied = false;
 	// Store the original source workspace name (before uniqueness is applied)
 	$scope._sourceWorkspaceName = '';
+	// Store the ORIGINAL base name for uniqueness checks (never includes _01 suffix)
+	// This prevents double-suffix issue (_01_01) when uniqueness is checked multiple times
+	$scope._originalBaseName = '';
+	// Store the last system-generated workspace name (to detect user edits)
+	$scope._lastSystemWorkspaceName = '';
+	// Store the last system-generated shortname (to detect user edits)
+	$scope._lastSystemShortname = '';
+	// Flag to track if PA number was prepended for uniqueness check (copy workflow with PLD)
+	$scope._paPrependedForUniqueness = false;
+
+	// Helper function to strip existing _NN suffix from a name
+	// Returns the base name without any numeric suffix (e.g., "Workspace_01" -> "Workspace")
+	$scope.stripSuffix = function (name) {
+		if (!name) return '';
+		return name.replace(/_\d+$/, '');
+	};
 
 	// Helper function to zero-pad a number to 2 digits (e.g., 1 -> "01", 10 -> "10")
 	$scope.zeroPad = function (num) {
 		return num < 10 ? '0' + num : '' + num;
 	};
 
+	// Helper function to detect if user has manually edited the workspace name
+	// Returns true if the current name differs from the last system-generated name
+	$scope.hasUserEditedWorkspaceName = function () {
+		if (!$scope._lastSystemWorkspaceName) {
+			return false; // No system name set yet
+		}
+		var current = ($scope.data.WorkspaceName || '').trim();
+		var lastSystem = ($scope._lastSystemWorkspaceName || '').trim();
+		return current !== lastSystem;
+	};
+
+	// Helper function to detect if user has manually edited the shortname
+	$scope.hasUserEditedShortname = function () {
+		if (!$scope._lastSystemShortname) {
+			return false; // No system shortname set yet
+		}
+		var current = ($scope.data.Shortname || '').trim();
+		var lastSystem = ($scope._lastSystemShortname || '').trim();
+		return current !== lastSystem;
+	};
+
+	// Helper function to update tracking variables when system sets workspace name
+	$scope.setSystemWorkspaceName = function (name, shortname) {
+		$scope.data.WorkspaceName = name;
+		$scope._lastSystemWorkspaceName = name;
+		if (shortname) {
+			$scope.data.Shortname = shortname;
+			$scope._lastSystemShortname = shortname;
+		}
+	};
+
 	// Uniqueness algorithm: Modify workspace name to ensure it's likely unique
 	// Called on transition from Step 2 to Step 3 in copy workflow
 	// Appends "_01" suffix (or increments to "_02", "_03", etc. if already present)
 	// This matches the established server-side algorithm in NextPLDTrackingNumber
+	// IMPORTANT: Honors user edits - if user has edited the name, their edit becomes the new base
 	$scope.applyUniquenessAlgorithm = function () {
 		if ($scope._uniquenessApplied) {
 			return; // Already applied, don't modify again
 		}
 
-		var baseName = $scope._sourceWorkspaceName || $scope.data.WorkspaceName || '';
+		// HONOR USER EDITS: If user has edited the workspace name, use their edit as the new base
+		// This respects user intent when they manually change the name to be unique
+		var userEdited = $scope.hasUserEditedWorkspaceName();
+		var baseName;
+
+		if (userEdited) {
+			// User has edited - use their current value as base (they may have already made it unique)
+			baseName = $scope.data.WorkspaceName || '';
+		} else {
+			// No user edit - use source workspace name
+			baseName = $scope._sourceWorkspaceName || $scope.data.WorkspaceName || '';
+		}
+
 		if (!baseName) {
 			return; // No workspace name to modify
 		}
@@ -559,12 +631,9 @@
 			uniqueName = baseName + '_01';
 		}
 
-		// Set the workspace name with uniqueness applied
-		$scope.data.WorkspaceName = uniqueName;
-
-		// Derive shortname from the modified workspace name (with length/character constraints)
-		// deriveShortname preserves the _NN suffix by truncating the base name if needed
-		$scope.data.Shortname = $scope.deriveShortname(uniqueName);
+		// Set the workspace name with uniqueness applied and track it
+		var shortName = $scope.deriveShortname(uniqueName);
+		$scope.setSystemWorkspaceName(uniqueName, shortName);
 
 		// Mark as applied
 		$scope._uniquenessApplied = true;
@@ -573,6 +642,8 @@
 	// Server-side uniqueness check: Calls backend to get guaranteed unique workspace name
 	// This queries the database for existing names and returns the next available unique name
 	// Returns a promise that resolves when the unique name is set
+	// IMPORTANT: Honors user edits - if user has edited the name, validates their edit for uniqueness
+	// CRITICAL: Uses _originalBaseName to prevent double-suffix issue (_01_01)
 	$scope.fetchUniqueWorkspaceName = function () {
 		var deferred = $q.defer();
 
@@ -582,19 +653,43 @@
 			return deferred.promise;
 		}
 
-		// DEFENSIVE: Prefer current WorkspaceName over stale _sourceWorkspaceName
-		// This handles the case where copyExactDetails updated WorkspaceName after _sourceWorkspaceName was set
-		var baseName = $scope.data.WorkspaceName || $scope._sourceWorkspaceName || '';
+		// HONOR USER EDITS: Check if user has manually edited the workspace name or shortname
+		var userEditedName = $scope.hasUserEditedWorkspaceName();
+		var userEditedShortname = $scope.hasUserEditedShortname();
+
+		// CRITICAL: Determine the BASE name to check for uniqueness
+		// Must use the ORIGINAL base name (without any _01 suffix) to prevent double-suffix issue
+		var baseName;
+		if (userEditedName) {
+			// User has edited the workspace name - use their edit as the base
+			// Strip any existing suffix they may have typed to get clean base
+			baseName = $scope.stripSuffix($scope.data.WorkspaceName || '');
+		} else {
+			// No user edit - use the ORIGINAL base name (never the suffixed version)
+			// This is the key fix: always use _originalBaseName for server calls
+			if ($scope._originalBaseName) {
+				baseName = $scope._originalBaseName;
+			} else {
+				// Fallback: strip suffix from current name if _originalBaseName not set
+				baseName = $scope.stripSuffix($scope.data.WorkspaceName || $scope._sourceWorkspaceName || '');
+			}
+		}
+
 		if (!baseName) {
 			deferred.resolve(); // No workspace name to modify
 			return deferred.promise;
 		}
 
-		// DEFENSIVE: Trim baseName before sending to server to prevent leading/trailing spaces from becoming underscores
+		// DEFENSIVE: Trim baseName before sending to server
 		baseName = baseName.trim();
 		if (!baseName) {
 			deferred.resolve(); // Empty after trim
 			return deferred.promise;
+		}
+
+		// Store as original base name if not already set
+		if (!$scope._originalBaseName) {
+			$scope._originalBaseName = baseName;
 		}
 
 		var getNextUniqueUrl = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetNextUniqueWorkspaceName);
@@ -608,11 +703,18 @@
 
 			// DEFENSIVE: Validate response contains required fields before applying
 			if (data && data.WorkspaceName && data.ShortName) {
-				// Set the unique workspace name from server response
-				$scope.data.WorkspaceName = data.WorkspaceName;
-				$scope.data.Shortname = data.ShortName;
+				// HONOR USER EDITS: If user edited the shortname, only update workspace name
+				// but preserve their shortname edit (they may have a reason for it)
+				if (userEditedShortname) {
+					// User edited shortname - only update workspace name, keep their shortname
+					$scope.data.WorkspaceName = data.WorkspaceName;
+					$scope._lastSystemWorkspaceName = data.WorkspaceName;
+				} else {
+					// No user edit on shortname - update both using tracking function
+					$scope.setSystemWorkspaceName(data.WorkspaceName, data.ShortName);
+				}
 
-				// Update source name to match for consistency
+				// Update source name to match current (for edit detection), but NOT _originalBaseName
 				$scope._sourceWorkspaceName = data.WorkspaceName;
 
 				// Mark as applied only on success
@@ -692,15 +794,16 @@
 		// Applied to BOTH copy workflow AND create new workflow for consistency
 		if (newStep === 3) {
 			if ($scope.data.IsAttemptingToImport) {
-				// COPY workflow: Apply uniqueness algorithm - modifies workspace name and derives shortname
-				$scope.applyUniquenessAlgorithm();
-
-				// For PLD integration: set tracking number and fetch PLD data
+				// COPY workflow with PLD: Server-side uniqueness was already applied in copyPromiseCallBack
+				// Just fetch PLD data, don't re-apply local uniqueness (would overwrite server result)
 				if ($scope.model.IsPLDIntegrated) {
 					$scope.data.TrackingNumber = $scope.model.Copy_PLD_PANumber;
 					$scope.data.ProposalTitle = $scope.model.Copy_PLD_PATitle;
 					// Fetch PLD data (LOB, dates, RFP, description) - fire and forget
 					$scope.fetchPLDDataForCopy();
+				} else {
+					// COPY workflow without PLD: Apply local uniqueness algorithm
+					$scope.applyUniquenessAlgorithm();
 				}
 			} else {
 				// CREATE NEW workflow: Also apply uniqueness algorithm
@@ -740,22 +843,43 @@
 		}
 
 		if ($scope.model.IsPLDIntegrated && newStep === 5) {
-			// Store the original user-entered workspace name if not already stored
-			if (!$scope.data.OriginalWorkspaceName) {
-				$scope.data.OriginalWorkspaceName = $scope.data.WorkspaceName;
+			// For COPY workflow with PLD: PA number was already prepended in copyPromiseCallBack
+			// before uniqueness was checked, so don't prepend again
+			if ($scope.data.IsAttemptingToImport && $scope._paPrependedForUniqueness) {
+				// PA already prepended and uniqueness checked - use WorkspaceName as-is
+				// Store OriginalWorkspaceName for back navigation
+				if (!$scope.data.OriginalWorkspaceName) {
+					$scope.data.OriginalWorkspaceName = $scope.data.WorkspaceName;
+				}
+			} else {
+				// For CREATE BLANK workflow: prepend PA number now
+				// Store the original user-entered workspace name if not already stored
+				if (!$scope.data.OriginalWorkspaceName) {
+					$scope.data.OriginalWorkspaceName = $scope.data.WorkspaceName;
+				}
+				// Use correct PA Number based on workflow (Copy vs Create Blank)
+				var paNumber = $scope.data.IsAttemptingToImport ? $scope.model.Copy_PLD_PANumber : $scope.model.PLD_PANumber;
+				// Concatenate PA Number with the user-entered workspace name
+				if (paNumber && paNumber.trim()) {
+					$scope.data.WorkspaceName = paNumber.trim() + " " + $scope.data.OriginalWorkspaceName;
+				}
 			}
-			// Concatenate PLD_PANumber with the user-entered workspace name
-			$scope.data.WorkspaceName = $scope.model.PLD_PANumber + " " + $scope.data.OriginalWorkspaceName;
-			// Only set Shortname from nextRevision if nextRevision has a value
-			// For copy workflow, nextRevision may be empty - preserve existing Shortname
-			if ($scope.data.nextRevision) {
-				$scope.data.Shortname = $scope.deriveShortname($scope.data.nextRevision);
+			// Only set Shortname from nextRevision for CREATE BLANK workflow (not copy workflow)
+			// nextRevision is used for PTM/PLD revision prefix in create blank mode
+			// For COPY workflow: preserve the shortname from cascading uniqueness algorithm
+			// The cascading uniqueness guarantees both workspace name AND shortname are unique
+			// Also honor user edits to shortname
+			if ($scope.data.nextRevision && !$scope.data.IsAttemptingToImport && !$scope.hasUserEditedShortname()) {
+				var newShortname = $scope.deriveShortname($scope.data.nextRevision);
+				$scope.data.Shortname = newShortname;
+				$scope._lastSystemShortname = newShortname;
 			}
 		}
 
 		if ($scope.model.IsPLDIntegrated && newStep !== 5) {
 			// When not step 5, restore the original workspace name for editing
-			if ($scope.data.OrignalWorkspaceName) {
+			// Fix typo: was OrignalWorkspaceName, should be OriginalWorkspaceName
+			if ($scope.data.OriginalWorkspaceName) {
 				$scope.data.WorkspaceName = $scope.data.OriginalWorkspaceName;
 			}
 		}
@@ -903,9 +1027,19 @@
 					$scope.goToStep(3);
 					break;
 				case 5:
-					// DEFENSIVE: Reset uniqueness flag when going back from Step 5
+					// DEFENSIVE: Reset uniqueness flags when going back from Step 5
 					// This ensures uniqueness is rechecked when user navigates forward again
 					$scope._uniquenessApplied = false;
+
+					// Clear OriginalWorkspaceName so it gets re-captured on next forward navigation
+					// This ensures user's edits on Step 3/4 are properly captured
+					$scope.data.OriginalWorkspaceName = '';
+
+					// Reset the PA prepended flag so it gets prepended again on next forward
+					$scope._paPrependedForUniqueness = false;
+
+					// Reset original base name so it gets recaptured with any user edits
+					$scope._originalBaseName = '';
 
 					if ($scope.data.IsAttemptingToImport && $scope.data.WSExactCopy) {
 						// skip Workspace Identification and Share/allow search settings
@@ -1006,14 +1140,55 @@
 
 						validatePromise.then(
 							function (answer) {
-								$scope.setStepSpecificElements(4);
-								$scope.isWaitingForCallback = false;
+								// For PLD integration: Re-check uniqueness if user edited name or shortname on Step 3
+								// This ensures the FINAL values going to Step 4 are unique
+								if ($scope.model.IsPLDIntegrated && ($scope.hasUserEditedWorkspaceName() || $scope.hasUserEditedShortname())) {
+									// User edited values on Step 3 - need to re-validate uniqueness
+									// Reset flag so fetchUniqueWorkspaceName will run
+									$scope._uniquenessApplied = false;
+									$scope.fetchUniqueWorkspaceName().then(function () {
+										$scope.setStepSpecificElements(4);
+										$scope.isWaitingForCallback = false;
+									});
+								} else {
+									$scope.setStepSpecificElements(4);
+									$scope.isWaitingForCallback = false;
+								}
 							}, function (error) {
 								$scope.isWaitingForCallback = false;
 							});
 						break;
 					case 4:
-						$scope.setStepSpecificElements(5);
+						// For PLD integration (both COPY and CREATE BLANK workflows),
+						// check uniqueness for FINAL name (with PA number) before Step 5
+						if ($scope.model.IsPLDIntegrated) {
+							$scope.isWaitingForCallback = true;
+
+							// Get the correct PA number based on workflow type
+							var paNumber = $scope.data.IsAttemptingToImport ?
+								($scope.model.Copy_PLD_PANumber || '').trim() :
+								($scope.model.PLD_PANumber || '').trim();
+							var baseName = ($scope.data.WorkspaceName || '').trim();
+
+							// CRITICAL: Prepend PA number for uniqueness check
+							var finalName = baseName;
+							if (paNumber) {
+								finalName = paNumber + ' ' + baseName;
+							}
+
+							// Update tracking for uniqueness check
+							$scope._sourceWorkspaceName = finalName;
+							$scope.data.WorkspaceName = finalName;
+							$scope._uniquenessApplied = false;
+							$scope._paPrependedForUniqueness = true;
+
+							$scope.fetchUniqueWorkspaceName().then(function () {
+								$scope.setStepSpecificElements(5);
+								$scope.isWaitingForCallback = false;
+							});
+						} else {
+							$scope.setStepSpecificElements(5);
+						}
 						break;
 				}
 			}
@@ -1029,17 +1204,38 @@
 
 		copyPromise.then(
 			function (answer) {
-				// For Step 5 with PLD integration, fetch unique workspace name from server
-				// This guarantees uniqueness by checking the database
-				if (nextStep === 5 && $scope.model.IsPLDIntegrated) {
-					// DEFENSIVE: After copyExactDetails sets WorkspaceName from server response,
-					// update _sourceWorkspaceName to match and reset the uniqueness flag.
-					// This ensures fetchUniqueWorkspaceName uses the correct base name.
-					if ($scope.data.WorkspaceName) {
-						$scope._sourceWorkspaceName = $scope.data.WorkspaceName;
+				// For PLD integration, use server-side cascading uniqueness for BOTH Step 3 AND Step 5
+				// This guarantees BOTH workspace name AND shortname/URL are unique by checking the database
+				if ($scope.model.IsPLDIntegrated && (nextStep === 3 || nextStep === 5)) {
+					var paNumber = ($scope.model.Copy_PLD_PANumber || '').trim();
+					var baseName = ($scope.data.WorkspaceName || '').trim();
+
+					// CRITICAL: Store the ORIGINAL base name (without any suffix or PA number)
+					// This prevents double-suffix issue (_01_01) when uniqueness is checked multiple times
+					// Strip any existing suffix in case the source workspace already had one
+					if (!$scope._originalBaseName) {
+						$scope._originalBaseName = $scope.stripSuffix(baseName);
 					}
+
+					// For Step 5: Prepend PA number to create the FINAL workspace name
+					// For Step 3: Don't prepend PA yet - user may still edit on Step 3
+					var nameToCheck = baseName;
+					if (nextStep === 5 && paNumber) {
+						// For Step 5, use original base name with PA prepended
+						// This ensures we don't double-suffix
+						nameToCheck = paNumber + ' ' + $scope._originalBaseName;
+						// Mark that PA number has been prepended so Step 5 doesn't prepend again
+						$scope._paPrependedForUniqueness = true;
+					}
+
+					// Update tracking with the name we're checking
+					$scope._sourceWorkspaceName = nameToCheck;
+					$scope.data.WorkspaceName = nameToCheck;
 					$scope._uniquenessApplied = false;
 
+					// CRITICAL: Use server-side cascading uniqueness
+					// This checks BOTH workspace name AND shortname for uniqueness
+					// Returns a name that is guaranteed unique for BOTH
 					$scope.fetchUniqueWorkspaceName().then(function () {
 						$scope.goToStep(nextStep);
 						$scope.isWaitingForCallback = false;
@@ -1372,10 +1568,16 @@
 	};
 
 	// When doing an Exact copy, copy the details so that they are shown on the Verify Page
+	// IMPORTANT: Honors user edits - if user has edited workspace name, their edit is preserved
 	$scope.copyExactDetails = function (nextStep, isCurrentWorkspace = false) {
 		// retrieve exact copy details from server for duplicate name and cost volume pricer display name
 		var deferred = $q.defer();
 		var getExactDetailsUrl = CreateSystemAdminWithParmsPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetExactCopyDataAction, $scope.model.workspaceToCopy.WorkspaceID);
+
+		// HONOR USER EDITS: Check if user has edited workspace name or shortname BEFORE making the call
+		// This snapshot is taken before the async call to ensure we don't lose the comparison state
+		var userEditedName = $scope.hasUserEditedWorkspaceName();
+		var userEditedShortname = $scope.hasUserEditedShortname();
 
 		$http({
 			method: 'POST',
@@ -1389,9 +1591,20 @@
 
 			if (nextStep == 5) {
 				if (!$scope.model.isPTMIntegrated || ($scope.model.ptmTrackingNumberNotRequired && $scope.model.ptmTrackingNumber === '')) {
-					// only copy if not PTM Integrated or original does not have a tracking number
-					$scope.data.WorkspaceName = response.data.Name;
-					$scope.data.Shortname = $scope.deriveShortname(response.data.ShortName);
+					// Only copy workspace name if user has NOT edited it
+					// HONOR USER EDITS: If user has manually changed the name, preserve their edit
+					if (!userEditedName) {
+						var shortName = $scope.deriveShortname(response.data.ShortName);
+						// Only update shortname if user hasn't edited it either
+						if (!userEditedShortname) {
+							$scope.setSystemWorkspaceName(response.data.Name, shortName);
+						} else {
+							// User edited shortname - only update workspace name, keep their shortname
+							$scope.data.WorkspaceName = response.data.Name;
+							$scope._lastSystemWorkspaceName = response.data.Name;
+						}
+					}
+					// Always update these other fields (not typically edited by user)
 					$scope.data.LineOfBusinessID = response.data.LOBId;
 					$scope.data.ProposalClass = response.data.ProposalClass;
 					$scope.data.SelectedContractTypes = response.data.ContractTypes;
@@ -1690,11 +1903,10 @@
 				$scope.data.Description = result.Description;
 			}
 
-			$scope.data.WorkspaceName = result.WorkspaceName;
-			// Derive Shortname from WorkspaceName (truncated to 21 chars max)
-			// Shortname should equal WorkspaceName unless length constraint prevents it
-			// Uniqueness is validated by existing live validation + backend validateWorkspace()
-			$scope.data.Shortname = $scope.deriveShortname(result.WorkspaceName);
+			// Set workspace name and derive shortname, using tracking function
+			// This allows us to detect if user later edits the name
+			var shortName = $scope.deriveShortname(result.WorkspaceName);
+			$scope.setSystemWorkspaceName(result.WorkspaceName, shortName);
 			$scope.data.ResourceDecimalPrecision = result.ResourceDecimalPrecision;
 			$scope.model.originalDecimalPrecision = result.ResourceDecimalPrecision;
 			$scope.data.CostDecimalPrecision = result.CostDecimalPrecision;
