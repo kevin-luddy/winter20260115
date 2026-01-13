@@ -268,7 +268,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 						decimal moqEquationTotal = 0m;
 						if (!string.IsNullOrEmpty(MOQEquationCalc))
 						{
-							moqEquationTotal = decimal.Parse(MOQEquationCalc);
+							decimal.TryParse(MOQEquationCalc, out moqEquationTotal);
 						}
 
 						errorMessages.AddRange(ActionLogicUtility.ValidateSkillMixSummaryTable(task, ws.EnableSAPConnection, task.taskElementLabors.Any(), moqEquationTotal));
