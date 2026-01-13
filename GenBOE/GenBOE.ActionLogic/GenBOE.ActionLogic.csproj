@@ -312,6 +312,7 @@
     <Compile Include="_ModelView\ConfidenceReportModelView.cs" />
     <Compile Include="_ModelView\ImportWbsResultsModelView.cs" />
     <Compile Include="_ModelView\RefreshPTMResponseData.cs" />
+    <Compile Include="_ModelView\SaveBoeBulkRolesModelView.cs" />
     <Compile Include="_ModelView\Task\ImportMoqTableResultDataModelView.cs" />
     <Compile Include="_ModelView\Task\MoqTableDataModelView.cs" />
     <Compile Include="Validation\SystemExportToProPricerFormatValidator.cs" />
