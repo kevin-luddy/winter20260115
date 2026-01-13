@@ -8,7 +8,10 @@ namespace GenBOE.ActionLogic._ModelView
 {
 	using GenBOE.ActionLogic.ModelView;
 	using System.Collections.Generic;
-
+	
+	/// <summary>
+	/// Model view class that represents BOEs data to save
+	/// </summary>
 	public class SaveBoeBulkRolesModelView
 	{
 		public SaveBoeBulkRolesModelView()
@@ -17,8 +20,14 @@ namespace GenBOE.ActionLogic._ModelView
 			this.BoeRolesToSave = new List<ManageBOEModelView>();
 		}
 
+		/// <summary>
+		/// Current workspace
+		/// </summary>
 		public string Workspace { get; set; }
 
+		/// <summary>
+		/// BOEs to save
+		/// </summary>
 		public ICollection<ManageBOEModelView> BoeRolesToSave { get; set; }
 	}
 }
