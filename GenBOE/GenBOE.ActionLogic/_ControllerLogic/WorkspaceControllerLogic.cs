@@ -38,7 +38,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System.Transactions;
 	using System.Web.Configuration;
 	using static IES.Common.Constants;
-	using System.Text.RegularExpressions;
 
 	public abstract class WorkspaceControllerLogic : IWorkspaceControllerLogic
 	{
@@ -1943,9 +1942,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					$"{paNumber}_01";
 			}
 
+			// Maximum allowed shortname length based on validation constraints
+			// Using 21 as the safe limit to match StringLength validation attribute
+			const int MAX_SHORTNAME_LENGTH = 21;
+
 			// Truncate shortname if it exceeds maximum length
 			// for revisions (with underscore suffix), ensure we leave room for the suffix
-			if (nextShortName.Length > IESWebConstants.MAX_SHORTNAME_LENGTH)
+			if (nextShortName.Length > MAX_SHORTNAME_LENGTH)
 			{
 				if (nextShortName.Contains("_"))
 				{
@@ -1955,7 +1958,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					string basePart = nextShortName.Substring(0, underscoreIndex);
 
 					// Truncate the base part to fit within max length width suffix
-					int maxBaseLength = IESWebConstants.MAX_SHORTNAME_LENGTH - suffix.Length;
+					int maxBaseLength = MAX_SHORTNAME_LENGTH - suffix.Length;
 					if (basePart.Length > maxBaseLength)
 					{
 						basePart = basePart.Substring(0, maxBaseLength);
@@ -1966,7 +1969,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				else
 				{
 					// No revision suffix - just truncate
-					nextShortName = nextShortName.Substring(0, IESWebConstants.MAX_SHORTNAME_LENGTH);
+					nextShortName = nextShortName.Substring(0, MAX_SHORTNAME_LENGTH);
 				}
 			}
 
@@ -1980,17 +1983,24 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		}
 
 		/// <summary>
-		/// Get the next unique workspace name by checking existing names and appending/incrementing suffix.
+		/// Get the next unique workspace name by checking BOTH existing names AND shortnames with cascading uniqueness.
 		/// Uses the same _01, _02 pattern as NextPLDTrackingNumber for consistency.
+		/// CRITICAL: If workspace name is unique but shortname conflicts, increment suffix until BOTH are unique.
 		/// </summary>
 		/// <param name="existingNames">Collection of existing workspace names that match the base pattern</param>
+		/// <param name="existingShortnames">Collection of existing shortnames/URLs that match the base pattern</param>
 		/// <param name="baseName">The base workspace name to make unique</param>
 		/// <returns>Dictionary with unique WorkspaceName and Shortname</returns>
-		public Dictionary<string, object> GetNextUniqueWorkspaceName(IEnumerable<string> existingNames, string baseName)
+		public Dictionary<string, object> GetNextUniqueWorkspaceName(IEnumerable<string> existingNames, IEnumerable<string> existingShortnames, string baseName)
 		{
 			if (existingNames == null)
 			{
 				throw new ArgumentNullException(nameof(existingNames));
+			}
+
+			if (existingShortnames == null)
+			{
+				throw new ArgumentNullException(nameof(existingShortnames));
 			}
 
 			if (string.IsNullOrWhiteSpace(baseName))
@@ -2001,82 +2011,137 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			// DEFENSIVE: Trim baseName before processing to prevent leading/trailing spaces from becoming underscores
 			baseName = baseName.Trim();
 
-			int max = 0;
-			bool anyRelevant = false;
-			string prefix = baseName + "_";
+			// Convert to HashSets for O(1) lookup
+			var existingNamesSet = new HashSet<string>(
+				existingNames.Select(n => (n ?? string.Empty).Trim().ToUpperInvariant()),
+				StringComparer.OrdinalIgnoreCase);
+			var existingShortnamesSet = new HashSet<string>(
+				existingShortnames.Select(s => (s ?? string.Empty).Trim().ToUpperInvariant()),
+				StringComparer.OrdinalIgnoreCase);
 
-			foreach (string name in existingNames)
+			// Find the maximum suffix number from BOTH existing names and shortnames
+			int maxNameSuffix = FindMaxSuffix(existingNames, baseName);
+			string baseShortname = DeriveShortname(baseName);
+			int maxShortnameSuffix = FindMaxSuffix(existingShortnames, baseShortname);
+
+			// Start with the higher of the two max suffixes
+			int startSuffix = Math.Max(maxNameSuffix, maxShortnameSuffix);
+
+			// CASCADING UNIQUENESS: Try suffix values until BOTH workspace name AND shortname are unique
+			const int MAX_ITERATIONS = 100; // Safety limit
+			string uniqueName = baseName;
+			string uniqueShortname = baseShortname;
+
+			// First check if base name is already unique for both
+			bool baseNameUnique = !existingNamesSet.Contains(baseName.ToUpperInvariant());
+			bool baseShornameUnique = !existingShortnamesSet.Contains(TruncateShortname(baseShortname).ToUpperInvariant());
+
+			if (baseNameUnique && baseShornameUnique)
 			{
-				string wsName = (name ?? string.Empty).Trim();
-
-				// Exact match with base name
-				if (wsName.Equals(baseName, StringComparison.OrdinalIgnoreCase))
-				{
-					anyRelevant = true;
-				}
-
-				// Check for suffix pattern (baseName_NN)
-				else if (wsName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-				{
-					string tail = wsName.Substring(prefix.Length);
-					if (int.TryParse(tail, out int n))
-					{
-						if (n > max)
-						{
-							max = n;
-						}
-						anyRelevant = true;
-					}
-				}
-			}
-
-			string uniqueName;
-			if (!anyRelevant)
-			{
-				// No conflicts, use base name as-is
+				// Base name is unique for both, use it
 				uniqueName = baseName;
+				uniqueShortname = TruncateShortname(baseShortname);
 			}
 			else
 			{
-				// Append incremented suffix with zero-padding
-				uniqueName = (max > 0) ?
-					$"{baseName}_{max + 1:00}" :
-					$"{baseName}_01";
-			}
+				// Need to find a unique suffix
+				int suffix = (startSuffix > 0) ? startSuffix + 1 : 1;
 
-			// Generate shortname from unique workspace name
-			// DEFENSIVE: Trim before regex replacement to prevent leading/trailing spaces from becoming underscores
-			string shortName = uniqueName.Trim().Replace(" ", "_");
-			// Remove any other invalid characters (keep alphanumeric, dash, underscore)
-			shortName = Regex.Replace(shortName, @"[^a-zA-Z0-9-_]", "_");
-
-			if (shortName.Length > IESWebConstants.MAX_SHORTNAME_LENGTH)
-			{
-				// Preserve suffix if present
-				if (shortName.Contains("_"))
+				for (int i = 0; i < MAX_ITERATIONS; i++)
 				{
-					int underscoreIndex = shortName.LastIndexOf("_");
-					string suffix = shortName.Substring(underscoreIndex);
-					string basePart = shortName.Substring(0, underscoreIndex);
+					string candidateName = $"{baseName}_{suffix:00}";
+					string candidateShortname = TruncateShortname(DeriveShortname(candidateName));
 
-					int maxBaseLength = IESWebConstants.MAX_SHORTNAME_LENGTH - suffix.Length;
-					if (maxBaseLength > 0 && basePart.Length > maxBaseLength)
+					bool nameUnique = !existingNamesSet.Contains(candidateName.ToUpperInvariant());
+					bool shortnameUnique = !existingShortnamesSet.Contains(candidateShortname.ToUpperInvariant());
+
+					if (nameUnique && shortnameUnique)
 					{
-						basePart = basePart.Substring(0, maxBaseLength);
+						uniqueName = candidateName;
+						uniqueShortname = candidateShortname;
+						break;
 					}
-					shortName = basePart + suffix;
-				}
-				else
-				{
-					shortName = shortName.Substring(0, IESWebConstants.MAX_SHORTNAME_LENGTH);
+
+					suffix++;
 				}
 			}
 
 			return new Dictionary<string, object>
 			{
 				["WorkspaceName"] = uniqueName,
-				["ShortName"] = shortName
+				["ShortName"] = uniqueShortname
 			};
+		}
+
+		/// <summary>
+		/// Find the maximum numeric suffix in a collection of names matching the base pattern.
+		/// </summary>
+		private int FindMaxSuffix(IEnumerable<string> names, string baseName)
+		{
+			int max = 0;
+			string prefix = baseName + "_";
+
+			foreach (string name in names)
+			{
+				string trimmedName = (name ?? string.Empty).Trim();
+
+				// Check for suffix pattern (baseName_NN)
+				if (trimmedName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+				{
+					string tail = trimmedName.Substring(prefix.Length);
+					if (int.TryParse(tail, out int n) && n > max)
+					{
+						max = n;
+					}
+				}
+			}
+
+			return max;
+		}
+
+		/// <summary>
+		/// Derive shortname from workspace name: replace spaces with underscores, remove invalid chars.
+		/// </summary>
+		private string DeriveShortname(string workspaceName)
+		{
+			if (string.IsNullOrWhiteSpace(workspaceName))
+			{
+				return string.Empty;
+			}
+
+			string shortName = workspaceName.Trim().Replace(" ", "_");
+			shortName = System.Text.RegularExpressions.Regex.Replace(shortName, @"[^a-zA-Z0-9-_]", "_");
+			return shortName;
+		}
+
+		/// <summary>
+		/// Truncate shortname to MAX_SHORTNAME_LENGTH, preserving suffix if present.
+		/// </summary>
+		private string TruncateShortname(string shortName)
+		{
+			const int MAX_SHORTNAME_LENGTH = 21;
+
+			if (shortName.Length <= MAX_SHORTNAME_LENGTH)
+			{
+				return shortName;
+			}
+
+			// Preserve suffix if present (e.g., _01, _02)
+			if (shortName.Contains("_"))
+			{
+				int underscoreIndex = shortName.LastIndexOf("_");
+				string suffix = shortName.Substring(underscoreIndex);
+				string basePart = shortName.Substring(0, underscoreIndex);
+
+				int maxBaseLength = MAX_SHORTNAME_LENGTH - suffix.Length;
+				if (maxBaseLength > 0 && basePart.Length > maxBaseLength)
+				{
+					basePart = basePart.Substring(0, maxBaseLength);
+				}
+				return basePart + suffix;
+			}
+
+			return shortName.Substring(0, MAX_SHORTNAME_LENGTH);
 		}
 
 		/// <summary>

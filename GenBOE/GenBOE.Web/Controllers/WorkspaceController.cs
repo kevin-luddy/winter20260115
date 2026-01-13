@@ -800,6 +800,7 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Get the next unique workspace name by checking existing names in the database.
 		/// Efficient endpoint that only queries for matching names and returns the next unique name.
+		/// Checks BOTH workspace name AND shortname/URL uniqueness with cascading logic.
 		/// </summary>
 		/// <param name="baseName">The base workspace name to make unique</param>
 		/// <returns>JSON with unique WorkspaceName and ShortName</returns>
@@ -808,13 +809,38 @@ namespace GenBOE.Web.Controllers
 		{
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_NEXT_UNIQUE_WORKSPACE_NAME, SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
 
+			// Get existing workspace names matching the pattern
 			ICollection<string> existingNames = this.workspaceLoader.GetWorkspaceNamesMatchingBase(baseName);
 
-			Dictionary<string, object> payload = _ControllerLogic.GetNextUniqueWorkspaceName(existingNames, baseName);
+			// Also get existing shortnames for cascading uniqueness check
+			// The shortname is derived from workspace name, so we need to check both
+			string baseShortname = DeriveBaseShortname(baseName);
+			ICollection<string> existingShortnames = this.workspaceLoader.GetWorkspaceShortnamesMatchingBase(baseShortname);
+
+			Dictionary<string, object> payload = _ControllerLogic.GetNextUniqueWorkspaceName(existingNames, existingShortnames, baseName);
 
 			FinalizeAction(_log, WebConstants.ACTION_GET_NEXT_UNIQUE_WORKSPACE_NAME, sw);
 
 			return Json(payload, JsonRequestBehavior.AllowGet);
+		}
+
+		/// <summary>
+		/// Helper method to derive a base shortname from workspace name for uniqueness checking.
+		/// Mirrors the client-side deriveShortname logic but without length truncation.
+		/// </summary>
+		private string DeriveBaseShortname(string workspaceName)
+		{
+			if (string.IsNullOrWhiteSpace(workspaceName))
+			{
+				return string.Empty;
+			}
+
+			string trimmed = workspaceName.Trim();
+			// Replace spaces with underscores
+			string shortname = trimmed.Replace(" ", "_");
+			// Remove invalid characters (keep alphanumeric, dash, underscore)
+			shortname = System.Text.RegularExpressions.Regex.Replace(shortname, @"[^a-zA-Z0-9-_]", "_");
+			return shortname;
 		}
 
 		#endregion Views

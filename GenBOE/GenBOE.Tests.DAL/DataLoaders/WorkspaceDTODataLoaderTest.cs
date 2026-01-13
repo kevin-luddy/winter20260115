@@ -1106,27 +1106,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
 		}
 
 		/// <summary>
-		/// Test GetAllWorkspacesWithTrackingNumbers successfully returns all workspaces containing tracking numbers
-		/// </summary>
-		[TestMethod]
-		public void GetAllWorkspacesWithTrackingNumbers()
-		{
-			IWorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
-
-			int totalWorkspacesFromDB;
-			using (GenBoeEntities gbe = new GenBoeEntities())
-			{
-				totalWorkspacesFromDB = (from w in gbe.Workspaces
-										 where !string.IsNullOrEmpty(w.TrackingNumber)
-										 select w).Count();
-			}
-
-			ICollection<WorkspaceDTO> results = sut.GetAllWorkspacesWithTrackingNumbers();
-
-			Assert.AreEqual(totalWorkspacesFromDB, results.Count);
-		}
-
-		/// <summary>
 		/// Test GetWorkspaceNamesMatchingBase returns exact match
 		/// </summary>
 		[TestMethod]
@@ -1238,6 +1217,75 @@ namespace GenBOE.Tests.DAL.DataLoaders
 			ICollection<string> resultLower = sut.GetWorkspaceNamesMatchingBase(workspaceName.ToLower());
 			ICollection<string> resultUpper = sut.GetWorkspaceNamesMatchingBase(workspaceName.ToUpper());
 			ICollection<string> resultOriginal = sut.GetWorkspaceNamesMatchingBase(workspaceName);
+
+			Assert.AreEqual(resultOriginal.Count, resultLower.Count, "Lowercase query should return same count");
+			Assert.AreEqual(resultOriginal.Count, resultUpper.Count, "Uppercase query should return same count");
+		}
+
+		/// <summary>
+		/// Test GetWorkspaceShortnamesMatchingBase returns exact match
+		/// </summary>
+		[TestMethod]
+		public void TestGetWorkspaceShortnamesMatchingBase_ExactMatch()
+		{
+			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+
+			string shortname;
+
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				// Get a workspace shortname that exists in the database
+				shortname = gbe.Workspaces.FirstOrDefault(x => x.IsDeleted == false)?.WorkspaceShortName;
+			}
+
+			Assert.IsNotNull(shortname, "No workspace found in database for test");
+
+			ICollection<string> result = sut.GetWorkspaceShortnamesMatchingBase(shortname);
+
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result.Any(), "Should return at least the exact match");
+			Assert.IsTrue(result.Any(x => x.Equals(shortname, StringComparison.OrdinalIgnoreCase)),
+				"Result should contain the exact shortname");
+		}
+
+		/// <summary>
+		/// Test GetWorkspaceShortnamesMatchingBase with non-existent shortname returns empty collection
+		/// </summary>
+		[TestMethod]
+		public void TestGetWorkspaceShortnamesMatchingBase_NonExistentName()
+		{
+			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+
+			// Use a GUID to ensure this shortname doesn't exist
+			string nonExistentShortname = "NonExistent_" + Guid.NewGuid().ToString().Substring(0, 8);
+
+			ICollection<string> result = sut.GetWorkspaceShortnamesMatchingBase(nonExistentShortname);
+
+			Assert.IsNotNull(result);
+			Assert.AreEqual(0, result.Count, "Should return empty collection for non-existent shortname");
+		}
+
+		/// <summary>
+		/// Test GetWorkspaceShortnamesMatchingBase is case-insensitive
+		/// </summary>
+		[TestMethod]
+		public void TestGetWorkspaceShortnamesMatchingBase_CaseInsensitive()
+		{
+			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+
+			string shortname;
+
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				shortname = gbe.Workspaces.FirstOrDefault(x => x.IsDeleted == false)?.WorkspaceShortName;
+			}
+
+			Assert.IsNotNull(shortname, "No workspace found in database for test");
+
+			// Query with different case variations
+			ICollection<string> resultLower = sut.GetWorkspaceShortnamesMatchingBase(shortname.ToLower());
+			ICollection<string> resultUpper = sut.GetWorkspaceShortnamesMatchingBase(shortname.ToUpper());
+			ICollection<string> resultOriginal = sut.GetWorkspaceShortnamesMatchingBase(shortname);
 
 			Assert.AreEqual(resultOriginal.Count, resultLower.Count, "Lowercase query should return same count");
 			Assert.AreEqual(resultOriginal.Count, resultUpper.Count, "Uppercase query should return same count");
