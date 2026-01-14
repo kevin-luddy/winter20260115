@@ -541,7 +541,7 @@ namespace IES.Common
 		// Maximum allowed shortname length based on validation constraints
 		// Using 21 as the safe limit to match StringLength validation attribute
 		/// </summary>
-		public const int MAX_SHORTNAME_LENGTH = 21;
+		public const int MAX_PLD_SHORTNAME_LENGTH = 21;
 
 		#endregion
 	}
