@@ -168,8 +168,9 @@ namespace GenBOE.ActionLogic.Common
 		/// <param name="taskElement">Task Element</param>
 		/// <param name="isEnableSAPConnection">Indicates whether SAP connection is enabled </param>
 		/// <param name="onButtonPress">True if this validation is being performed as part of the Validate BOE button</param>
+		/// <param name="moqEquationTotal">The MOQ equation total</param>
 		/// <returns>A collection of validation errors/messages</returns>
-		public static ICollection<string> ValidateSkillMixSummaryTable(BoeTaskElementDTO taskElement, bool isEnableSAPConnection, bool onButtonPress)
+		public static ICollection<string> ValidateSkillMixSummaryTable(BoeTaskElementDTO taskElement, bool isEnableSAPConnection, bool onButtonPress, decimal? moqEquationTotal = 0m)
 		{
 			if (taskElement == null)
 			{
@@ -195,6 +196,13 @@ namespace GenBOE.ActionLogic.Common
 				{
 					errorMessages.Add("Total Historical Hours in Skill Mix Summary Table do not match the sum of the Total Relevant Hours.");
 				}
+			}
+
+			// Delta hours should be 0 when skill mix is enabled
+			decimal proposedLegacyAndBRC = taskElement.SkillMixSummaryTable.Sum(x => x.TotalProposedLegacyBrc);
+			if (proposedLegacyAndBRC != moqEquationTotal)
+			{
+				errorMessages.Add("Skill Mix Summary Table: The Total Proposed Legacy & BRC does not match the MOQ Equation total.");
 			}
 
 			foreach (string skillMixResourceID in skillMixSummaryRowsExceedChars.Select(x => x.ResourceID))
