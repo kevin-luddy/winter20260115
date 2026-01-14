@@ -2027,40 +2027,31 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			// CASCADING UNIQUENESS: Try suffix values until BOTH workspace name AND shortname are unique
 			const int MAX_ITERATIONS = 100; // Safety limit
 			string uniqueName = baseName;
-			string uniqueShortname = baseShortname;
+			string uniqueShortname = TruncateShortname(baseShortname);
 
 			// First check if base name is already unique for both
 			bool baseNameUnique = !existingNamesSet.Contains(baseName.ToUpperInvariant());
 			bool baseShornameUnique = !existingShortnamesSet.Contains(TruncateShortname(baseShortname).ToUpperInvariant());
 
-			if (baseNameUnique && baseShornameUnique)
-			{
-				// Base name is unique for both, use it
-				uniqueName = baseName;
-				uniqueShortname = TruncateShortname(baseShortname);
-			}
-			else
+			while (!baseNameUnique || !baseShornameUnique)
 			{
 				// Need to find a unique suffix
 				int suffix = (startSuffix > 0) ? startSuffix + 1 : 1;
 
-				for (int i = 0; i < MAX_ITERATIONS; i++)
+				string candidateName = $"{baseName}_{suffix:00}";
+				string candidateShortname = TruncateShortname(DeriveShortname(candidateName));
+
+				bool nameUnique = !existingNamesSet.Contains(candidateName.ToUpperInvariant());
+				bool shortnameUnique = !existingShortnamesSet.Contains(candidateShortname.ToUpperInvariant());
+
+				if (nameUnique && shortnameUnique)
 				{
-					string candidateName = $"{baseName}_{suffix:00}";
-					string candidateShortname = TruncateShortname(DeriveShortname(candidateName));
-
-					bool nameUnique = !existingNamesSet.Contains(candidateName.ToUpperInvariant());
-					bool shortnameUnique = !existingShortnamesSet.Contains(candidateShortname.ToUpperInvariant());
-
-					if (nameUnique && shortnameUnique)
-					{
-						uniqueName = candidateName;
-						uniqueShortname = candidateShortname;
-						break;
-					}
-
-					suffix++;
+					uniqueName = candidateName;
+					uniqueShortname = candidateShortname;
+					break;
 				}
+
+				suffix++;
 			}
 
 			return new Dictionary<string, object>
@@ -2073,6 +2064,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <summary>
 		/// Find the maximum numeric suffix in a collection of names matching the base pattern.
 		/// </summary>
+		/// <param name="names">name list</param>
+		/// <param name="baseName">name without suffix</param>
+		/// <returns>next max int for suffix given the list</returns>
 		private int FindMaxSuffix(IEnumerable<string> names, string baseName)
 		{
 			int max = 0;
@@ -2099,6 +2093,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <summary>
 		/// Derive shortname from workspace name: replace spaces with underscores, remove invalid chars.
 		/// </summary>
+		/// <param name="workspaceName">name of the workspace</param>
+		/// <returns>string representing the derived shortname</returns>
 		private string DeriveShortname(string workspaceName)
 		{
 			if (string.IsNullOrWhiteSpace(workspaceName))
@@ -2112,8 +2108,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		}
 
 		/// <summary>
-		/// Truncate shortname to MAX_SHORTNAME_LENGTH, preserving suffix if present.
+		/// Truncate shortname to MAX_PLD_SHORTNAME_LENGTH, preserving suffix if present.
 		/// </summary>
+		/// <param name="workspaceName">name of the workspace</param>
+		/// <returns>string representing the derived shortname</returns>
 		private string TruncateShortname(string shortName)
 		{
 			const int MAX_SHORTNAME_LENGTH = 21;
