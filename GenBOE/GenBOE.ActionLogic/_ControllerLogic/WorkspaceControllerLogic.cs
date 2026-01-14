@@ -38,6 +38,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System.Transactions;
 	using System.Web.Configuration;
 	using static IES.Common.Constants;
+	using static IES.Common.IESWebConstants;
 
 	public abstract class WorkspaceControllerLogic : IWorkspaceControllerLogic
 	{
@@ -1942,13 +1943,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					$"{paNumber}_01";
 			}
 
-			// Maximum allowed shortname length based on validation constraints
-			// Using 21 as the safe limit to match StringLength validation attribute
-			const int MAX_SHORTNAME_LENGTH = 21;
-
 			// Truncate shortname if it exceeds maximum length
 			// for revisions (with underscore suffix), ensure we leave room for the suffix
-			if (nextShortName.Length > MAX_SHORTNAME_LENGTH)
+			if (nextShortName.Length > MAX_PLD_SHORTNAME_LENGTH)
 			{
 				if (nextShortName.Contains("_"))
 				{
@@ -1958,7 +1955,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					string basePart = nextShortName.Substring(0, underscoreIndex);
 
 					// Truncate the base part to fit within max length width suffix
-					int maxBaseLength = MAX_SHORTNAME_LENGTH - suffix.Length;
+					int maxBaseLength = MAX_PLD_SHORTNAME_LENGTH - suffix.Length;
 					if (basePart.Length > maxBaseLength)
 					{
 						basePart = basePart.Substring(0, maxBaseLength);
@@ -1969,7 +1966,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				else
 				{
 					// No revision suffix - just truncate
-					nextShortName = nextShortName.Substring(0, MAX_SHORTNAME_LENGTH);
+					nextShortName = nextShortName.Substring(0, MAX_PLD_SHORTNAME_LENGTH);
 				}
 			}
 
