@@ -15,6 +15,7 @@ namespace GenBOE.Web.Controllers.Backend
 	using System.Web.Http;
 	using System.Web.Http.Cors;
 	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic._ModelView;
 	using GenBOE.ActionLogic._ModelView.Backend;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.CopyBOE;
@@ -403,6 +404,42 @@ namespace GenBOE.Web.Controllers.Backend
 			result.Data = true;
 
 			FinalizeAction(logger, WebConstants.ACTION_SAVE_DUPLICATE_TASK_ELEMENTS, sw);
+			return result;
+		}
+
+
+
+		/// <summary>
+		/// Save Bulk Boe Roles
+		/// </summary>
+		/// <param name="modelView">Boe Roles to Save data</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		[HttpPost]
+		public IESSingleResponse<ICollection<string>> SaveBoeBulkRoles([FromBody] SaveBoeBulkRolesModelView modelView)
+		{
+			_ = modelView ?? throw new ArgumentNullException(nameof(modelView));
+
+			IESSingleResponse<ICollection<string>> result = new IESSingleResponse<ICollection<string>>();
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(modelView.Workspace);
+
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_SAVE_BULK_ROLE_ASSIGN, SecurityPage.ManageBOEs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			try
+			{
+				List<string> errorMessages = this.boeControllerLogic.SaveBoeBulkRoles(ws, modelView.BoeRolesToSave).ToList();
+
+				result.IsSuccessful = true;
+				result.Data = errorMessages;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.IsSuccessful = false;
+			}
+
+			FinalizeAction(logger, WebConstants.ACTION_SAVE_BULK_ROLE_ASSIGN, sw);
+
 			return result;
 		}
 	}
