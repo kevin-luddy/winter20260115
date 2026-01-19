@@ -347,7 +347,7 @@
         </div>
     </div>
     <div class="form-element" id="SAPConnectionSelect">
-        <select name="EnableSAPConnection" id="EnableSAPConnection" data-ng-model="data.EnableSAPConnection" data-ng-disabled="data.WorkspaceToCopyID > 0 || (!data.UsingTemplateBoe)">
+        <select name="EnableSAPConnection" id="EnableSAPConnection" data-ng-model="data.EnableSAPConnection" data-ng-disabled="!data.UsingTemplateBoe">
             <option data-ng-if="data.UsingTemplateBoe === true && model.isSAPConfigurationEnabled" data-ng-value="true">Yes</option>
             <option data-ng-value="false">No</option>
         </select>
